@@ -5,11 +5,13 @@ import {
     WordScrambleConfig, 
     PictionaryConfig,
     SpeedTypingConfig,
+    ReactionShowdownConfig,
     GameRoundInfo,
     NumberGuessRoundInfo,
     WordScrambleRoundInfo,
     PictionaryRoundInfo,
-    SpeedTypingRoundInfo
+    SpeedTypingRoundInfo,
+    ReactionShowdownRoundInfo
 } from '../models/game.model';
 
 /**
@@ -65,6 +67,10 @@ export function isSpeedTypingConfig(config: GameConfig | null): config is SpeedT
     return config?.type === 'speed-typing';
 }
 
+export function isReactionShowdownConfig(config: GameConfig | null): config is ReactionShowdownConfig {
+    return config?.type === 'reaction-showdown';
+}
+
 // ==================== Round Info Type Guards ====================
 
 export function isNumberGuessRoundInfo(info: GameRoundInfo | null | undefined): info is NumberGuessRoundInfo {
@@ -81,4 +87,8 @@ export function isPictionaryRoundInfo(info: GameRoundInfo | null | undefined): i
 
 export function isSpeedTypingRoundInfo(info: GameRoundInfo | null | undefined): info is SpeedTypingRoundInfo {
     return info?.gameType === 'speed-typing';
+}
+
+export function isReactionShowdownRoundInfo(info: GameRoundInfo | null | undefined): info is ReactionShowdownRoundInfo {
+    return info?.gameType === 'reaction-showdown';
 }

@@ -52,6 +52,15 @@ public class GameTypeRegistry {
             .minPlayers(2)
             .maxPlayers(10)
             .build());
+
+        gameTypes.add(GameType.builder()
+            .id("reaction-showdown")
+            .name("Reaction Showdown")
+            .description("Test your reflexes! Tap when you see the green signal. Watch out for fake-outs!")
+            .icon("⚡")
+            .minPlayers(2)
+            .maxPlayers(10)
+            .build());
     }
 
     public List<GameType> getAllGameTypes() {

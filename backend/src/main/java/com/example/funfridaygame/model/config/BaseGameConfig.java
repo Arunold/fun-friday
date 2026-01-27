@@ -17,7 +17,8 @@ import lombok.Setter;
     @JsonSubTypes.Type(value = NumberGuessConfig.class, name = "number-guess"),
     @JsonSubTypes.Type(value = WordScrambleConfig.class, name = "word-scramble"),
     @JsonSubTypes.Type(value = PictionaryConfig.class, name = "pictionary"),
-    @JsonSubTypes.Type(value = SpeedTypingConfig.class, name = "speed-typing")
+    @JsonSubTypes.Type(value = SpeedTypingConfig.class, name = "speed-typing"),
+    @JsonSubTypes.Type(value = ReactionShowdownConfig.class, name = "reaction-showdown")
 })
 public abstract class BaseGameConfig {
 

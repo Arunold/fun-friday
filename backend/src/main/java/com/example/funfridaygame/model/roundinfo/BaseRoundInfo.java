@@ -5,6 +5,7 @@ import com.example.funfridaygame.model.config.PictionaryConfig;
 import com.example.funfridaygame.model.round.BaseGameRound;
 import com.example.funfridaygame.model.round.NumberGuessRound;
 import com.example.funfridaygame.model.round.PictionaryRound;
+import com.example.funfridaygame.model.round.ReactionShowdownRound;
 import com.example.funfridaygame.model.round.SpeedTypingRound;
 import com.example.funfridaygame.model.round.WordScrambleRound;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -26,7 +27,8 @@ import lombok.Setter;
     @JsonSubTypes.Type(value = NumberGuessRoundInfo.class, name = "number-guess"),
     @JsonSubTypes.Type(value = WordScrambleRoundInfo.class, name = "word-scramble"),
     @JsonSubTypes.Type(value = PictionaryRoundInfo.class, name = "pictionary"),
-    @JsonSubTypes.Type(value = SpeedTypingRoundInfo.class, name = "speed-typing")
+    @JsonSubTypes.Type(value = SpeedTypingRoundInfo.class, name = "speed-typing"),
+    @JsonSubTypes.Type(value = ReactionShowdownRoundInfo.class, name = "reaction-showdown")
 })
 public abstract class BaseRoundInfo {
 
@@ -56,6 +58,8 @@ public abstract class BaseRoundInfo {
             return new PictionaryRoundInfo(pRound, includeTarget, pConfig);
         } else if (round instanceof SpeedTypingRound stRound) {
             return new SpeedTypingRoundInfo(stRound, includeTarget);
+        } else if (round instanceof ReactionShowdownRound rsRound) {
+            return new ReactionShowdownRoundInfo(rsRound);
         }
 
         throw new IllegalArgumentException("Unknown round type: " + round.getClass().getName());

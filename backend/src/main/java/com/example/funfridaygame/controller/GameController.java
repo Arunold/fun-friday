@@ -7,6 +7,7 @@ import com.example.funfridaygame.dto.GameMessage;
 import com.example.funfridaygame.dto.GuessRequest;
 import com.example.funfridaygame.dto.JoinGameRequest;
 import com.example.funfridaygame.dto.PictionaryGuessRequest;
+import com.example.funfridaygame.dto.ReactionTapRequest;
 import com.example.funfridaygame.dto.TypingProgressRequest;
 import com.example.funfridaygame.dto.WordGuessRequest;
 import com.example.funfridaygame.model.Game;
@@ -27,6 +28,7 @@ import com.example.funfridaygame.service.GameTypeRegistry;
 import com.example.funfridaygame.service.game.GameStrategy;
 import com.example.funfridaygame.service.game.GameStrategyRegistry;
 import com.example.funfridaygame.service.game.PictionaryStrategy;
+import com.example.funfridaygame.service.game.ReactionShowdownService;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -50,16 +52,19 @@ public class GameController {
     private final SimpMessagingTemplate messagingTemplate;
     private final GameTypeRegistry gameTypeRegistry;
     private final GameStrategyRegistry strategyRegistry;
+    private final ReactionShowdownService reactionService;
     private final Map<String, Game> games = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> roundTimers = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
 
     public GameController(SimpMessagingTemplate messagingTemplate,
                          GameTypeRegistry gameTypeRegistry,
-                         GameStrategyRegistry strategyRegistry) {
+                         GameStrategyRegistry strategyRegistry,
+                         ReactionShowdownService reactionService) {
         this.messagingTemplate = messagingTemplate;
         this.gameTypeRegistry = gameTypeRegistry;
         this.strategyRegistry = strategyRegistry;
+        this.reactionService = reactionService;
     }
 
     @PreDestroy
@@ -275,6 +280,17 @@ public class GameController {
         }
     }
 
+    // ==================== Reaction Showdown handlers ====================
+
+    @MessageMapping("/reactionTap")
+    public void handleReactionTap(ReactionTapRequest request) {
+        String gameId = request.getGameId().toUpperCase();
+        Game game = games.get(gameId);
+        if (game != null) {
+            reactionService.handleTap(game, request.getPlayerName());
+        }
+    }
+
     private void checkRoundEnd(String gameId, Game game) {
         Optional<GameStrategy> strategyOpt = strategyRegistry.getStrategy(game.getGameTypeId());
         if (strategyOpt.isEmpty()) {
@@ -341,6 +357,11 @@ public class GameController {
         final int currentTurnNumber = turnNumber;
 
         messagingTemplate.convertAndSend("/topic/game/" + gameId, game);
+
+        // For Reaction Showdown, trigger the signal scheduling
+        if ("reaction-showdown".equals(game.getGameTypeId())) {
+            reactionService.startRound(game);
+        }
 
         int roundDuration = config != null ? config.getRoundDuration() : 30;
         ScheduledFuture<?> timer = scheduler.schedule(() -> {

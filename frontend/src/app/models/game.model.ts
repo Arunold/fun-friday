@@ -33,8 +33,18 @@ export interface SpeedTypingConfig extends BaseGameConfig {
     minAccuracy: number;
 }
 
+// Reaction Showdown specific config
+export interface ReactionShowdownConfig extends BaseGameConfig {
+    type: 'reaction-showdown';
+    minDelay: number;
+    maxDelay: number;
+    includeFakeOuts: boolean;
+    fakeOutChance: number;
+}
+
 // Union type for all configs
-export type GameConfig = NumberGuessConfig | WordScrambleConfig | PictionaryConfig | SpeedTypingConfig;
+export type GameConfig = NumberGuessConfig | WordScrambleConfig
+    | PictionaryConfig | SpeedTypingConfig | ReactionShowdownConfig;
 
 export interface Game {
     gameId: string;
@@ -117,8 +127,27 @@ export interface SpeedTypingRoundInfo extends BaseRoundInfo {
     rankings: string[];
 }
 
+// Reaction Showdown player reaction info
+export interface ReactionInfo {
+    reactionTime: number;
+    falseStart: boolean;
+    tappedFakeOut: boolean;
+}
+
+// Reaction Showdown specific round info
+export interface ReactionShowdownRoundInfo extends BaseRoundInfo {
+    gameType: 'reaction-showdown';
+    phase: 'WAITING' | 'REACT' | 'FAKEOUT';
+    isFakeOut: boolean;
+    signalTime: number;
+    playerReactions: Record<string, ReactionInfo>;
+    fastestPlayer: string | null;
+    fastestTime: number;
+}
+
 // Union type for all round info types
-export type GameRoundInfo = NumberGuessRoundInfo | WordScrambleRoundInfo | PictionaryRoundInfo | SpeedTypingRoundInfo;
+export type GameRoundInfo = NumberGuessRoundInfo | WordScrambleRoundInfo
+    | PictionaryRoundInfo | SpeedTypingRoundInfo | ReactionShowdownRoundInfo;
 
 export interface GameType {
     id: string;
