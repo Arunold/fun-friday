@@ -7,16 +7,18 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class OrderByPipe implements PipeTransform {
 
-  transform(array: any[], field: string, direction: string = 'asc'): any[] {
+  transform<T extends object>(array: T[], field: keyof T, direction = 'asc'): T[] {
     if (!array) {
       return [];
     }
 
     const sorted = [...array];
     sorted.sort((a, b) => {
-      if (a[field] < b[field]) {
+      const aVal = a[field];
+      const bVal = b[field];
+      if (aVal < bVal) {
         return direction === 'asc' ? -1 : 1;
-      } else if (a[field] > b[field]) {
+      } else if (aVal > bVal) {
         return direction === 'asc' ? 1 : -1;
       }
       return 0;

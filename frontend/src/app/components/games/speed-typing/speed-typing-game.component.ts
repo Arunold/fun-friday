@@ -1,13 +1,11 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { WebsocketService, GameService } from '../../../services';
 import { SpeedTypingRoundInfo, PlayerProgressInfo } from '../../../models';
 import { GameLayoutComponent } from '../../game-layout/game-layout.component';
 import { BaseGameComponent } from '../base-game.component';
@@ -29,24 +27,11 @@ import { isSpeedTypingRoundInfo } from '../../../utils/game-config.utils';
     GameLayoutComponent
   ]
 })
-export class SpeedTypingGameComponent extends BaseGameComponent implements AfterViewInit {
+export class SpeedTypingGameComponent extends BaseGameComponent {
   typedText = '';
   readonly gameIcon = 'keyboard';
 
   @ViewChild('typingInput') typingInput!: ElementRef<HTMLInputElement>;
-
-  constructor(
-    route: ActivatedRoute,
-    router: Router,
-    websocketService: WebsocketService,
-    gameService: GameService
-  ) {
-    super(route, router, websocketService, gameService);
-  }
-
-  ngAfterViewInit(): void {
-    // Focus will be set in onNewRound when game state changes
-  }
 
   // Typed getter for round info
   get roundInfo(): SpeedTypingRoundInfo | null {

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -46,10 +46,8 @@ export class NavbarComponent implements OnInit {
   playerAvatar = '👤';
   isHost = false;
 
-  constructor(
-    private router: Router,
-    private websocketService: WebsocketService
-  ) {}
+  private router = inject(Router);
+  private websocketService = inject(WebsocketService);
 
   ngOnInit(): void {
     this.playerName = sessionStorage.getItem('playerName') || '';

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -131,7 +131,7 @@ export interface AvatarDialogData {
   `]
 })
 export class AvatarDialogComponent {
-    selectedAvatar: string = '';
+    selectedAvatar = '';
 
     maleAvatars: Avatar[] = [
         { id: 'm1', emoji: '👨' },
@@ -165,12 +165,12 @@ export class AvatarDialogComponent {
 
     othersAvatars: Avatar[] = [...this.maleAvatars, ...this.femaleAvatars].sort(() => Math.random() - 0.5);
 
-    constructor(
-        public dialogRef: MatDialogRef<AvatarDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: AvatarDialogData
-    ) {
-        if (data?.selectedAvatar) {
-            this.selectedAvatar = data.selectedAvatar;
+    public dialogRef = inject(MatDialogRef<AvatarDialogComponent>);
+    public data = inject<AvatarDialogData>(MAT_DIALOG_DATA);
+
+    constructor() {
+        if (this.data?.selectedAvatar) {
+            this.selectedAvatar = this.data.selectedAvatar;
         }
     }
 

@@ -9,7 +9,7 @@ export class WebsocketService {
 
   private stompClient: Client;
   private subscriptions = new Map<string, StompSubscription>();
-  private pendingSubscriptions: { topic: string; callback: (message: any) => void }[] = [];
+  private pendingSubscriptions: { topic: string; callback: (message: unknown) => void }[] = [];
 
   constructor() {
     this.stompClient = new Client({
@@ -33,7 +33,7 @@ export class WebsocketService {
     pending.forEach(sub => this.subscribe(sub.topic, sub.callback));
   }
 
-  subscribe(topic: string, callback: (message: any) => void): void {
+  subscribe(topic: string, callback: (message: unknown) => void): void {
     if (!this.stompClient.active) {
       this.pendingSubscriptions.push({ topic, callback });
       return;
@@ -62,7 +62,7 @@ export class WebsocketService {
     this.subscriptions.clear();
   }
 
-  sendMessage(destination: string, message: any): void {
+  sendMessage(destination: string, message: unknown): void {
     if (this.stompClient.active && this.stompClient.connected) {
       try {
         this.stompClient.publish({ destination, body: JSON.stringify(message) });

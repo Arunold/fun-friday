@@ -29,13 +29,10 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
   protected roundTimerInterval: ReturnType<typeof setInterval> | null = null;
   protected dialog = inject(MatDialog);
   protected ngZone = inject(NgZone);
-
-  constructor(
-    protected route: ActivatedRoute,
-    protected router: Router,
-    protected websocketService: WebsocketService,
-    protected gameService: GameService
-  ) {}
+  protected route = inject(ActivatedRoute);
+  protected router = inject(Router);
+  protected websocketService = inject(WebsocketService);
+  protected gameService = inject(GameService);
 
   ngOnInit(): void {
     this.gameId = this.route.snapshot.paramMap.get('id');
@@ -94,7 +91,8 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
 
     if (this.gameId) {
       this.websocketService.connect();
-      this.websocketService.subscribe('/topic/game/' + this.gameId, (game: Game) => {
+      this.websocketService.subscribe('/topic/game/' + this.gameId, (message: unknown) => {
+        const game = message as Game;
         this.handleGameUpdate(game);
       });
 

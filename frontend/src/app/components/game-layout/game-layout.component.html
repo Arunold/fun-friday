@@ -27,7 +27,7 @@
           <h1><mat-icon class="title-icon">{{ gameIcon }}</mat-icon> {{ game.gameTypeName }}</h1>
           <div class="game-code-display">
             <span class="label">Game Code:</span>
-            <span class="code" (click)="onCopyCode()">{{ gameId }}</span>
+            <span class="code" tabindex="0" role="button" (click)="onCopyCode()" (keydown.enter)="onCopyCode()">{{ gameId }}</span>
             <button mat-icon-button (click)="onCopyCode()" title="Copy code">
               <mat-icon>content_copy</mat-icon>
             </button>

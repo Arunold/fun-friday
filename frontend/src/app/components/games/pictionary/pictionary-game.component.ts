@@ -1,15 +1,13 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { WebsocketService, GameService } from '../../../services';
-import { DrawingStroke, PictionaryRoundInfo } from '../../../models';
+import { DrawingStroke, DrawingMessage, PictionaryGuessMessage, PictionaryRoundInfo } from '../../../models';
 import { GameLayoutComponent } from '../../game-layout/game-layout.component';
 import { BaseGameComponent } from '../base-game.component';
 import { getCurrentTurn, getTotalTurns, isPictionaryRoundInfo } from '../../../utils/game-config.utils';
@@ -74,15 +72,6 @@ export class PictionaryGameComponent extends BaseGameComponent implements AfterV
     return isPictionaryRoundInfo(info) ? info : null;
   }
 
-  constructor(
-    route: ActivatedRoute,
-    router: Router,
-    websocketService: WebsocketService,
-    gameService: GameService
-  ) {
-    super(route, router, websocketService, gameService);
-  }
-
   ngAfterViewInit(): void {
     this.initCanvas();
   }
@@ -104,32 +93,34 @@ export class PictionaryGameComponent extends BaseGameComponent implements AfterV
     
     // Subscribe to drawing updates
     if (this.gameId) {
-      this.websocketService.subscribe('/topic/game/' + this.gameId + '/drawing', (message: any) => {
-        if (message.type === 'DRAWING_STROKE' && message.stroke) {
-          this.drawReceivedStroke(message.stroke);
+      this.websocketService.subscribe('/topic/game/' + this.gameId + '/drawing', (message: unknown) => {
+        const drawMsg = message as DrawingMessage;
+        if (drawMsg.type === 'DRAWING_STROKE' && drawMsg.stroke) {
+          this.drawReceivedStroke(drawMsg.stroke);
           // Store received stroke for other players' undo sync
           if (!this.isDrawer()) {
-            this.strokeHistory.push(message.stroke);
+            this.strokeHistory.push(drawMsg.stroke);
           }
-        } else if (message.type === 'CLEAR_CANVAS') {
+        } else if (drawMsg.type === 'CLEAR_CANVAS') {
           this.clearCanvas();
           this.strokeHistory = [];
-        } else if (message.type === 'UNDO_STROKE' && !this.isDrawer()) {
+        } else if (drawMsg.type === 'UNDO_STROKE' && !this.isDrawer()) {
           // Handle undo from drawer
           if (this.strokeHistory.length > 0) {
             this.strokeHistory.pop();
             this.redrawAllStrokes();
           }
-        } else if (message.type === 'REDO_STROKE' && message.stroke && !this.isDrawer()) {
+        } else if (drawMsg.type === 'REDO_STROKE' && drawMsg.stroke && !this.isDrawer()) {
           // Handle redo from drawer
-          this.strokeHistory.push(message.stroke);
-          this.drawReceivedStroke(message.stroke);
+          this.strokeHistory.push(drawMsg.stroke);
+          this.drawReceivedStroke(drawMsg.stroke);
         }
       });
 
       // Subscribe to guess updates
-      this.websocketService.subscribe('/topic/game/' + this.gameId + '/guess', (message: any) => {
-        if (message.type === 'PICTIONARY_GUESS') {
+      this.websocketService.subscribe('/topic/game/' + this.gameId + '/guess', (message: unknown) => {
+        const guessMsg = message as PictionaryGuessMessage;
+        if (guessMsg.type === 'PICTIONARY_GUESS') {
           // Handle real-time guess display if needed
         }
       });

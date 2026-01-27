@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -32,11 +32,9 @@ export class HomeComponent implements OnInit {
   gameTypes: GameType[] = [];
   selectedGameType: GameType | null = null;
 
-  constructor(
-    private websocketService: WebsocketService,
-    private gameService: GameService,
-    private router: Router
-  ) {}
+  private websocketService = inject(WebsocketService);
+  private gameService = inject(GameService);
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.websocketService.connect();

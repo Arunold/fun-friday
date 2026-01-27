@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { WebsocketService, GameService } from '../../../services';
 import { WordScrambleRoundInfo } from '../../../models';
 import { GameLayoutComponent } from '../../game-layout/game-layout.component';
 import { BaseGameComponent } from '../base-game.component';
@@ -30,15 +28,6 @@ import { isWordScrambleRoundInfo } from '../../../utils/game-config.utils';
 export class WordScrambleGameComponent extends BaseGameComponent {
   wordGuessValue = '';
   readonly gameIcon = 'text_rotation_none';
-
-  constructor(
-    route: ActivatedRoute,
-    router: Router,
-    websocketService: WebsocketService,
-    gameService: GameService
-  ) {
-    super(route, router, websocketService, gameService);
-  }
 
   // Typed getter for round info
   get roundInfo(): WordScrambleRoundInfo | null {

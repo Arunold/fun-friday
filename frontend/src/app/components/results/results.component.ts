@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,12 +31,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
     isHost = false;
     isLoading = true;
 
-    constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private websocketService: WebsocketService,
-        private gameService: GameService
-    ) { }
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    private websocketService = inject(WebsocketService);
+    private gameService = inject(GameService);
 
     ngOnInit(): void {
         this.gameId = this.route.snapshot.paramMap.get('id');
@@ -84,16 +82,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
         if (!this.gameId) return;
 
         this.websocketService.connect();
-        this.websocketService.subscribe('/topic/game/' + this.gameId, (game: Game) => {
-            this.game = game;
+        this.websocketService.subscribe('/topic/game/' + this.gameId, (message: unknown) => {
+            this.game = message as Game;
 
             // If host started a new game (play again), redirect to game
-            if (game.gameState === 'LOBBY') {
-                this.router.navigate(['/game', game.gameTypeId, this.gameId]);
+            if (this.game.gameState === 'LOBBY') {
+                this.router.navigate(['/game', this.game.gameTypeId, this.gameId]);
             }
             // If game is starting, redirect to the game
-            if (game.gameState === 'STARTING') {
-                this.router.navigate(['/game', game.gameTypeId, this.gameId]);
+            if (this.game.gameState === 'STARTING') {
+                this.router.navigate(['/game', this.game.gameTypeId, this.gameId]);
             }
         });
     }

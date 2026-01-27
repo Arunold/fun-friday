@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -63,7 +63,7 @@ export interface SetupResult {
         <h2>{{ mode === 'host' ? 'Setup Your Game' : 'Setup Your Profile' }}</h2>
 
         <!-- Avatar Selection (clickable) -->
-        <div class="avatar-selector" (click)="openAvatarDialog()">
+        <div class="avatar-selector" tabindex="0" role="button" (click)="openAvatarDialog()" (keydown.enter)="openAvatarDialog()">
           <div class="avatar-display">
             <span class="avatar-emoji">{{ selectedAvatarEmoji }}</span>
           </div>
@@ -321,13 +321,13 @@ export interface SetupResult {
 export class GameSetupComponent implements OnInit {
     mode: 'host' | 'join' = 'host';
     selectedGameType: GameType | null = null;
-    gameCode: string = '';
+    gameCode = '';
 
-    playerName: string = '';
-    selectedAvatarId: string = '';
-    selectedAvatarEmoji: string = '👨';
-    errorMessage: string = '';
-    isLoading: boolean = false;
+    playerName = '';
+    selectedAvatarId = '';
+    selectedAvatarEmoji = '👨';
+    errorMessage = '';
+    isLoading = false;
 
     gameConfig: GameConfig = {
         totalRounds: 3,
@@ -335,13 +335,11 @@ export class GameSetupComponent implements OnInit {
         roundDuration: 30
     };
 
-    constructor(
-        private dialog: MatDialog,
-        private router: Router,
-        private route: ActivatedRoute,
-        private websocketService: WebsocketService,
-        private gameService: GameService
-    ) { }
+    private dialog = inject(MatDialog);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
+    private websocketService = inject(WebsocketService);
+    private gameService = inject(GameService);
 
     ngOnInit(): void {
         // Determine mode based on route
@@ -417,7 +415,8 @@ export class GameSetupComponent implements OnInit {
         const hostName = this.playerName.trim();
         const gameTypeId = this.selectedGameType.id;
 
-        this.websocketService.subscribe('/topic/created/' + hostName, (game: Game) => {
+        this.websocketService.subscribe('/topic/created/' + hostName, (message: unknown) => {
+            const game = message as Game;
             sessionStorage.setItem('playerName', hostName);
             sessionStorage.setItem('isHost', 'true');
             sessionStorage.setItem('playerAvatar', this.selectedAvatarEmoji);
@@ -427,7 +426,8 @@ export class GameSetupComponent implements OnInit {
             this.router.navigate(['/game', game.gameTypeId, game.gameId]);
         });
 
-        this.websocketService.subscribe('/topic/error/' + hostName, (error: any) => {
+        this.websocketService.subscribe('/topic/error/' + hostName, (message: unknown) => {
+            const error = message as { error?: string };
             this.isLoading = false;
             this.errorMessage = error.error || 'Failed to create game';
         });
@@ -446,7 +446,8 @@ export class GameSetupComponent implements OnInit {
         const playerName = this.playerName.trim();
         const gameId = this.gameCode.toUpperCase();
 
-        this.websocketService.subscribe('/topic/game/' + gameId, (game: Game) => {
+        this.websocketService.subscribe('/topic/game/' + gameId, (message: unknown) => {
+            const game = message as Game;
             sessionStorage.setItem('playerName', playerName);
             sessionStorage.setItem('isHost', 'false');
             sessionStorage.setItem('playerAvatar', this.selectedAvatarEmoji);
@@ -456,7 +457,8 @@ export class GameSetupComponent implements OnInit {
             this.router.navigate(['/game', game.gameTypeId, gameId]);
         });
 
-        this.websocketService.subscribe('/topic/error/' + playerName, (error: any) => {
+        this.websocketService.subscribe('/topic/error/' + playerName, (message: unknown) => {
+            const error = message as { error?: string };
             this.isLoading = false;
             this.errorMessage = error.error || 'Failed to join game';
         });

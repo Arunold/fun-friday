@@ -71,7 +71,7 @@ export interface NumberGuessRoundInfo extends BaseRoundInfo {
     gameType: 'number-guess';
     minRange: number;
     maxRange: number;
-    playerGuesses: { [playerName: string]: number };
+    playerGuesses: Record<string, number>;
     targetNumber: number | null;
 }
 
@@ -80,7 +80,7 @@ export interface WordScrambleRoundInfo extends BaseRoundInfo {
     gameType: 'word-scramble';
     scrambledWord: string;
     originalWord: string | null;
-    playerWordGuesses: { [playerName: string]: string };
+    playerWordGuesses: Record<string, string>;
 }
 
 // Pictionary specific round info
@@ -89,8 +89,8 @@ export interface PictionaryRoundInfo extends BaseRoundInfo {
     drawerName: string;
     wordToDraw: string | null;
     wordHint: string;
-    drawingData: any[];
-    playerPictionaryGuesses: { [playerName: string]: string[] };
+    drawingData: DrawingStroke[];
+    playerPictionaryGuesses: Record<string, string[]>;
     correctGuesser: string | null;
     currentTurnNumber: number;
     totalTurns: number;
@@ -113,7 +113,7 @@ export interface SpeedTypingRoundInfo extends BaseRoundInfo {
     difficulty: 'EASY' | 'MEDIUM' | 'HARD';
     minAccuracy: number;
     startTime: number;
-    playerProgress: { [playerName: string]: PlayerProgressInfo };
+    playerProgress: Record<string, PlayerProgressInfo>;
     rankings: string[];
 }
 
@@ -145,6 +145,6 @@ export interface PictionaryGuessMessage {
 
 // Drawing message from WebSocket
 export interface DrawingMessage {
-    type: 'DRAWING_STROKE' | 'CLEAR_CANVAS';
+    type: 'DRAWING_STROKE' | 'CLEAR_CANVAS' | 'UNDO_STROKE' | 'REDO_STROKE';
     stroke?: DrawingStroke;
 }

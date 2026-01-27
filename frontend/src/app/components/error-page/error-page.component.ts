@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -145,10 +145,8 @@ export class ErrorPageComponent implements OnInit {
 
   errorConfig: ErrorConfig = this.errorConfigs['not-found'];
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
