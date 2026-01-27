@@ -12,15 +12,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class NumberGuessConfig extends BaseGameConfig {
-    
+
     private int minRange = 1;
     private int maxRange = 100;
-    
+
     @Override
     public void onRoundStart(int playerCount) {
         // No special initialization needed
     }
-    
+
     @Override
     public void onRoundEnd() {
         // No cleanup needed

@@ -25,22 +25,22 @@ public class Game {
     private String host;
     private String gameTypeId;
     private String gameTypeName;
-    
+
     // Players
     private final List<Player> players = new CopyOnWriteArrayList<>();
-    
+
     // Game state
     private volatile GameState gameState = GameState.LOBBY;
     private int totalRounds = 3;
     private volatile int currentRoundNumber = 0;
-    
+
     // Game-specific configuration (polymorphic)
     private BaseGameConfig gameConfig;
-    
+
     // Current round (internal use only)
     @JsonIgnore
     private volatile BaseGameRound currentRound;
-    
+
     // Round info sent to clients (polymorphic)
     private volatile BaseRoundInfo currentRoundInfo;
 
@@ -76,10 +76,12 @@ public class Game {
     }
 
     public boolean allPlayersAnswered() {
-        if (currentRound == null) return false;
+        if (currentRound == null) {
+            return false;
+        }
         return currentRound.getAnsweredCount() >= players.size();
     }
-    
+
     /**
      * Get typed game config (for type-safe access in strategies)
      */

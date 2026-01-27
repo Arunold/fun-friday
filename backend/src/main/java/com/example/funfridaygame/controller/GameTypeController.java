@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameTypeController {
 
     private final GameTypeRegistry gameTypeRegistry;
-    private static final Map<String, Game> games = new ConcurrentHashMap<>();
+    private static final Map<String, Game> GAMES = new ConcurrentHashMap<>();
 
     public GameTypeController(GameTypeRegistry gameTypeRegistry) {
         this.gameTypeRegistry = gameTypeRegistry;
@@ -27,15 +27,15 @@ public class GameTypeController {
 
     // Static method to register games (called from GameController)
     public static void registerGame(String gameId, Game game) {
-        games.put(gameId, game);
+        GAMES.put(gameId, game);
     }
 
     public static void removeGame(String gameId) {
-        games.remove(gameId);
+        GAMES.remove(gameId);
     }
 
     public static Game getGame(String gameId) {
-        return games.get(gameId);
+        return GAMES.get(gameId);
     }
 
     @GetMapping("/game-types")
@@ -45,7 +45,7 @@ public class GameTypeController {
 
     @GetMapping("/games/{gameId}/status")
     public ResponseEntity<Map<String, Object>> getGameStatus(@PathVariable String gameId) {
-        Game game = games.get(gameId.toUpperCase());
+        Game game = GAMES.get(gameId.toUpperCase());
         Map<String, Object> response = new HashMap<>();
 
         if (game == null) {
@@ -63,7 +63,7 @@ public class GameTypeController {
 
     @GetMapping("/games/{gameId}")
     public ResponseEntity<Game> getGameDetails(@PathVariable String gameId) {
-        Game game = games.get(gameId.toUpperCase());
+        Game game = GAMES.get(gameId.toUpperCase());
 
         if (game == null) {
             return ResponseEntity.notFound().build();

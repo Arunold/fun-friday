@@ -9,32 +9,32 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class BaseGameRound {
-    
+
     protected int roundNumber;
     protected String winner;
     protected boolean revealed;
     protected long roundStartTime;
-    
+
     protected BaseGameRound() {
         this.roundStartTime = System.currentTimeMillis();
     }
-    
+
     protected BaseGameRound(int roundNumber) {
         this.roundNumber = roundNumber;
         this.revealed = false;
         this.roundStartTime = System.currentTimeMillis();
     }
-    
+
     /**
      * Calculate and return the winner of this round
      */
     public abstract String calculateWinner();
-    
+
     /**
      * Check if a player has submitted their answer/guess
      */
     public abstract boolean hasPlayerAnswered(String playerName);
-    
+
     /**
      * Get the number of players who have answered
      */

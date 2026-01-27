@@ -15,16 +15,16 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 public class WordScrambleRoundInfo extends BaseRoundInfo {
-    
+
     private String scrambledWord;
     private String originalWord;
     private Map<String, String> playerWordGuesses = new HashMap<>();
-    
+
     public WordScrambleRoundInfo(WordScrambleRound round, boolean includeTarget) {
         super(round);
         this.scrambledWord = round.getScrambledWord();
         this.playerWordGuesses = new HashMap<>(round.getPlayerWordGuesses());
-        
+
         if (includeTarget || round.isRevealed()) {
             this.originalWord = round.getOriginalWord();
         }

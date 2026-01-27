@@ -14,28 +14,28 @@ import java.util.stream.Collectors;
  */
 @Component
 public class GameStrategyRegistry {
-    
+
     private final Map<String, GameStrategy> strategies;
-    
+
     public GameStrategyRegistry(List<GameStrategy> strategyList) {
         this.strategies = strategyList.stream()
             .collect(Collectors.toMap(GameStrategy::getGameTypeId, Function.identity()));
     }
-    
+
     /**
      * Get the strategy for a specific game type
      */
     public Optional<GameStrategy> getStrategy(String gameTypeId) {
         return Optional.ofNullable(strategies.get(gameTypeId));
     }
-    
+
     /**
      * Get all registered game type IDs
      */
     public List<String> getAllGameTypeIds() {
         return List.copyOf(strategies.keySet());
     }
-    
+
     /**
      * Check if a game type is registered
      */

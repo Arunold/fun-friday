@@ -18,18 +18,18 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SpeedTypingRoundInfo extends BaseRoundInfo {
-    
+
     private String targetText;
     private String difficulty;
     private int minAccuracy;
     private long startTime;
-    
+
     // Simplified player progress for frontend
     private Map<String, PlayerProgressInfo> playerProgress = new HashMap<>();
-    
+
     // Ordered list of finishers
     private List<String> rankings = new ArrayList<>();
-    
+
     public SpeedTypingRoundInfo(SpeedTypingRound round, boolean includeTarget) {
         super(round);
         this.targetText = round.getTargetText();
@@ -37,7 +37,7 @@ public class SpeedTypingRoundInfo extends BaseRoundInfo {
         this.minAccuracy = round.getMinAccuracy();
         this.startTime = round.getStartTime();
         this.rankings = new ArrayList<>(round.getFinishOrder());
-        
+
         // Convert player progress
         for (Map.Entry<String, SpeedTypingRound.PlayerProgress> entry : round.getPlayerProgress().entrySet()) {
             SpeedTypingRound.PlayerProgress progress = entry.getValue();
@@ -49,7 +49,7 @@ public class SpeedTypingRoundInfo extends BaseRoundInfo {
             this.playerProgress.put(entry.getKey(), info);
         }
     }
-    
+
     /**
      * Simplified progress info for frontend
      */

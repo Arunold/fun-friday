@@ -26,7 +26,7 @@ public class TurnResult {
         this.drawerName = drawerName;
         this.wordToDraw = wordToDraw;
         this.correctGuesser = correctGuesser;
-        
+
         // Calculate points
         if (correctGuesser != null) {
             this.guesserPoints = 100;

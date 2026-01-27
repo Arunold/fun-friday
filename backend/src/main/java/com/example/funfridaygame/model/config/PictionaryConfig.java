@@ -12,10 +12,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PictionaryConfig extends BaseGameConfig {
-    
+
     private volatile int currentTurn = 0;
     private volatile int totalTurns = 0;
-    
+
     @Override
     public void onRoundStart(int playerCount) {
         // Reset turns when a new round starts
@@ -24,26 +24,26 @@ public class PictionaryConfig extends BaseGameConfig {
             totalTurns = playerCount;
         }
     }
-    
+
     @Override
     public void onRoundEnd() {
         // Increment turn after each turn ends
     }
-    
+
     /**
      * Move to next turn
      */
     public void nextTurn() {
         currentTurn++;
     }
-    
+
     /**
      * Check if there are more turns in current round
      */
     public boolean hasMoreTurns() {
         return currentTurn < totalTurns;
     }
-    
+
     /**
      * Reset turns for a new round
      */

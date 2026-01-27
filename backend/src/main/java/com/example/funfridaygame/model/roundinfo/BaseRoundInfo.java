@@ -29,23 +29,24 @@ import lombok.Setter;
     @JsonSubTypes.Type(value = SpeedTypingRoundInfo.class, name = "speed-typing")
 })
 public abstract class BaseRoundInfo {
-    
+
     protected int roundNumber;
     protected String winner;
     protected boolean revealed;
-    
+
     protected BaseRoundInfo(BaseGameRound round) {
         this.roundNumber = round.getRoundNumber();
         this.winner = round.getWinner();
         this.revealed = round.isRevealed();
     }
-    
+
     /**
      * Factory method to create the appropriate RoundInfo based on round type
      */
     public static BaseRoundInfo fromRound(BaseGameRound round, boolean includeTarget, BaseGameConfig config) {
-        if (round == null) return null;
-        
+        if (round == null) {
+            return null;
+        }
         if (round instanceof NumberGuessRound ngRound) {
             return new NumberGuessRoundInfo(ngRound, includeTarget);
         } else if (round instanceof WordScrambleRound wsRound) {
@@ -56,7 +57,7 @@ public abstract class BaseRoundInfo {
         } else if (round instanceof SpeedTypingRound stRound) {
             return new SpeedTypingRoundInfo(stRound, includeTarget);
         }
-        
+
         throw new IllegalArgumentException("Unknown round type: " + round.getClass().getName());
     }
 }

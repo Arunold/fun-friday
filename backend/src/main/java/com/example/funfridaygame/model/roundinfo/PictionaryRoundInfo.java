@@ -19,7 +19,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 public class PictionaryRoundInfo extends BaseRoundInfo {
-    
+
     private String drawerName;
     private String wordToDraw;
     private String wordHint;
@@ -29,7 +29,7 @@ public class PictionaryRoundInfo extends BaseRoundInfo {
     private int currentTurnNumber;
     private int totalTurns;
     private List<TurnResult> turnResults = new ArrayList<>();
-    
+
     public PictionaryRoundInfo(PictionaryRound round, boolean includeTarget, PictionaryConfig config) {
         super(round);
         this.drawerName = round.getDrawerName();
@@ -38,12 +38,12 @@ public class PictionaryRoundInfo extends BaseRoundInfo {
         this.correctGuesser = round.getCorrectGuesser();
         this.currentTurnNumber = round.getCurrentTurnNumber();
         this.turnResults = new ArrayList<>(round.getTurnResults());
-        
+
         // Get total turns from config if available
         if (config != null) {
             this.totalTurns = config.getTotalTurns();
         }
-        
+
         // Word is only revealed at the end, but always sent for drawer (frontend filters)
         if (includeTarget || round.isRevealed()) {
             this.wordToDraw = round.getWordToDraw();
@@ -51,17 +51,19 @@ public class PictionaryRoundInfo extends BaseRoundInfo {
             // Always include word for drawer to see
             this.wordToDraw = round.getWordToDraw();
         }
-        
+
         // Generate hint (underscores for word length)
         if (round.getWordToDraw() != null) {
             this.wordHint = generateWordHint(round.getWordToDraw());
         }
     }
-    
+
     private static String generateWordHint(String word) {
         StringBuilder hint = new StringBuilder();
         for (int i = 0; i < word.length(); i++) {
-            if (i > 0) hint.append(" ");
+            if (i > 0) {
+                hint.append(" ");
+            }
             hint.append("_");
         }
         return hint.toString();

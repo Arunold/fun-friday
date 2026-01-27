@@ -1,9 +1,28 @@
 package com.example.funfridaygame.controller;
 
-import com.example.funfridaygame.dto.*;
-import com.example.funfridaygame.model.*;
-import com.example.funfridaygame.model.config.*;
-import com.example.funfridaygame.model.round.*;
+import com.example.funfridaygame.dto.ClearCanvasRequest;
+import com.example.funfridaygame.dto.CreateGameRequest;
+import com.example.funfridaygame.dto.DrawingStrokeRequest;
+import com.example.funfridaygame.dto.GameMessage;
+import com.example.funfridaygame.dto.GuessRequest;
+import com.example.funfridaygame.dto.JoinGameRequest;
+import com.example.funfridaygame.dto.PictionaryGuessRequest;
+import com.example.funfridaygame.dto.TypingProgressRequest;
+import com.example.funfridaygame.dto.WordGuessRequest;
+import com.example.funfridaygame.model.Game;
+import com.example.funfridaygame.model.GameState;
+import com.example.funfridaygame.model.GameType;
+import com.example.funfridaygame.model.Player;
+import com.example.funfridaygame.model.TurnResult;
+import com.example.funfridaygame.model.config.BaseGameConfig;
+import com.example.funfridaygame.model.config.NumberGuessConfig;
+import com.example.funfridaygame.model.config.PictionaryConfig;
+import com.example.funfridaygame.model.config.WordScrambleConfig;
+import com.example.funfridaygame.model.round.BaseGameRound;
+import com.example.funfridaygame.model.round.NumberGuessRound;
+import com.example.funfridaygame.model.round.PictionaryRound;
+import com.example.funfridaygame.model.round.SpeedTypingRound;
+import com.example.funfridaygame.model.round.WordScrambleRound;
 import com.example.funfridaygame.service.GameTypeRegistry;
 import com.example.funfridaygame.service.game.GameStrategy;
 import com.example.funfridaygame.service.game.GameStrategyRegistry;
@@ -18,7 +37,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Controller
@@ -31,7 +54,7 @@ public class GameController {
     private final Map<String, ScheduledFuture<?>> roundTimers = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
 
-    public GameController(SimpMessagingTemplate messagingTemplate, 
+    public GameController(SimpMessagingTemplate messagingTemplate,
                          GameTypeRegistry gameTypeRegistry,
                          GameStrategyRegistry strategyRegistry) {
         this.messagingTemplate = messagingTemplate;
@@ -74,7 +97,7 @@ public class GameController {
         BaseGameConfig config = strategyOpt.get().createDefaultConfig();
         int roundDuration = request.getRoundDuration() > 0 ? request.getRoundDuration() : 30;
         config.setRoundDuration(roundDuration);
-        
+
         // Apply request-specific settings to config
         if (config instanceof WordScrambleConfig wsConfig) {
             wsConfig.setWordLength(request.getWordLength() > 0 ? request.getWordLength() : 7);
@@ -85,7 +108,7 @@ public class GameController {
         } else if (config instanceof PictionaryConfig pConfig) {
             pConfig.setTotalTurns(game.getPlayers().size()); // Will be updated when game starts
         }
-        
+
         game.setGameConfig(config);
 
         Player host = Player.builder()
@@ -254,8 +277,10 @@ public class GameController {
 
     private void checkRoundEnd(String gameId, Game game) {
         Optional<GameStrategy> strategyOpt = strategyRegistry.getStrategy(game.getGameTypeId());
-        if (strategyOpt.isEmpty()) return;
-        
+        if (strategyOpt.isEmpty()) {
+            return;
+        }
+
         GameStrategy strategy = strategyOpt.get();
         if (strategy.shouldEndRoundEarly(game, game.getCurrentRound())) {
             cancelRoundTimer(gameId);
@@ -273,7 +298,7 @@ public class GameController {
             game.setCurrentRoundNumber(0);
             game.setCurrentRound(null);
             game.setCurrentRoundInfo(null);
-            
+
             // Reset game-specific config state
             BaseGameConfig config = game.getGameConfig();
             if (config instanceof PictionaryConfig pConfig) {
@@ -290,7 +315,9 @@ public class GameController {
 
     private void startNewRound(String gameId) {
         Game game = games.get(gameId);
-        if (game == null) return;
+        if (game == null) {
+            return;
+        }
 
         cancelRoundTimer(gameId);
 
@@ -312,7 +339,7 @@ public class GameController {
             turnNumber = pConfig.getCurrentTurn();
         }
         final int currentTurnNumber = turnNumber;
-        
+
         messagingTemplate.convertAndSend("/topic/game/" + gameId, game);
 
         int roundDuration = config != null ? config.getRoundDuration() : 30;
@@ -447,20 +474,30 @@ public class GameController {
 
     private synchronized void endPictionaryTurn(String gameId, int roundNumber, int turnNumber) {
         Game game = games.get(gameId);
-        if (game == null || game.getGameState() != GameState.DRAWING) return;
-        if (game.getCurrentRound().getRoundNumber() != roundNumber) return;
-        
+        if (game == null || game.getGameState() != GameState.DRAWING) {
+            return;
+        }
+        if (game.getCurrentRound().getRoundNumber() != roundNumber) {
+            return;
+        }
+
         PictionaryConfig pConfig = game.getTypedConfig(PictionaryConfig.class);
-        if (pConfig == null || pConfig.getCurrentTurn() != turnNumber) return;
+        if (pConfig == null || pConfig.getCurrentTurn() != turnNumber) {
+            return;
+        }
 
         cancelRoundTimer(gameId);
 
         BaseGameRound round = game.getCurrentRound();
-        if (!(round instanceof PictionaryRound pRound)) return;
+        if (!(round instanceof PictionaryRound pRound)) {
+            return;
+        }
 
         Optional<GameStrategy> strategyOpt = strategyRegistry.getStrategy(game.getGameTypeId());
-        if (strategyOpt.isEmpty()) return;
-        
+        if (strategyOpt.isEmpty()) {
+            return;
+        }
+
         PictionaryStrategy strategy = (PictionaryStrategy) strategyOpt.get();
         strategy.awardPoints(game, pRound);
 
@@ -495,8 +532,12 @@ public class GameController {
 
     private synchronized void revealRoundResult(String gameId, int roundNumber) {
         Game game = games.get(gameId);
-        if (game == null || game.getGameState() != GameState.GUESSING) return;
-        if (game.getCurrentRound().getRoundNumber() != roundNumber) return;
+        if (game == null || game.getGameState() != GameState.GUESSING) {
+            return;
+        }
+        if (game.getCurrentRound().getRoundNumber() != roundNumber) {
+            return;
+        }
 
         cancelRoundTimer(gameId);
 
@@ -522,7 +563,9 @@ public class GameController {
 
     private void finishGame(String gameId) {
         Game game = games.get(gameId);
-        if (game == null) return;
+        if (game == null) {
+            return;
+        }
 
         game.setGameState(GameState.FINISHED);
         messagingTemplate.convertAndSend("/topic/game/" + gameId, game);
@@ -535,7 +578,9 @@ public class GameController {
         String gameId = message.getContent().toUpperCase();
         Game game = games.get(gameId);
 
-        if (game == null) return;
+        if (game == null) {
+            return;
+        }
 
         String playerName = message.getSender();
         boolean isHost = game.getHost().equals(playerName);
@@ -561,14 +606,18 @@ public class GameController {
     @MessageMapping("/removePlayer")
     public void removePlayer(GameMessage message) {
         String[] parts = message.getContent().split(":");
-        if (parts.length != 2) return;
+        if (parts.length != 2) {
+            return;
+        }
 
         String gameId = parts[0].toUpperCase();
         String playerToRemove = parts[1];
         String hostName = message.getSender();
 
         Game game = games.get(gameId);
-        if (game == null) return;
+        if (game == null) {
+            return;
+        }
 
         if (!game.getHost().equals(hostName)) {
             log.warn("Non-host {} tried to remove player {}", hostName, playerToRemove);

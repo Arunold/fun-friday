@@ -30,7 +30,7 @@ public class WordScrambleStrategy implements GameStrategy {
     public String getGameTypeId() {
         return GAME_TYPE_ID;
     }
-    
+
     @Override
     public BaseGameConfig createDefaultConfig() {
         return new WordScrambleConfig();
@@ -39,10 +39,10 @@ public class WordScrambleStrategy implements GameStrategy {
     @Override
     public BaseGameRound createRound(Game game) {
         game.setCurrentRoundNumber(game.getCurrentRoundNumber() + 1);
-        
+
         WordScrambleConfig config = game.getTypedConfig(WordScrambleConfig.class);
         int wordLength = config != null ? config.getWordLength() : DEFAULT_WORD_LENGTH;
-        
+
         String word = wordService.getRandomWord(wordLength);
         String scrambled = wordService.scrambleWord(word);
         return new WordScrambleRound(game.getCurrentRoundNumber(), word, scrambled);

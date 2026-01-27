@@ -20,14 +20,14 @@ import lombok.Setter;
     @JsonSubTypes.Type(value = SpeedTypingConfig.class, name = "speed-typing")
 })
 public abstract class BaseGameConfig {
-    
+
     protected int roundDuration = 30;
-    
+
     /**
      * Called when a new round starts
      */
     public abstract void onRoundStart(int playerCount);
-    
+
     /**
      * Called when a round ends
      */
