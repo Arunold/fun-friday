@@ -11,6 +11,7 @@
 
 # Angular cache
 /.angular/cache
+/.angular/
 
 # Logs
 npm-debug.log
@@ -58,3 +59,11 @@ Thumbs.db
 # Environment
 .env
 .env.local
+
+# E2E
+/e2e/*.js
+/e2e/*.map
+
+# Browser testing
+/playwright-report/
+/playwright/.cache/

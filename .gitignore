@@ -21,6 +21,11 @@ out-tsc/
 # Angular cache
 .angular/
 
+# Package manager locks (optional - uncomment if you don't want to commit them)
+# package-lock.json
+# pnpm-lock.yaml
+# yarn.lock
+
 # ===== Common =====
 
 # Logs
@@ -66,3 +71,9 @@ coverage/
 *.swp
 *.swo
 *~
+
+# Keep gradle wrapper
+!gradle/wrapper/gradle-wrapper.properties
+
+# Local dev notes (optional)
+# TODO

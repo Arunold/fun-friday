@@ -4,11 +4,15 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
 bin/
 
 # Logs
 *.log
 logs/
+
+# Spring Boot
+*.pid
 
 # IDE - IntelliJ
 .idea/
@@ -57,3 +61,12 @@ application-local.yml
 *.swo
 *~
 hs_err_pid*
+replay_pid*
+
+# JaCoCo test coverage
+jacoco.exec
+
+# Secrets (never commit)
+*.pem
+*.key
+secrets/
