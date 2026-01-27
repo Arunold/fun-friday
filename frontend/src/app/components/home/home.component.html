@@ -1,0 +1,58 @@
+<div class="container home-container">
+  <h1><mat-icon class="title-icon">celebration</mat-icon> Fun Friday Game</h1>
+  <p class="subtitle">Choose a game and play with your friends!</p>
+
+  <div class="step-content">
+    <!-- Join Game Section -->
+    <div class="join-section">
+      <h2>Join an Existing Game</h2>
+      <div class="join-input-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Game Code</mat-label>
+          <input matInput placeholder="Enter 6-character code" [(ngModel)]="gameCode"
+                 maxlength="6" style="text-transform: uppercase;">
+        </mat-form-field>
+        <button mat-raised-button color="accent" (click)="goToJoinSetup()"
+                [disabled]="!gameCode.trim() || gameCode.trim().length < 6">
+          <mat-icon>login</mat-icon>
+          Join Game
+        </button>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider">
+      <span>OR</span>
+    </div>
+
+    <!-- Game Types Selection -->
+    @if (gameTypes.length > 0) {
+      <div class="game-types-section">
+        <h2>Host a New Game</h2>
+        <p class="hint-text">Click a game card to start hosting</p>
+        <div class="game-types-grid">
+          @for (gameType of gameTypes; track gameType.id) {
+            <mat-card matRipple class="game-type-card"
+                      [class.selected]="selectedGameType?.id === gameType.id"
+                      (click)="selectGameType(gameType)">
+              <mat-card-header>
+                <span class="game-icon">{{ gameType.icon }}</span>
+                <mat-card-title>{{ gameType.name }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <p>{{ gameType.description }}</p>
+                <span class="player-count">{{ gameType.minPlayers }}-{{ gameType.maxPlayers }} players</span>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+  }
+</div>

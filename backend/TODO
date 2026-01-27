@@ -1,0 +1,4 @@
+- use Lombok instead of manual setter, getter and other redundant things.
+- it seems all the info needed for different games are kept in one model, which I think is a bad design. can it be improved with inheritance or other better approach?
+- design the application in a way that it adapts to new games in the future without affecting other games functionality.
+- Try to clean up and optimize the code.

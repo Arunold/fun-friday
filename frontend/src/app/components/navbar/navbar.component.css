@@ -1,0 +1,148 @@
+.game-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(18, 18, 18, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-type-badge {
+  background: var(--spotify-green);
+  color: #000;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.game-code-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: var(--spotify-text-gray);
+}
+
+.game-code-badge mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.profile-avatar {
+  font-size: 1.5rem;
+}
+
+.profile-name {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.dropdown-icon {
+  color: var(--spotify-text-gray);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+::ng-deep .profile-menu {
+  margin-top: 8px;
+}
+
+::ng-deep .profile-menu .mat-mdc-menu-content {
+  background: #282828;
+  padding: 0;
+}
+
+::ng-deep .profile-menu .menu-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+::ng-deep .profile-menu .menu-avatar {
+  font-size: 2rem;
+}
+
+::ng-deep .profile-menu .menu-info {
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .profile-menu .menu-name {
+  color: #fff;
+  font-weight: 600;
+}
+
+::ng-deep .profile-menu .menu-role {
+  color: var(--spotify-text-gray);
+  font-size: 0.8rem;
+}
+
+::ng-deep .profile-menu .mat-mdc-menu-item {
+  color: #fff;
+}
+
+::ng-deep .profile-menu .exit-option {
+  color: var(--spotify-text-gray);
+}
+
+::ng-deep .profile-menu .exit-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .game-header {
+    padding: 0 16px;
+  }
+
+  .profile-name {
+    display: none;
+  }
+
+  .game-code-badge {
+    display: none;
+  }
+}

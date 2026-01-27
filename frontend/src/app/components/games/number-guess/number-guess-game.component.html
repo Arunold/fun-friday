@@ -1,0 +1,116 @@
+<app-game-layout
+  [game]="game!"
+  [gameId]="gameId"
+  [playerName]="playerName"
+  [isHost]="isHost"
+  [playerAvatar]="playerAvatar"
+  [isLoading]="isLoading"
+  [countdown]="countdown"
+  [roundTimer]="roundTimer"
+  [gameIcon]="gameIcon"
+  (startGame)="startGame()"
+  (leaveGame)="leaveGame()"
+  (exitGame)="exitGame()"
+  (copyCode)="copyGameCode()"
+  (removePlayer)="removePlayer($event)">
+  
+  <!-- GUESSING STATE - Number Guess specific content -->
+  @if (game?.gameState === 'GUESSING' && roundInfo) {
+    <mat-card class="guess-card">
+      <mat-card-header>
+        <mat-card-title>Guess the Number!</mat-card-title>
+        <mat-card-subtitle>
+          Pick a number between {{ roundInfo.minRange }} and {{ roundInfo.maxRange }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (!hasGuessed) {
+          <div class="guess-input-section">
+            <mat-form-field appearance="outline" class="guess-input">
+              <mat-label>Your Guess</mat-label>
+              <input matInput type="number" [(ngModel)]="guessValue" 
+                     [min]="roundInfo.minRange" 
+                     [max]="roundInfo.maxRange"
+                     (keyup.enter)="submitGuess()">
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="submitGuess()" 
+                    [disabled]="guessValue === null">
+              Submit Guess
+            </button>
+          </div>
+        } @else {
+          <div class="guess-submitted">
+            <p><mat-icon class="success-icon">check_circle</mat-icon> Your guess has been submitted!</p>
+            <p class="your-guess">You guessed: <strong>{{ getPlayerGuess(playerName) }}</strong></p>
+          </div>
+        }
+
+        <div class="players-guessed">
+          <h4>Players who guessed:</h4>
+          <div class="guess-status-list">
+            @for (player of game!.players; track player.name) {
+              <span class="guess-status" [class.guessed]="hasPlayerAnswered(player.name)">
+                <span class="status-avatar">{{ player.avatar || '👤' }}</span>
+                {{ player.name }} 
+                @if (hasPlayerAnswered(player.name)) {
+                  <mat-icon class="status-icon">check_circle</mat-icon>
+                } @else {
+                  <mat-icon class="status-icon waiting">hourglass_empty</mat-icon>
+                }
+              </span>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ROUND RESULT STATE -->
+  @if (game?.gameState === 'ROUND_RESULT' && roundInfo) {
+    <div class="result-content">
+      <div class="target-reveal">
+        <span class="target-label">The number was:</span>
+        <span class="target-number">{{ roundInfo.targetNumber }}</span>
+      </div>
+
+      <mat-card class="results-card">
+        <mat-card-header>
+          @if (roundInfo.winner) {
+            <mat-card-title>
+              <mat-icon class="winner-icon">celebration</mat-icon> 
+              {{ roundInfo.winner }} wins this round!
+            </mat-card-title>
+          } @else {
+            <mat-card-title>
+              <mat-icon class="no-winner-icon">sentiment_dissatisfied</mat-icon> 
+              No winner this round!
+            </mat-card-title>
+          }
+        </mat-card-header>
+        <mat-card-content>
+          <div class="guesses-list">
+            @for (player of game!.players; track player.name) {
+              <div class="guess-result-item" [class.winner]="isRoundWinner(player.name)">
+                <span class="result-avatar">{{ player.avatar || '👤' }}</span>
+                <span class="player-name">{{ player.name }}</span>
+                <span class="player-guess">Guessed: {{ getPlayerGuess(player.name) ?? 'No guess' }}</span>
+                @if (isRoundWinner(player.name)) {
+                  <span class="winner-badge">
+                    <mat-icon class="trophy-icon">emoji_events</mat-icon> Winner!
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <div class="next-round-indicator">
+            <div class="loading-spinner"></div>
+            <p class="next-round-text">Next round starting soon...</p>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  }
+  
+</app-game-layout>
