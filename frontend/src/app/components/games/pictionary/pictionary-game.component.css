@@ -1,0 +1,545 @@
+/* =========================================
+   PICTIONARY GAME STYLES
+   ========================================= */
+
+/* Drawing View Layout */
+.drawing-view {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Round Header - Pictionary Override */
+.round-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.round-header h2 {
+    color: var(--spotify-white);
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+/* Turn Indicator */
+.turn-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--spotify-gray);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--spotify-text-gray);
+    margin-left: 16px;
+}
+
+.turn-indicator mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--spotify-green);
+}
+
+/* Turn Result Header */
+.turn-result-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.turn-label {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--spotify-green) 0%, #1db954 100%);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Points Display */
+.points-earned {
+    background: var(--spotify-green);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-left: 12px;
+}
+
+.guesser-result {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(29, 185, 84, 0.1);
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.guesser-result mat-icon {
+    color: var(--spotify-green);
+}
+
+.drawer-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    color: var(--spotify-text-gray);
+    margin-top: 8px;
+}
+
+.drawer-info mat-icon {
+    color: var(--spotify-green);
+}
+
+.drawer-info.you-drawing {
+    color: var(--spotify-green);
+    font-weight: 700;
+}
+
+.word-hint {
+    font-family: monospace;
+    letter-spacing: 4px;
+    margin-left: 12px;
+    color: var(--spotify-white);
+}
+
+.pictionary-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.canvas-section {
+    min-height: 400px;
+}
+
+.drawing-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background: #282828;
+    cursor: default;
+}
+
+.drawing-canvas.drawing-mode {
+    cursor: crosshair;
+}
+
+/* Drawing Tools Panel - Enhanced Design */
+.drawing-tools-panel {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    background: var(--spotify-dark-gray);
+    border-radius: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.tool-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.tool-section.undo-redo-section {
+    flex-direction: row;
+    gap: 4px;
+}
+
+.section-label {
+    font-size: 0.75rem;
+    color: var(--spotify-text-gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.tool-divider {
+    width: 1px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tool-btn {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--spotify-white) !important;
+    transition: all 0.2s ease !important;
+}
+
+.tool-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(1.1);
+}
+
+.tool-btn:disabled {
+    opacity: 0.3 !important;
+}
+
+.tool-btn.clear-btn {
+    background: rgba(255, 59, 48, 0.2) !important;
+    color: #ff6b6b !important;
+}
+
+.tool-btn.clear-btn:hover {
+    background: rgba(255, 59, 48, 0.4) !important;
+}
+
+/* Color Palette - Enhanced Grid */
+.color-section .color-palette {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+}
+
+.color-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+    background: none;
+}
+
+.color-btn:hover {
+    transform: scale(1.15);
+    z-index: 1;
+}
+
+.color-btn.selected {
+    border-color: var(--spotify-green);
+    box-shadow: 0 0 8px var(--spotify-green);
+    transform: scale(1.2);
+    z-index: 2;
+}
+
+.color-btn.light-color {
+    border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.color-btn.light-color.selected {
+    border-color: var(--spotify-green);
+}
+
+/* Color Picker Button */
+.color-picker-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-picker-btn .picker-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hidden-color-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* Brush Size Control */
+.brush-size-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.size-preview {
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    min-width: 8px;
+    min-height: 8px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.size-slider {
+    width: 100px;
+}
+
+.size-slider .mdc-slider__track,
+.size-slider .mat-mdc-slider .mdc-slider__track {
+    height: 4px !important;
+}
+
+.size-slider .mdc-slider__thumb-knob,
+.size-slider .mat-mdc-slider .mdc-slider__thumb-knob {
+    background-color: var(--spotify-green) !important;
+    border-color: var(--spotify-green) !important;
+}
+
+.size-slider .mdc-slider__track--active_fill,
+.size-slider .mat-mdc-slider .mdc-slider__track--active_fill {
+    background-color: var(--spotify-green) !important;
+    border-color: var(--spotify-green) !important;
+}
+
+.size-value {
+    font-size: 0.85rem;
+    color: var(--spotify-green);
+    min-width: 35px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Guessing Section */
+.guessing-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.guess-card {
+    height: 100%;
+}
+
+.guess-input-section {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.word-guess-input {
+    flex: 1;
+}
+
+.guess-submitted {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 8px;
+    background: rgba(29, 185, 84, 0.1);
+}
+
+.guess-submitted.correct {
+    color: var(--spotify-green);
+}
+
+.success-icon {
+    color: var(--spotify-green);
+}
+
+.your-guesses {
+    margin-top: 20px;
+}
+
+.your-guesses h4 {
+    margin-bottom: 12px;
+    color: var(--spotify-text-gray);
+}
+
+.guess-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.guess-chip {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    font-size: 0.9rem;
+}
+
+/* Players Status */
+.players-status {
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.players-status h4 {
+    margin-bottom: 12px;
+    color: var(--spotify-text-gray);
+}
+
+.guess-status-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.guess-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.guess-status.drawing {
+    background: rgba(29, 185, 84, 0.2);
+    color: var(--spotify-green);
+}
+
+.guess-status.correct {
+    background: rgba(29, 185, 84, 0.2);
+    color: var(--spotify-green);
+}
+
+.guess-status.guessing {
+    background: rgba(255, 193, 7, 0.2);
+}
+
+.status-avatar {
+    font-size: 1.2rem;
+}
+
+.status-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.status-icon.correct {
+    color: var(--spotify-green);
+}
+
+.status-icon.waiting {
+    color: var(--spotify-text-gray);
+}
+
+/* Pictionary Result Summary */
+.pictionary-result-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 0;
+}
+
+.drawer-result,
+.guesser-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.drawer-result mat-icon {
+    color: var(--spotify-green);
+}
+
+.guesser-result mat-icon {
+    color: gold;
+}
+
+.drawer-result .points,
+.guesser-result .points {
+    margin-left: auto;
+    font-weight: 700;
+    color: var(--spotify-green);
+}
+
+.guess-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.guess-result-item.winner {
+    background: rgba(29, 185, 84, 0.15);
+}
+
+.result-avatar {
+    font-size: 1.5rem;
+}
+
+.winner-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    color: gold;
+    font-weight: 700;
+}
+
+.trophy-icon {
+    color: gold;
+    font-size: 20px;
+}
+
+.winner-icon {
+    vertical-align: middle;
+    color: var(--spotify-green);
+    margin-right: 4px;
+}
+
+.no-winner-icon {
+    color: #FFA42B;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.guesses-list {
+    margin-top: 16px;
+}
+
+/* Responsive Pictionary Layout */
+@media (max-width: 900px) {
+    .pictionary-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .canvas-section {
+        order: 1;
+    }
+    
+    .guessing-section {
+        order: 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .drawing-tools-panel {
+        padding: 10px;
+        gap: 12px;
+    }
+    
+    .tool-divider {
+        display: none;
+    }
+    
+    .color-section .color-palette {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .size-slider {
+        width: 80px;
+    }
+    
+    .guess-status-list {
+        flex-direction: column;
+    }
+}

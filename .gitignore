@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+!build/build.gradle
+!build/build.gradle.kts
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
+
+# IDE
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db

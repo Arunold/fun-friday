@@ -1,0 +1,131 @@
+<app-game-layout
+  [game]="game!"
+  [gameId]="gameId"
+  [playerName]="playerName"
+  [isHost]="isHost"
+  [playerAvatar]="playerAvatar"
+  [isLoading]="isLoading"
+  [countdown]="countdown"
+  [roundTimer]="roundTimer"
+  [gameIcon]="gameIcon"
+  (startGame)="startGame()"
+  (leaveGame)="leaveGame()"
+  (exitGame)="exitGame()"
+  (copyCode)="copyGameCode()"
+  (removePlayer)="removePlayer($event)">
+  
+  <!-- GUESSING STATE - Word Scramble specific content -->
+  @if (game?.gameState === 'GUESSING' && roundInfo) {
+    <mat-card class="guess-card">
+      <mat-card-header>
+        <mat-card-title>Unscramble the Word!</mat-card-title>
+        <mat-card-subtitle>
+          Rearrange the letters to form a word
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="scrambled-word-display">
+          @for (letter of roundInfo.scrambledWord.split(''); track $index) {
+            <span class="scrambled-letter">{{ letter }}</span>
+          }
+        </div>
+
+        @if (!hasGuessed) {
+          <div class="guess-input-section">
+            <mat-form-field appearance="outline" class="word-guess-input">
+              <mat-label>Your Answer</mat-label>
+              <input matInput type="text" [(ngModel)]="wordGuessValue" 
+                     (keyup.enter)="submitWordGuess()"
+                     autocomplete="off"
+                     spellcheck="false">
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="submitWordGuess()" 
+                    [disabled]="!wordGuessValue.trim()">
+              Submit Answer
+            </button>
+          </div>
+        } @else {
+          <div class="guess-submitted">
+            <p><mat-icon class="success-icon">check_circle</mat-icon> Your answer has been submitted!</p>
+            <p class="your-guess">You answered: <strong>{{ getPlayerWordGuess(playerName) }}</strong></p>
+          </div>
+        }
+
+        <div class="players-guessed">
+          <h4>Players who answered:</h4>
+          <div class="guess-status-list">
+            @for (player of game!.players; track player.name) {
+              <span class="guess-status" [class.guessed]="hasPlayerAnswered(player.name)">
+                <span class="status-avatar">{{ player.avatar || '👤' }}</span>
+                {{ player.name }} 
+                @if (hasPlayerAnswered(player.name)) {
+                  <mat-icon class="status-icon">check_circle</mat-icon>
+                } @else {
+                  <mat-icon class="status-icon waiting">hourglass_empty</mat-icon>
+                }
+              </span>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ROUND RESULT STATE -->
+  @if (game?.gameState === 'ROUND_RESULT' && roundInfo) {
+    <div class="result-content">
+      <div class="target-reveal">
+        <span class="target-label">The word was:</span>
+        <span class="target-word">{{ roundInfo.originalWord }}</span>
+      </div>
+
+      <mat-card class="results-card">
+        <mat-card-header>
+          @if (roundInfo.winner) {
+            <mat-card-title>
+              <mat-icon class="winner-icon">celebration</mat-icon> 
+              {{ roundInfo.winner }} wins this round!
+            </mat-card-title>
+          } @else {
+            <mat-card-title>
+              <mat-icon class="no-winner-icon">sentiment_dissatisfied</mat-icon> 
+              No winner this round!
+            </mat-card-title>
+          }
+        </mat-card-header>
+        <mat-card-content>
+          <div class="guesses-list">
+            @for (player of game!.players; track player.name) {
+              <div class="guess-result-item"
+                   [class.winner]="isRoundWinner(player.name)"
+                   [class.correct]="isCorrectAnswer(player.name)"
+                   [class.incorrect]="isIncorrectAnswer(player.name)">
+                <span class="result-avatar">{{ player.avatar || '👤' }}</span>
+                <span class="player-name">{{ player.name }}</span>
+                <span class="player-guess">Answered: {{ getPlayerWordGuess(player.name) ?? 'No answer' }}</span>
+                @if (isRoundWinner(player.name)) {
+                  <span class="winner-badge">
+                    <mat-icon class="trophy-icon">emoji_events</mat-icon> Fastest!
+                  </span>
+                }
+                @if (!isRoundWinner(player.name) && isCorrectAnswer(player.name)) {
+                  <mat-icon class="correct-icon">check_circle</mat-icon>
+                }
+                @if (isIncorrectAnswer(player.name)) {
+                  <mat-icon class="incorrect-icon">cancel</mat-icon>
+                }
+              </div>
+            }
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <div class="next-round-indicator">
+            <div class="loading-spinner"></div>
+            <p class="next-round-text">Next round starting soon...</p>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  }
+  
+</app-game-layout>

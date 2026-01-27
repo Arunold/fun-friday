@@ -1,0 +1,47 @@
+<header class="game-header">
+  <div class="header-left">
+    <span class="game-type-badge">{{ gameTypeName }}</span>
+    @if (showGameCode && gameId) {
+      <span class="game-code-badge">
+        <mat-icon>tag</mat-icon>
+        {{ gameId }}
+      </span>
+    }
+  </div>
+  <div class="header-right">
+    <button class="profile-button" [matMenuTriggerFor]="profileMenu">
+      <span class="profile-avatar">{{ playerAvatar }}</span>
+      <span class="profile-name">{{ playerName }}</span>
+      <mat-icon class="dropdown-icon">expand_more</mat-icon>
+    </button>
+    <mat-menu #profileMenu="matMenu" class="profile-menu">
+      <div class="menu-header">
+        <span class="menu-avatar">{{ playerAvatar }}</span>
+        <div class="menu-info">
+          <span class="menu-name">{{ playerName }}</span>
+          <span class="menu-role">{{ isHost ? 'Host' : 'Player' }}</span>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      @if (showExitOptions) {
+        @if (isHost) {
+          <button mat-menu-item class="exit-option" (click)="onExitGame()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>End Game</span>
+          </button>
+        } @else {
+          <button mat-menu-item class="exit-option" (click)="onLeaveGame()">
+            <mat-icon>logout</mat-icon>
+            <span>Leave Game</span>
+          </button>
+        }
+      }
+      @if (showHomeButton) {
+        <button mat-menu-item class="exit-option" (click)="onGoHome()">
+          <mat-icon>home</mat-icon>
+          <span>Go Home</span>
+        </button>
+      }
+    </mat-menu>
+  </div>
+</header>

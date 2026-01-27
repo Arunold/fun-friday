@@ -1,0 +1,224 @@
+/* =========================================
+   WORD SCRAMBLE GAME STYLES
+   ========================================= */
+
+/* Scrambled Word Display */
+.scrambled-word-display {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 30px;
+    margin-bottom: 24px;
+    background: rgba(29, 185, 84, 0.1);
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.scrambled-letter {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--spotify-green);
+    font-family: 'Courier New', monospace;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 8px;
+    min-width: 50px;
+    text-align: center;
+}
+
+/* Guess Input Section */
+.guess-input-section {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.word-guess-input {
+    flex: 1;
+}
+
+/* Guess Submitted State */
+.guess-submitted {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 8px;
+    background: rgba(29, 185, 84, 0.1);
+    margin-bottom: 24px;
+}
+
+.guess-submitted p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.guess-submitted .success-icon {
+    color: var(--spotify-green);
+}
+
+.guess-submitted .your-guess {
+    color: var(--spotify-text-gray);
+}
+
+.guess-submitted .your-guess strong {
+    color: var(--spotify-white);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Players Guessed Section */
+.players-guessed {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.players-guessed h4 {
+    margin-bottom: 12px;
+    color: var(--spotify-text-gray);
+}
+
+.guess-status-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.guess-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.guess-status.guessed {
+    background: rgba(29, 185, 84, 0.2);
+    color: var(--spotify-green);
+}
+
+.status-avatar {
+    font-size: 1.2rem;
+}
+
+.status-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--spotify-green);
+}
+
+.status-icon.waiting {
+    color: var(--spotify-text-gray);
+}
+
+/* Result Guesses List */
+.guesses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.guess-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.guess-result-item.winner {
+    background: rgba(29, 185, 84, 0.15);
+}
+
+.guess-result-item.correct {
+    background: rgba(29, 185, 84, 0.1);
+}
+
+.guess-result-item.incorrect {
+    background: rgba(255, 59, 48, 0.1);
+}
+
+.result-avatar {
+    font-size: 1.5rem;
+}
+
+.player-name {
+    flex: 1;
+}
+
+.player-guess {
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--spotify-text-gray);
+}
+
+.winner-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: gold;
+    font-weight: 700;
+}
+
+.trophy-icon {
+    color: gold;
+    font-size: 20px;
+}
+
+.winner-icon {
+    vertical-align: middle;
+    color: var(--spotify-green);
+    margin-right: 4px;
+}
+
+.no-winner-icon {
+    color: #FFA42B;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.correct-icon {
+    color: var(--spotify-green);
+}
+
+.incorrect-icon {
+    color: #ff6b6b;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .scrambled-letter {
+        font-size: 1.8rem;
+        padding: 8px 12px;
+        min-width: 40px;
+    }
+    
+    .scrambled-word-display {
+        padding: 20px;
+        gap: 6px;
+    }
+    
+    .guess-input-section {
+        flex-direction: column;
+    }
+    
+    .guess-input-section button {
+        width: 100%;
+    }
+    
+    .guess-status-list {
+        flex-direction: column;
+    }
+}

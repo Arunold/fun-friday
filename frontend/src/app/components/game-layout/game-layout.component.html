@@ -1,0 +1,157 @@
+<!-- Loading State -->
+@if (isLoading) {
+  <div class="game-container">
+    <div class="loading-view">
+      <mat-icon class="loading-spinner">hourglass_empty</mat-icon>
+      <h2>Loading game...</h2>
+    </div>
+  </div>
+}
+
+@if (!isLoading && game) {
+  <!-- Navbar Component - handles its own state from sessionStorage -->
+  <app-navbar 
+    [gameTypeName]="game.gameTypeName"
+    [gameId]="gameId"
+    [showGameCode]="game.gameState !== 'LOBBY' && game.gameState !== 'STARTING'"
+    [showExitOptions]="true"
+    [showHomeButton]="false">
+  </app-navbar>
+
+  <div class="game-container with-header">
+    
+    <!-- LOBBY STATE -->
+    @if (game.gameState === 'LOBBY') {
+      <div class="lobby-view">
+        <div class="lobby-header">
+          <h1><mat-icon class="title-icon">{{ gameIcon }}</mat-icon> {{ game.gameTypeName }}</h1>
+          <div class="game-code-display">
+            <span class="label">Game Code:</span>
+            <span class="code" (click)="onCopyCode()">{{ gameId }}</span>
+            <button mat-icon-button (click)="onCopyCode()" title="Copy code">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+          <p class="share-text">Share this code with your friends to join!</p>
+        </div>
+
+        <mat-card class="players-card">
+          <mat-card-header>
+            <mat-card-title>Players ({{ game.players.length }})</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="players-list">
+              @for (player of game.players; track player.name) {
+                <div class="player-item">
+                  <span class="player-avatar">{{ player.avatar || '👤' }}</span>
+                  <span class="player-name">{{ player.name }}</span>
+                  @if (player.name === playerName) {
+                    <span class="you-badge">You</span>
+                  }
+                  @if (player.name === game.host) {
+                    <span class="host-badge">HOST</span>
+                  }
+                  @if (isHost && player.name !== game.host) {
+                    <button mat-icon-button 
+                            class="remove-player-btn"
+                            matTooltip="Remove player"
+                            (click)="onRemovePlayer(player.name)">
+                      <mat-icon>person_remove</mat-icon>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </mat-card-content>
+          @if (isHost) {
+            <mat-card-actions>
+              <button mat-raised-button color="primary" (click)="onStartGame()" 
+                      [disabled]="game.players.length < 2">
+                Start Game
+              </button>
+            </mat-card-actions>
+          } @else {
+            <mat-card-actions>
+              <p class="waiting-text">Waiting for {{ game.host }} to start the game...</p>
+            </mat-card-actions>
+          }
+        </mat-card>
+      </div>
+    }
+
+    <!-- STARTING STATE -->
+    @if (game.gameState === 'STARTING') {
+      <div class="starting-view">
+        <div class="countdown-container">
+          <h1>Get Ready!</h1>
+          <p>{{ game.gameTypeName }} is about to begin...</p>
+          @if (countdown > 0) {
+            <div class="countdown-timer">
+              <span class="countdown-number">{{ countdown }}</span>
+            </div>
+          } @else {
+            <div class="pulse-animation">
+              <mat-icon class="pulse-icon">{{ gameIcon }}</mat-icon>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- GAMEPLAY STATES (GUESSING, DRAWING, ROUND_RESULT) - Project game-specific content -->
+    @if (game.gameState === 'GUESSING' || game.gameState === 'DRAWING' || game.gameState === 'ROUND_RESULT') {
+      <div class="gameplay-layout">
+        <div class="main-content">
+          <!-- Round Header -->
+          @if (showRoundHeader && game.currentRoundInfo) {
+            <div class="round-header">
+              <h2>Round {{ game.currentRoundInfo.roundNumber }} of {{ game.totalRounds }}</h2>
+              @if (game.gameState !== 'ROUND_RESULT') {
+                <div class="round-timer" [class.warning]="roundTimer <= 10" [class.critical]="roundTimer <= 5">
+                  <mat-icon>timer</mat-icon>
+                  <span class="timer-value">{{ roundTimer }}s</span>
+                </div>
+              }
+            </div>
+          }
+          
+          <!-- Game-specific content slot -->
+          <ng-content></ng-content>
+        </div>
+        
+        <!-- Sidebar with scores -->
+        @if (showSidebar) {
+          <div class="sidebar">
+            <mat-card class="scores-card">
+              <mat-card-header>
+                <mat-card-title>Scores</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="scores-list">
+                  @for (player of game.players | orderBy:'score':'desc'; track player.name) {
+                    <div class="score-item" [class.current-player]="player.name === playerName">
+                      <span class="score-avatar">{{ player.avatar || '👤' }}</span>
+                      <span class="player-name">{{ player.name }}</span>
+                      @if (player.name === playerName) {
+                        <span class="you-badge">You</span>
+                      }
+                      <span class="player-score">{{ player.score }}</span>
+                      @if (isHost && player.name !== game.host) {
+                        <button mat-icon-button 
+                                class="remove-player-btn-small"
+                                matTooltip="Remove player"
+                                (click)="onRemovePlayer(player.name)">
+                          <mat-icon>person_remove</mat-icon>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        }
+      </div>
+    }
+  </div>
+}
