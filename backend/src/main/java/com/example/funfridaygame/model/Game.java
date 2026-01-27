@@ -49,6 +49,14 @@ public class Game {
         updateRoundInfo();
     }
 
+    /**
+     * Update the round info DTO from current round state.
+     * Call this after modifying round state directly (e.g., typing progress updates).
+     */
+    public void updateCurrentRoundInfo() {
+        updateRoundInfo();
+    }
+
     private void updateRoundInfo() {
         if (currentRound != null) {
             boolean includeTarget = gameState == GameState.ROUND_RESULT;

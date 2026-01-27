@@ -4,10 +4,12 @@ import {
     NumberGuessConfig, 
     WordScrambleConfig, 
     PictionaryConfig,
+    SpeedTypingConfig,
     GameRoundInfo,
     NumberGuessRoundInfo,
     WordScrambleRoundInfo,
-    PictionaryRoundInfo
+    PictionaryRoundInfo,
+    SpeedTypingRoundInfo
 } from '../models/game.model';
 
 /**
@@ -59,6 +61,10 @@ export function isNumberGuessConfig(config: GameConfig | null): config is Number
     return config?.type === 'number-guess';
 }
 
+export function isSpeedTypingConfig(config: GameConfig | null): config is SpeedTypingConfig {
+    return config?.type === 'speed-typing';
+}
+
 // ==================== Round Info Type Guards ====================
 
 export function isNumberGuessRoundInfo(info: GameRoundInfo | null | undefined): info is NumberGuessRoundInfo {
@@ -71,4 +77,8 @@ export function isWordScrambleRoundInfo(info: GameRoundInfo | null | undefined):
 
 export function isPictionaryRoundInfo(info: GameRoundInfo | null | undefined): info is PictionaryRoundInfo {
     return info?.gameType === 'pictionary';
+}
+
+export function isSpeedTypingRoundInfo(info: GameRoundInfo | null | undefined): info is SpeedTypingRoundInfo {
+    return info?.gameType === 'speed-typing';
 }

@@ -3,7 +3,7 @@ import { HomeComponent } from './components/home/home.component';
 import { GameSetupComponent } from './components/game-setup/game-setup.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { ResultsComponent } from './components/results/results.component';
-import { NumberGuessGameComponent, WordScrambleGameComponent, PictionaryGameComponent } from './components/games';
+import { NumberGuessGameComponent, WordScrambleGameComponent, PictionaryGameComponent, SpeedTypingGameComponent } from './components/games';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -13,6 +13,7 @@ export const routes: Routes = [
   { path: 'game/number-guess/:id', component: NumberGuessGameComponent },
   { path: 'game/word-scramble/:id', component: WordScrambleGameComponent },
   { path: 'game/pictionary/:id', component: PictionaryGameComponent },
+  { path: 'game/speed-typing/:id', component: SpeedTypingGameComponent },
   { path: 'results/:id', component: ResultsComponent },
   { path: '**', redirectTo: '' }
 ];

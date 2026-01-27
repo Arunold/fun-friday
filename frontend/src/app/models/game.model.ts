@@ -26,8 +26,15 @@ export interface PictionaryConfig extends BaseGameConfig {
     totalTurns: number;
 }
 
+// Speed Typing specific config
+export interface SpeedTypingConfig extends BaseGameConfig {
+    type: 'speed-typing';
+    difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+    minAccuracy: number;
+}
+
 // Union type for all configs
-export type GameConfig = NumberGuessConfig | WordScrambleConfig | PictionaryConfig;
+export type GameConfig = NumberGuessConfig | WordScrambleConfig | PictionaryConfig | SpeedTypingConfig;
 
 export interface Game {
     gameId: string;
@@ -90,8 +97,28 @@ export interface PictionaryRoundInfo extends BaseRoundInfo {
     turnResults: TurnResult[];
 }
 
+// Speed Typing player progress info
+export interface PlayerProgressInfo {
+    typedText: string;
+    percentage: number;
+    accuracy: number;
+    finished: boolean;
+    finishTime: number;
+}
+
+// Speed Typing specific round info
+export interface SpeedTypingRoundInfo extends BaseRoundInfo {
+    gameType: 'speed-typing';
+    targetText: string;
+    difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+    minAccuracy: number;
+    startTime: number;
+    playerProgress: { [playerName: string]: PlayerProgressInfo };
+    rankings: string[];
+}
+
 // Union type for all round info types
-export type GameRoundInfo = NumberGuessRoundInfo | WordScrambleRoundInfo | PictionaryRoundInfo;
+export type GameRoundInfo = NumberGuessRoundInfo | WordScrambleRoundInfo | PictionaryRoundInfo | SpeedTypingRoundInfo;
 
 export interface GameType {
     id: string;

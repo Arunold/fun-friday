@@ -1,0 +1,175 @@
+<app-game-layout
+  [game]="game!"
+  [gameId]="gameId"
+  [playerName]="playerName"
+  [isHost]="isHost"
+  [playerAvatar]="playerAvatar"
+  [isLoading]="isLoading"
+  [countdown]="countdown"
+  [roundTimer]="roundTimer"
+  [gameIcon]="gameIcon"
+  (startGame)="startGame()"
+  (leaveGame)="leaveGame()"
+  (exitGame)="exitGame()"
+  (copyCode)="copyGameCode()"
+  (removePlayer)="removePlayer($event)">
+  
+  <!-- GUESSING STATE - Speed Typing specific content -->
+  @if (game?.gameState === 'GUESSING' && roundInfo) {
+    <mat-card class="typing-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>keyboard</mat-icon>
+          Speed Typing Race!
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{ getDifficultyLabel() }} - Type the sentence below as fast and accurately as you can!
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- Target Text Display -->
+        <div class="target-text-container">
+          <div class="target-text">
+            @for (char of targetText.split(''); track $index) {
+              <span [class]="getTypedCharClass($index)">{{ char }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Typing Input -->
+        @if (!isFinished) {
+          <div class="typing-input-section">
+            <mat-form-field appearance="outline" class="typing-input">
+              <mat-label>Start typing here...</mat-label>
+              <input #typingInput matInput type="text" 
+                     [(ngModel)]="typedText" 
+                     (ngModelChange)="onTyping()"
+                     autocomplete="off"
+                     spellcheck="false"
+                     autocapitalize="off"
+                     autocorrect="off">
+            </mat-form-field>
+            <div class="typing-stats">
+              <span class="stat">
+                <mat-icon>speed</mat-icon>
+                Progress: {{ myProgress?.percentage ?? 0 }}%
+              </span>
+              <span class="stat">
+                <mat-icon>check_circle</mat-icon>
+                Accuracy: {{ myProgress?.accuracy ?? 100 }}%
+              </span>
+            </div>
+          </div>
+        } @else {
+          <div class="finished-message">
+            <mat-icon class="finish-icon">celebration</mat-icon>
+            <p>You finished!</p>
+            <p class="finish-stats">
+              Time: {{ formatFinishTime(playerName) }} | 
+              Accuracy: {{ myProgress?.accuracy }}%
+              @if (getFinishPosition(playerName) > 0) {
+                | Position: {{ getFinishPosition(playerName) }}{{ getPositionSuffix(getFinishPosition(playerName)) }}
+              }
+            </p>
+          </div>
+        }
+
+        <!-- Live Progress Bars -->
+        <div class="players-progress">
+          <h4>Race Progress:</h4>
+          <div class="progress-list">
+            @for (player of game!.players; track player.name) {
+              <div class="player-progress-item" [class.finished]="hasPlayerFinished(player.name)">
+                <div class="player-info">
+                  <span class="player-avatar">{{ player.avatar || '👤' }}</span>
+                  <span class="player-name" [class.current]="player.name === playerName">
+                    {{ player.name }}
+                    @if (player.name === playerName) { (You) }
+                  </span>
+                  @if (hasPlayerFinished(player.name)) {
+                    <span class="finish-badge">
+                      {{ getFinishPosition(player.name) }}{{ getPositionSuffix(getFinishPosition(player.name)) }}
+                    </span>
+                  }
+                </div>
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="getProgressPercentage(player.name)"
+                  [color]="hasPlayerFinished(player.name) ? 'primary' : 'accent'">
+                </mat-progress-bar>
+                <div class="progress-stats">
+                  <span>{{ getProgressPercentage(player.name) }}%</span>
+                  <span class="accuracy" [class.low]="getProgressAccuracy(player.name) < 90">
+                    {{ getProgressAccuracy(player.name) }}% accuracy
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ROUND RESULT STATE -->
+  @if (game?.gameState === 'ROUND_RESULT' && roundInfo) {
+    <div class="result-content">
+      <div class="target-reveal">
+        <span class="target-label">The sentence was:</span>
+        <span class="target-sentence">{{ roundInfo.targetText }}</span>
+      </div>
+
+      <mat-card class="results-card">
+        <mat-card-header>
+          @if (roundInfo.winner) {
+            <mat-card-title>
+              <mat-icon class="winner-icon">emoji_events</mat-icon> 
+              {{ roundInfo.winner }} wins this round!
+            </mat-card-title>
+          } @else {
+            <mat-card-title>
+              <mat-icon class="no-winner-icon">sentiment_dissatisfied</mat-icon> 
+              No winner this round!
+            </mat-card-title>
+          }
+        </mat-card-header>
+        <mat-card-content>
+          <div class="final-rankings">
+            @for (playerName of roundInfo.rankings; track playerName; let i = $index) {
+              @if (getPlayerProgress(playerName); as progress) {
+                <div class="ranking-item" [class.winner]="i === 0">
+                  <span class="position">{{ i + 1 }}{{ getPositionSuffix(i + 1) }}</span>
+                  <span class="player-avatar">{{ getPlayerAvatar(playerName) }}</span>
+                  <span class="player-name">{{ playerName }}</span>
+                  <span class="time">{{ formatFinishTime(playerName) }}</span>
+                  <span class="accuracy">{{ progress.accuracy }}%</span>
+                </div>
+              }
+            }
+            
+            <!-- Players who didn't finish -->
+            @for (player of game!.players; track player.name) {
+              @if (!hasPlayerFinished(player.name)) {
+                <div class="ranking-item incomplete">
+                  <span class="position">-</span>
+                  <span class="player-avatar">{{ player.avatar || '👤' }}</span>
+                  <span class="player-name">{{ player.name }}</span>
+                  <span class="incomplete-label">Did not finish</span>
+                  <span class="progress">{{ getProgressPercentage(player.name) }}%</span>
+                </div>
+              }
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <p class="next-round-notice">
+        @if (game!.currentRoundNumber < game!.totalRounds) {
+          Next round starting soon...
+        } @else {
+          Final results coming up!
+        }
+      </p>
+    </div>
+  }
+</app-game-layout>

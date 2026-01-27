@@ -1,0 +1,320 @@
+/* Speed Typing Game Styles */
+
+.typing-card {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.typing-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Target Text Display */
+.target-text-container {
+  background: #1e1e2e;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px 0;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 1.4rem;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
+}
+
+.target-text {
+  word-wrap: break-word;
+}
+
+.target-text span {
+  transition: background-color 0.1s ease;
+}
+
+.target-text span.correct {
+  color: #a6e3a1;
+  background-color: rgba(166, 227, 161, 0.15);
+}
+
+.target-text span.incorrect {
+  color: #f38ba8;
+  background-color: rgba(243, 139, 168, 0.25);
+  text-decoration: underline;
+  text-decoration-style: wavy;
+}
+
+.target-text span.untyped {
+  color: #6c7086;
+}
+
+/* Typing Input Section */
+.typing-input-section {
+  margin: 24px 0;
+}
+
+.typing-input {
+  width: 100%;
+}
+
+.typing-input input {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.typing-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.typing-stats .stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  color: #cdd6f4;
+}
+
+.typing-stats .stat mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Finished Message */
+.finished-message {
+  text-align: center;
+  padding: 32px;
+  background: linear-gradient(135deg, #1e1e2e, #313244);
+  border-radius: 12px;
+  margin: 16px 0;
+}
+
+.finished-message .finish-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #f9e2af;
+  animation: bounce 1s ease infinite;
+}
+
+.finished-message p {
+  margin: 8px 0;
+  font-size: 1.2rem;
+}
+
+.finished-message .finish-stats {
+  color: #a6adc8;
+  font-size: 1rem;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Players Progress */
+.players-progress {
+  margin-top: 32px;
+}
+
+.players-progress h4 {
+  margin-bottom: 16px;
+  color: #cdd6f4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.player-progress-item {
+  background: #313244;
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.player-progress-item.finished {
+  background: linear-gradient(135deg, #313244, rgba(166, 227, 161, 0.1));
+  border: 1px solid rgba(166, 227, 161, 0.3);
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.player-avatar {
+  font-size: 1.5rem;
+}
+
+.player-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.player-name.current {
+  color: #89b4fa;
+}
+
+.finish-badge {
+  background: #a6e3a1;
+  color: #1e1e2e;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #a6adc8;
+}
+
+.progress-stats .accuracy.low {
+  color: #f38ba8;
+}
+
+/* Result Content */
+.result-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.target-reveal {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.target-label {
+  display: block;
+  font-size: 1rem;
+  color: #a6adc8;
+  margin-bottom: 8px;
+}
+
+.target-sentence {
+  display: block;
+  font-size: 1.3rem;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  color: #cdd6f4;
+  background: #313244;
+  padding: 16px 24px;
+  border-radius: 8px;
+}
+
+.results-card {
+  margin: 16px 0;
+}
+
+.results-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.winner-icon {
+  color: #f9e2af !important;
+}
+
+.no-winner-icon {
+  color: #a6adc8 !important;
+}
+
+/* Final Rankings */
+.final-rankings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #45475a;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.ranking-item.winner {
+  background: linear-gradient(135deg, #45475a, rgba(249, 226, 175, 0.2));
+  border: 2px solid #f9e2af;
+}
+
+.ranking-item.incomplete {
+  opacity: 0.7;
+  background: #313244;
+}
+
+.ranking-item .position {
+  font-size: 1.2rem;
+  font-weight: bold;
+  min-width: 40px;
+  color: #f9e2af;
+}
+
+.ranking-item .player-name {
+  flex: 1;
+}
+
+.ranking-item .time {
+  font-family: 'Fira Code', monospace;
+  color: #89b4fa;
+}
+
+.ranking-item .accuracy {
+  color: #a6e3a1;
+  min-width: 60px;
+  text-align: right;
+}
+
+.ranking-item .incomplete-label {
+  color: #f38ba8;
+  font-style: italic;
+}
+
+.ranking-item .progress {
+  color: #a6adc8;
+}
+
+/* Next Round Notice */
+.next-round-notice {
+  text-align: center;
+  color: #a6adc8;
+  font-style: italic;
+  margin-top: 24px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .target-text-container {
+    font-size: 1.1rem;
+    padding: 16px;
+  }
+
+  .typing-stats {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .ranking-item {
+    flex-wrap: wrap;
+  }
+}

@@ -40,7 +40,16 @@ public class GameTypeRegistry {
             .name("Pictionary")
             .description("Draw and guess! One player draws while others try to guess the word. Take turns being the artist!")
             .icon("🎨")
-            .minPlayers(3)
+            .minPlayers(2)
+            .maxPlayers(10)
+            .build());
+
+        gameTypes.add(GameType.builder()
+            .id("speed-typing")
+            .name("Speed Typing Race")
+            .description("Race to type the displayed sentence! Fastest accurate typer wins. Test your typing speed and accuracy!")
+            .icon("⌨️")
+            .minPlayers(2)
             .maxPlayers(10)
             .build());
     }

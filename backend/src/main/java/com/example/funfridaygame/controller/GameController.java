@@ -224,6 +224,34 @@ public class GameController {
         }
     }
 
+    @MessageMapping("/typingProgress")
+    public void updateTypingProgress(TypingProgressRequest request) {
+        String gameId = request.getGameId().toUpperCase();
+        Game game = games.get(gameId);
+
+        if (game == null || game.getGameState() != GameState.GUESSING) {
+            return;
+        }
+
+        BaseGameRound round = game.getCurrentRound();
+        if (!(round instanceof SpeedTypingRound stRound)) {
+            return;
+        }
+
+        boolean finished = stRound.updateProgress(request.getPlayerName(), request.getTypedText());
+
+        // Update round info and broadcast
+        game.updateCurrentRoundInfo();
+        messagingTemplate.convertAndSend("/topic/game/" + gameId, game);
+
+        // If this player just finished, check if all players are done
+        if (finished && stRound.allPlayersFinished(game.getPlayers().size())) {
+            log.info("All players finished typing! Revealing immediately.");
+            cancelRoundTimer(gameId);
+            revealRoundResult(gameId, round.getRoundNumber());
+        }
+    }
+
     private void checkRoundEnd(String gameId, Game game) {
         Optional<GameStrategy> strategyOpt = strategyRegistry.getStrategy(game.getGameTypeId());
         if (strategyOpt.isEmpty()) return;

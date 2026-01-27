@@ -5,6 +5,7 @@ import com.example.funfridaygame.model.config.PictionaryConfig;
 import com.example.funfridaygame.model.round.BaseGameRound;
 import com.example.funfridaygame.model.round.NumberGuessRound;
 import com.example.funfridaygame.model.round.PictionaryRound;
+import com.example.funfridaygame.model.round.SpeedTypingRound;
 import com.example.funfridaygame.model.round.WordScrambleRound;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -24,7 +25,8 @@ import lombok.Setter;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = NumberGuessRoundInfo.class, name = "number-guess"),
     @JsonSubTypes.Type(value = WordScrambleRoundInfo.class, name = "word-scramble"),
-    @JsonSubTypes.Type(value = PictionaryRoundInfo.class, name = "pictionary")
+    @JsonSubTypes.Type(value = PictionaryRoundInfo.class, name = "pictionary"),
+    @JsonSubTypes.Type(value = SpeedTypingRoundInfo.class, name = "speed-typing")
 })
 public abstract class BaseRoundInfo {
     
@@ -51,6 +53,8 @@ public abstract class BaseRoundInfo {
         } else if (round instanceof PictionaryRound pRound) {
             PictionaryConfig pConfig = config instanceof PictionaryConfig ? (PictionaryConfig) config : null;
             return new PictionaryRoundInfo(pRound, includeTarget, pConfig);
+        } else if (round instanceof SpeedTypingRound stRound) {
+            return new SpeedTypingRoundInfo(stRound, includeTarget);
         }
         
         throw new IllegalArgumentException("Unknown round type: " + round.getClass().getName());
