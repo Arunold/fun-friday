@@ -1,0 +1,168 @@
+<app-game-layout
+  [game]="game!"
+  [gameId]="gameId"
+  [playerName]="playerName"
+  [isHost]="isHost"
+  [playerAvatar]="playerAvatar"
+  [isLoading]="isLoading"
+  [countdown]="countdown"
+  [roundTimer]="roundTimer"
+  [gameIcon]="gameIcon"
+  (startGame)="startGame()"
+  (leaveGame)="leaveGame()"
+  (exitGame)="exitGame()"
+  (copyCode)="copyGameCode()"
+  (removePlayer)="removePlayer($event)"
+>
+  <!-- GUESSING STATE - Sliding Puzzle specific content -->
+  @if (game?.gameState === 'GUESSING' && roundInfo) {
+    <mat-card class="puzzle-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>extension</mat-icon>
+          Sliding Puzzle!
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{ getDifficultyLabel() }} - Slide tiles to arrange them in order (1 to {{ gridSize * gridSize - 1 }})
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- Puzzle Grid -->
+        @if (!isSolved) {
+          <div class="puzzle-container">
+            <div class="puzzle-grid" [style.grid-template-columns]="getGridTemplateColumns()">
+              @for (tile of myPuzzle; track $index) {
+                <button
+                  class="puzzle-tile"
+                  [class.empty]="tile === 0"
+                  [class.movable]="isMovable($index)"
+                  [class.correct]="isCorrectPosition($index)"
+                  [disabled]="tile === 0 || !isMovable($index)"
+                  (click)="onTileClick($index)"
+                >
+                  @if (tile !== 0) {
+                    {{ tile }}
+                  }
+                </button>
+              }
+            </div>
+            <div class="puzzle-stats">
+              <span class="stat">
+                <mat-icon>touch_app</mat-icon>
+                Moves: {{ myPuzzleState?.moves ?? 0 }}
+              </span>
+              <span class="stat">
+                <mat-icon>check_circle</mat-icon>
+                Correct: {{ myPuzzleState?.correctTiles ?? 0 }}/{{ gridSize * gridSize }}
+              </span>
+            </div>
+          </div>
+        } @else {
+          <div class="solved-message">
+            <mat-icon class="solved-icon">celebration</mat-icon>
+            <p>Puzzle Solved!</p>
+            <p class="solve-stats">
+              Time: {{ formatSolveTime(playerName) }} | Moves: {{ myPuzzleState?.moves }}
+              @if (getSolvePosition(playerName) > 0) {
+                | Position: {{ getSolvePosition(playerName) }}{{ getPositionSuffix(getSolvePosition(playerName)) }}
+              }
+            </p>
+          </div>
+        }
+
+        <!-- Live Progress -->
+        <div class="players-progress">
+          <h4>Race Progress:</h4>
+          <div class="progress-list">
+            @for (player of game!.players; track player.name) {
+              <div class="player-progress-item" [class.solved]="hasPlayerSolved(player.name)">
+                <div class="player-info">
+                  <span class="player-avatar">{{ player.avatar || '👤' }}</span>
+                  <span class="player-name" [class.current]="player.name === playerName">
+                    {{ player.name }}
+                    @if (player.name === playerName) {
+                      (You)
+                    }
+                  </span>
+                  @if (hasPlayerSolved(player.name)) {
+                    <span class="solve-badge">
+                      {{ getSolvePosition(player.name) }}{{ getPositionSuffix(getSolvePosition(player.name)) }}
+                    </span>
+                  }
+                </div>
+                <mat-progress-bar
+                  mode="determinate"
+                  [value]="getPlayerProgress(player.name)"
+                  [color]="hasPlayerSolved(player.name) ? 'primary' : 'accent'"
+                >
+                </mat-progress-bar>
+                <div class="progress-stats">
+                  <span>{{ getPlayerProgress(player.name) }}% correct</span>
+                  <span class="moves">{{ getPlayerState(player.name)?.moves ?? 0 }} moves</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ROUND RESULT STATE -->
+  @if (game?.gameState === 'ROUND_RESULT' && roundInfo) {
+    <div class="result-content">
+      <mat-card class="results-card">
+        <mat-card-header>
+          @if (roundInfo.winner) {
+            <mat-card-title>
+              <mat-icon class="winner-icon">emoji_events</mat-icon>
+              {{ roundInfo.winner }} wins this round!
+            </mat-card-title>
+          } @else {
+            <mat-card-title>
+              <mat-icon class="no-winner-icon">sentiment_dissatisfied</mat-icon>
+              No winner this round!
+            </mat-card-title>
+          }
+        </mat-card-header>
+        <mat-card-content>
+          <div class="final-rankings">
+            <!-- Players who solved -->
+            @for (solverName of roundInfo.solveOrder; track solverName; let i = $index) {
+              @if (getPlayerState(solverName); as state) {
+                <div class="ranking-item" [class.winner]="i === 0">
+                  <span class="position">{{ i + 1 }}{{ getPositionSuffix(i + 1) }}</span>
+                  <span class="player-avatar">{{ getPlayerAvatar(solverName) }}</span>
+                  <span class="player-name">{{ solverName }}</span>
+                  <span class="time">{{ formatSolveTime(solverName) }}</span>
+                  <span class="moves">{{ state.moves }} moves</span>
+                </div>
+              }
+            }
+
+            <!-- Players who didn't solve -->
+            @for (player of game!.players; track player.name) {
+              @if (!hasPlayerSolved(player.name)) {
+                <div class="ranking-item incomplete">
+                  <span class="position">-</span>
+                  <span class="player-avatar">{{ player.avatar || '👤' }}</span>
+                  <span class="player-name">{{ player.name }}</span>
+                  <span class="incomplete-label">Did not finish</span>
+                  <span class="progress">{{ getPlayerProgress(player.name) }}% complete</span>
+                </div>
+              }
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <p class="next-round-notice">
+        @if (game!.currentRoundNumber < game!.totalRounds) {
+          Next round starting soon...
+        } @else {
+          Final results coming up!
+        }
+      </p>
+    </div>
+  }
+</app-game-layout>

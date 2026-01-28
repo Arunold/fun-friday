@@ -70,6 +70,17 @@ public class GameTypeRegistry {
                         .minPlayers(2)
                         .maxPlayers(10)
                         .build());
+
+        gameTypes.add(
+                GameType.builder()
+                        .id("sliding-puzzle")
+                        .name("Sliding Puzzle")
+                        .description(
+                                "Race to solve the puzzle! Slide tiles to arrange them in order. Fastest solver wins!")
+                        .icon("🧩")
+                        .minPlayers(2)
+                        .maxPlayers(10)
+                        .build());
     }
 
     public List<GameType> getAllGameTypes() {

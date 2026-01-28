@@ -1,17 +1,19 @@
-import { 
-    Game, 
-    GameConfig, 
-    NumberGuessConfig, 
-    WordScrambleConfig, 
-    PictionaryConfig,
-    SpeedTypingConfig,
-    ReactionShowdownConfig,
-    GameRoundInfo,
-    NumberGuessRoundInfo,
-    WordScrambleRoundInfo,
-    PictionaryRoundInfo,
-    SpeedTypingRoundInfo,
-    ReactionShowdownRoundInfo
+import {
+  Game,
+  GameConfig,
+  NumberGuessConfig,
+  WordScrambleConfig,
+  PictionaryConfig,
+  SpeedTypingConfig,
+  ReactionShowdownConfig,
+  SlidingPuzzleConfig,
+  GameRoundInfo,
+  NumberGuessRoundInfo,
+  WordScrambleRoundInfo,
+  PictionaryRoundInfo,
+  SpeedTypingRoundInfo,
+  ReactionShowdownRoundInfo,
+  SlidingPuzzleRoundInfo,
 } from '../models/game.model';
 
 /**
@@ -21,74 +23,96 @@ import {
 // ==================== Config Utilities ====================
 
 export function getRoundDuration(game: Game | null | undefined): number {
-    return game?.gameConfig?.roundDuration ?? 30;
+  return game?.gameConfig?.roundDuration ?? 30;
 }
 
 export function getWordLength(game: Game | null | undefined): number {
-    const config = game?.gameConfig ?? null;
-    return isWordScrambleConfig(config) ? config.wordLength : 7;
+  const config = game?.gameConfig ?? null;
+  return isWordScrambleConfig(config) ? config.wordLength : 7;
 }
 
 export function getCurrentTurn(game: Game | null | undefined): number {
-    const config = game?.gameConfig ?? null;
-    return isPictionaryConfig(config) ? config.currentTurn : 0;
+  const config = game?.gameConfig ?? null;
+  return isPictionaryConfig(config) ? config.currentTurn : 0;
 }
 
 export function getTotalTurns(game: Game | null | undefined): number {
-    const config = game?.gameConfig ?? null;
-    return isPictionaryConfig(config) ? config.totalTurns : 0;
+  const config = game?.gameConfig ?? null;
+  return isPictionaryConfig(config) ? config.totalTurns : 0;
 }
 
 export function getMinRange(game: Game | null | undefined): number {
-    const config = game?.gameConfig ?? null;
-    return isNumberGuessConfig(config) ? config.minRange : 1;
+  const config = game?.gameConfig ?? null;
+  return isNumberGuessConfig(config) ? config.minRange : 1;
 }
 
 export function getMaxRange(game: Game | null | undefined): number {
-    const config = game?.gameConfig ?? null;
-    return isNumberGuessConfig(config) ? config.maxRange : 100;
+  const config = game?.gameConfig ?? null;
+  return isNumberGuessConfig(config) ? config.maxRange : 100;
 }
 
 // ==================== Config Type Guards ====================
 
 export function isPictionaryConfig(config: GameConfig | null): config is PictionaryConfig {
-    return config?.type === 'pictionary';
+  return config?.type === 'pictionary';
 }
 
 export function isWordScrambleConfig(config: GameConfig | null): config is WordScrambleConfig {
-    return config?.type === 'word-scramble';
+  return config?.type === 'word-scramble';
 }
 
 export function isNumberGuessConfig(config: GameConfig | null): config is NumberGuessConfig {
-    return config?.type === 'number-guess';
+  return config?.type === 'number-guess';
 }
 
 export function isSpeedTypingConfig(config: GameConfig | null): config is SpeedTypingConfig {
-    return config?.type === 'speed-typing';
+  return config?.type === 'speed-typing';
 }
 
-export function isReactionShowdownConfig(config: GameConfig | null): config is ReactionShowdownConfig {
-    return config?.type === 'reaction-showdown';
+export function isReactionShowdownConfig(
+  config: GameConfig | null
+): config is ReactionShowdownConfig {
+  return config?.type === 'reaction-showdown';
+}
+
+export function isSlidingPuzzleConfig(config: GameConfig | null): config is SlidingPuzzleConfig {
+  return config?.type === 'sliding-puzzle';
 }
 
 // ==================== Round Info Type Guards ====================
 
-export function isNumberGuessRoundInfo(info: GameRoundInfo | null | undefined): info is NumberGuessRoundInfo {
-    return info?.gameType === 'number-guess';
+export function isNumberGuessRoundInfo(
+  info: GameRoundInfo | null | undefined
+): info is NumberGuessRoundInfo {
+  return info?.gameType === 'number-guess';
 }
 
-export function isWordScrambleRoundInfo(info: GameRoundInfo | null | undefined): info is WordScrambleRoundInfo {
-    return info?.gameType === 'word-scramble';
+export function isWordScrambleRoundInfo(
+  info: GameRoundInfo | null | undefined
+): info is WordScrambleRoundInfo {
+  return info?.gameType === 'word-scramble';
 }
 
-export function isPictionaryRoundInfo(info: GameRoundInfo | null | undefined): info is PictionaryRoundInfo {
-    return info?.gameType === 'pictionary';
+export function isPictionaryRoundInfo(
+  info: GameRoundInfo | null | undefined
+): info is PictionaryRoundInfo {
+  return info?.gameType === 'pictionary';
 }
 
-export function isSpeedTypingRoundInfo(info: GameRoundInfo | null | undefined): info is SpeedTypingRoundInfo {
-    return info?.gameType === 'speed-typing';
+export function isSpeedTypingRoundInfo(
+  info: GameRoundInfo | null | undefined
+): info is SpeedTypingRoundInfo {
+  return info?.gameType === 'speed-typing';
 }
 
-export function isReactionShowdownRoundInfo(info: GameRoundInfo | null | undefined): info is ReactionShowdownRoundInfo {
-    return info?.gameType === 'reaction-showdown';
+export function isSlidingPuzzleRoundInfo(
+  info: GameRoundInfo | null | undefined
+): info is SlidingPuzzleRoundInfo {
+  return info?.gameType === 'sliding-puzzle';
+}
+
+export function isReactionShowdownRoundInfo(
+  info: GameRoundInfo | null | undefined
+): info is ReactionShowdownRoundInfo {
+  return info?.gameType === 'reaction-showdown';
 }

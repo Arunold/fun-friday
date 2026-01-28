@@ -19,4 +19,7 @@ public class CreateGameRequest {
     @Builder.Default private int wordLength = 7;
 
     @Builder.Default private int roundDuration = 30;
+
+    // Difficulty for games that support it (e.g., sliding-puzzle, speed-typing)
+    @Builder.Default private String difficulty = "MEDIUM";
 }

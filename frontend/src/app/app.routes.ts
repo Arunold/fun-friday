@@ -4,11 +4,12 @@ import { GameSetupComponent } from './components/game-setup/game-setup.component
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { ResultsComponent } from './components/results/results.component';
 import {
-    NumberGuessGameComponent,
-    WordScrambleGameComponent,
-    PictionaryGameComponent,
-    SpeedTypingGameComponent,
-    ReactionShowdownGameComponent
+  NumberGuessGameComponent,
+  WordScrambleGameComponent,
+  PictionaryGameComponent,
+  SpeedTypingGameComponent,
+  ReactionShowdownGameComponent,
+  SlidingPuzzleGameComponent,
 } from './components/games';
 
 export const routes: Routes = [
@@ -21,6 +22,7 @@ export const routes: Routes = [
   { path: 'game/pictionary/:id', component: PictionaryGameComponent },
   { path: 'game/speed-typing/:id', component: SpeedTypingGameComponent },
   { path: 'game/reaction-showdown/:id', component: ReactionShowdownGameComponent },
+  { path: 'game/sliding-puzzle/:id', component: SlidingPuzzleGameComponent },
   { path: 'results/:id', component: ResultsComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];

@@ -1523,6 +1523,97 @@ Alice is drawing...
 
 ---
 
+## Game 14: Sliding Puzzle ✅ IMPLEMENTED
+
+### Concept
+Classic sliding puzzle race! All players receive the same shuffled puzzle and race to solve it. Tiles are numbered and one space is empty - slide tiles to arrange them in order. Fastest solver wins the most points!
+
+### Gameplay Flow
+1. Host starts the game
+2. All players receive the **same** shuffled puzzle
+3. Players click/tap tiles adjacent to the empty space to slide them
+4. Goal: Arrange tiles in numerical order (1, 2, 3... with empty space at bottom-right)
+5. First player to solve gets time bonus
+6. Points awarded for correct tile positions + completion + time remaining
+
+### Example Gameplay
+
+**4x4 Puzzle (Medium Difficulty):**
+
+| Shuffled | → | Solved |
+|----------|---|--------|
+| 5 1 3 4  | → | 1 2 3 4 |
+| 9 2 7 8  | → | 5 6 7 8 |
+| 6 10 11 12| → | 9 10 11 12|
+| 13 14 15 ▢| → | 13 14 15 ▢|
+
+### Scoring
+| Action | Points |
+|--------|--------|
+| Each correct tile position | 5 pts |
+| Complete puzzle solved | 25 pts |
+| Time bonus (per second remaining) | 1 pt |
+
+**Example:** Player solves 4x4 puzzle in 45 seconds (90 sec round)
+- 16 correct tiles x 5 = 80 pts
+- Completion bonus = 25 pts
+- Time bonus: 45 remaining x 1 = 45 pts
+- **Total: 150 pts**
+
+### Difficulty Levels
+| Level | Grid Size | Time Limit |
+|-------|-----------|------------|
+| Easy 🟢 | 3x3 (8 tiles) | 60 seconds |
+| Medium 🟡 | 4x4 (15 tiles) | 90 seconds |
+| Hard 🔴 | 5x5 (24 tiles) | 120 seconds |
+
+### Config (SlidingPuzzleConfig)
+```typescript
+{
+  type: 'sliding-puzzle',
+  roundDuration: number,        // 60-120 based on difficulty
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD',
+  gridSize: number,             // 3, 4, or 5
+  pointsPerCorrectTile: number, // default 5
+  completionBonus: number,      // default 25
+  timeBonusPerSecond: number    // default 1
+}
+```
+
+### Round Info (SlidingPuzzleRoundInfo)
+```typescript
+{
+  gameType: 'sliding-puzzle',
+  roundNumber: number,
+  winner: string | null,
+  revealed: boolean,
+  gridSize: number,
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD',
+  startTime: number,
+  initialPuzzle: number[],         // same shuffled puzzle for all
+  playerStates: Record<string, PlayerPuzzleInfo>,
+  solveOrder: string[]             // players in order of completion
+}
+
+interface PlayerPuzzleInfo {
+  puzzle: number[],     // current state
+  moves: number,        // move count
+  solved: boolean,
+  solveTime: number,    // ms to solve
+  correctTiles: number  // tiles in correct position
+}
+```
+
+### Technical Notes
+- Puzzle generation uses **Fisher-Yates shuffle** with solvability check
+- Solvability verified using **inversion count algorithm**
+- All players receive identical initial puzzle state
+- Moves broadcast via WebSocket: `/app/puzzleMove`
+- Valid moves: only tiles adjacent to empty space (horizontally/vertically)
+- Live progress shows each player's correct tile count and move count
+
+---
+
 ## Implementation Priority
 
 ### Phase 1: Quick Wins (Similar to existing games)

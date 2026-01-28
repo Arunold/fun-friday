@@ -10,6 +10,7 @@ import com.example.funfridaygame.model.Player;
 import com.example.funfridaygame.model.config.BaseGameConfig;
 import com.example.funfridaygame.model.config.NumberGuessConfig;
 import com.example.funfridaygame.model.config.PictionaryConfig;
+import com.example.funfridaygame.model.config.SlidingPuzzleConfig;
 import com.example.funfridaygame.model.config.WordScrambleConfig;
 import com.example.funfridaygame.service.GameTypeRegistry;
 import com.example.funfridaygame.service.game.GameStrategy;
@@ -87,6 +88,11 @@ public class GameController {
             ngConfig.setMaxRange(100);
         } else if (config instanceof PictionaryConfig pConfig) {
             pConfig.setTotalTurns(game.getPlayers().size());
+        } else if (config instanceof SlidingPuzzleConfig spConfig) {
+            SlidingPuzzleConfig.Difficulty diff = parseDifficulty(request.getDifficulty());
+            spConfig.setDifficulty(diff);
+            spConfig.setGridSize(getGridSizeForDifficulty(diff));
+            config.setRoundDuration(getDurationForDifficulty(diff, roundDuration));
         }
 
         game.setGameConfig(config);
@@ -287,5 +293,36 @@ public class GameController {
         Map<String, String> error = new HashMap<>();
         error.put("error", message);
         messagingTemplate.convertAndSend("/topic/error/" + username, error);
+    }
+
+    private SlidingPuzzleConfig.Difficulty parseDifficulty(String difficulty) {
+        if (difficulty == null || difficulty.isBlank()) {
+            return SlidingPuzzleConfig.Difficulty.MEDIUM;
+        }
+        try {
+            return SlidingPuzzleConfig.Difficulty.valueOf(difficulty.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return SlidingPuzzleConfig.Difficulty.MEDIUM;
+        }
+    }
+
+    private int getGridSizeForDifficulty(SlidingPuzzleConfig.Difficulty diff) {
+        return switch (diff) {
+            case EASY -> 3;
+            case MEDIUM -> 4;
+            case HARD -> 5;
+        };
+    }
+
+    private int getDurationForDifficulty(SlidingPuzzleConfig.Difficulty diff, int defaultDuration) {
+        // Use provided duration or calculate from difficulty
+        if (defaultDuration > 0) {
+            return defaultDuration;
+        }
+        return switch (diff) {
+            case EASY -> 60;
+            case MEDIUM -> 90;
+            case HARD -> 120;
+        };
     }
 }

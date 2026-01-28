@@ -1,0 +1,177 @@
+.setup-page {
+  min-height: 100vh;
+  background: var(--spotify-black);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.setup-card {
+  background: var(--spotify-dark-gray);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.setup-card h2 {
+  color: var(--spotify-white);
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: var(--spotify-text-gray) !important;
+}
+
+.back-btn:hover {
+  color: var(--spotify-white) !important;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 30px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.host-badge {
+  background: rgba(29, 185, 84, 0.15);
+  border: 1px solid var(--spotify-green);
+  color: var(--spotify-green);
+}
+
+.host-badge .game-icon {
+  font-size: 1.5rem;
+}
+
+.join-badge {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--spotify-white);
+  color: var(--spotify-white);
+}
+
+.join-badge mat-icon {
+  font-size: 1.2rem;
+  width: 20px;
+  height: 20px;
+}
+
+/* Avatar Selector */
+.avatar-selector {
+  cursor: pointer;
+  margin-bottom: 25px;
+  transition: transform 0.2s ease;
+}
+
+.avatar-selector:hover {
+  transform: scale(1.05);
+}
+
+.avatar-selector:hover .avatar-display {
+  border-color: var(--spotify-green);
+  box-shadow: 0 0 30px rgba(29, 185, 84, 0.4);
+}
+
+.avatar-display {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--spotify-gray);
+  border: 4px solid var(--spotify-light-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  transition: all 0.2s ease;
+}
+
+.avatar-emoji {
+  font-size: 4rem;
+}
+
+.avatar-hint {
+  color: var(--spotify-text-gray);
+  font-size: 0.85rem;
+}
+
+.avatar-selector:hover .avatar-hint {
+  color: var(--spotify-green);
+}
+
+/* Form Fields */
+.full-width {
+  width: 100%;
+}
+
+/* Config Section */
+.config-section {
+  margin: 25px 0;
+  padding: 20px;
+  background: var(--spotify-gray);
+  border-radius: 12px;
+  text-align: left;
+}
+
+.config-section h3 {
+  color: var(--spotify-white);
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+
+.config-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.config-row mat-form-field {
+  flex: 1;
+  min-width: 150px;
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #f44336;
+  background: rgba(244, 67, 54, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px 32px !important;
+  font-size: 1rem !important;
+}
+
+/* Loading Spinner */
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
