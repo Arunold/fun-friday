@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GameType, Game } from '../models';
+import { environment } from '../../environments/environment';
 
 export interface GameStatus {
   exists: boolean;
@@ -12,11 +13,10 @@ export interface GameStatus {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GameService {
-
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiUrl;
 
   private http = inject(HttpClient);
 

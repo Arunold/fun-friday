@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Client, StompSubscription } from '@stomp/stompjs';
+import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { environment } from '../../environments/environment';
+import { BehaviorSubject } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebsocketService {
   private stompClient: Client;
+  private connectionState = new BehaviorSubject<boolean>(false);
   private subscriptions = new Map<string, StompSubscription>();
   private pendingSubscriptions: { topic: string; callback: (message: unknown) => void }[] = [];
 
@@ -17,17 +19,25 @@ export class WebsocketService {
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      onConnect: () => this.processPendingSubscriptions(),
+      onConnect: () => {
+        console.log('WebSocket connected');
+        this.connectionState.next(true);
+        this.processPendingSubscriptions();
+      },
+      onDisconnect: () => {
+        console.log('WebSocket disconnected');
+        this.connectionState.next(false);
+      },
     });
   }
 
-  connect(): void {
+  connect() {
     if (!this.stompClient.active) {
       this.stompClient.activate();
     }
   }
 
-  private processPendingSubscriptions(): void {
+  private processPendingSubscriptions() {
     const pending = [...this.pendingSubscriptions];
     this.pendingSubscriptions = [];
     pending.forEach(sub => this.subscribe(sub.topic, sub.callback));
@@ -39,11 +49,12 @@ export class WebsocketService {
       return;
     }
 
+    // Avoid duplicate subscriptions
     if (this.subscriptions.has(topic)) {
       return;
     }
 
-    const subscription = this.stompClient.subscribe(topic, message => {
+    const subscription = this.stompClient.subscribe(topic, (message: IMessage) => {
       callback(JSON.parse(message.body));
     });
     this.subscriptions.set(topic, subscription);
@@ -63,16 +74,14 @@ export class WebsocketService {
   }
 
   sendMessage(destination: string, message: unknown): void {
-    if (this.stompClient.active && this.stompClient.connected) {
-      try {
-        this.stompClient.publish({ destination, body: JSON.stringify(message) });
-      } catch {
-        // Connection lost during send - ignore
-      }
+    if (this.stompClient.active) {
+      this.stompClient.publish({ destination, body: JSON.stringify(message) });
+    } else {
+      console.error('STOMP client is not connected.');
     }
   }
 
   isConnected(): boolean {
-    return this.stompClient.active && this.stompClient.connected;
+    return this.stompClient.active;
   }
 }

@@ -11,6 +11,12 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private final WebSocketProperties webSocketProperties;
+
+    public WebSocketConfig(WebSocketProperties webSocketProperties) {
+        this.webSocketProperties = webSocketProperties;
+    }
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -19,16 +25,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/stomp").setAllowedOrigins("http://localhost:4200").withSockJS();
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:4200").withSockJS();
-        registry.addEndpoint("/ws/info").setAllowedOrigins("http://localhost:4200").withSockJS();
+        String[] allowedOrigins = webSocketProperties.getAllowedOriginsArray();
+        registry.addEndpoint("/ws/stomp").setAllowedOrigins(allowedOrigins).withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins(allowedOrigins).withSockJS();
     }
 
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        // Increase message size limits for drawing data
-        registration.setMessageSizeLimit(512 * 1024); // 512 KB max message size
-        registration.setSendBufferSizeLimit(1024 * 1024); // 1 MB send buffer
-        registration.setSendTimeLimit(20 * 1000); // 20 seconds send timeout
+        registration.setMessageSizeLimit(webSocketProperties.getMessageSizeLimit());
+        registration.setSendBufferSizeLimit(webSocketProperties.getSendBufferSize());
+        registration.setSendTimeLimit(webSocketProperties.getSendTimeLimit());
     }
 }

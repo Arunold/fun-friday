@@ -1,0 +1,34 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Node
+frontend/node_modules
+frontend/.angular
+
+# Gradle
+backend/.gradle
+backend/build
+
+# Logs
+*.log
+
+# Temp files
+tmp/
+*.tmp
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Husky
+.husky
+
+# Local config
+*.local
