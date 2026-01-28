@@ -4,16 +4,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Configuration for Speed Typing Race game.
- */
+/** Configuration for Speed Typing Race game. */
 @Getter
 @Setter
 @NoArgsConstructor
 public class SpeedTypingConfig extends BaseGameConfig {
 
     public enum Difficulty {
-        EASY, MEDIUM, HARD
+        EASY,
+        MEDIUM,
+        HARD
     }
 
     private Difficulty difficulty = Difficulty.MEDIUM;

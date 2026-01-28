@@ -9,9 +9,7 @@ import com.example.funfridaygame.model.round.BaseGameRound;
 import com.example.funfridaygame.model.round.NumberGuessRound;
 import org.springframework.stereotype.Component;
 
-/**
- * Strategy implementation for Number Guess game.
- */
+/** Strategy implementation for Number Guess game. */
 @Component
 public class NumberGuessStrategy implements GameStrategy {
 

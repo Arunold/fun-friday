@@ -1,18 +1,13 @@
 package com.example.funfridaygame.model.roundinfo;
 
+import com.example.funfridaygame.model.round.ReactionShowdownRound;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.example.funfridaygame.model.round.ReactionShowdownRound;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Round info DTO for Reaction Showdown game.
- * Simple: one reaction opportunity per round.
- */
+/** Round info DTO for Reaction Showdown game. Simple: one reaction opportunity per round. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,7 +41,8 @@ public class ReactionShowdownRoundInfo extends BaseRoundInfo {
             info.setTappedFakeOut(entry.getValue().isTappedFakeOut());
             this.playerReactions.put(entry.getKey(), info);
 
-            if (!entry.getValue().isFalseStart() && !entry.getValue().isTappedFakeOut()
+            if (!entry.getValue().isFalseStart()
+                    && !entry.getValue().isTappedFakeOut()
                     && entry.getValue().getReactionTime() > 0
                     && entry.getValue().getReactionTime() < fastest) {
                 fastest = entry.getValue().getReactionTime();
@@ -55,9 +51,7 @@ public class ReactionShowdownRoundInfo extends BaseRoundInfo {
         this.fastestTime = fastest == Long.MAX_VALUE ? 0 : fastest;
     }
 
-    /**
-     * Simplified reaction info for frontend
-     */
+    /** Simplified reaction info for frontend */
     @Getter
     @Setter
     @NoArgsConstructor

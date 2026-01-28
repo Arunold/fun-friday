@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.2.5'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'checkstyle'
+	id 'com.diffplug.spotless' version '6.25.0'
 }
 
 group = 'com.example'
@@ -26,6 +27,36 @@ tasks.withType(Checkstyle) {
 		xml.required = false
 		html.required = true
 	}
+}
+
+// Spotless code formatter configuration (aligned with Checkstyle)
+spotless {
+	java {
+		target 'src/**/*.java'
+		
+		// Remove unused imports
+		removeUnusedImports()
+		
+		// Import ordering (matches Checkstyle config)
+		importOrder('java', 'javax', 'jakarta', 'org', 'com', '')
+		
+		// Google Java Format for consistent style
+		googleJavaFormat('1.19.2').aosp()
+		
+		// Trim trailing whitespace (matches Checkstyle RegexpSingleline)
+		trimTrailingWhitespace()
+		
+		// Ensure file ends with newline
+		endWithNewline()
+		
+		// Format annotations on their own line
+		formatAnnotations()
+	}
+}
+
+// Run spotlessCheck before checkstyle
+tasks.named('checkstyleMain') {
+	dependsOn 'spotlessCheck'
 }
 
 dependencies {

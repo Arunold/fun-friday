@@ -1,7 +1,5 @@
 package com.example.funfridaygame.service.game;
 
-import org.springframework.stereotype.Component;
-
 import com.example.funfridaygame.model.Game;
 import com.example.funfridaygame.model.GameState;
 import com.example.funfridaygame.model.Player;
@@ -10,10 +8,9 @@ import com.example.funfridaygame.model.config.WordScrambleConfig;
 import com.example.funfridaygame.model.round.BaseGameRound;
 import com.example.funfridaygame.model.round.WordScrambleRound;
 import com.example.funfridaygame.service.WordService;
+import org.springframework.stereotype.Component;
 
-/**
- * Strategy implementation for Word Scramble game.
- */
+/** Strategy implementation for Word Scramble game. */
 @Component
 public class WordScrambleStrategy implements GameStrategy {
 

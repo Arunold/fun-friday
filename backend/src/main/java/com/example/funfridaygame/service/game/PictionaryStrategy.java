@@ -11,9 +11,7 @@ import com.example.funfridaygame.model.round.PictionaryRound;
 import com.example.funfridaygame.service.PictionaryWordService;
 import org.springframework.stereotype.Component;
 
-/**
- * Strategy implementation for Pictionary game.
- */
+/** Strategy implementation for Pictionary game. */
 @Component
 public class PictionaryStrategy implements GameStrategy {
 
@@ -104,24 +102,19 @@ public class PictionaryStrategy implements GameStrategy {
         return round.getCorrectGuesser() != null;
     }
 
-    /**
-     * Create a turn result for the current turn
-     */
+    /** Create a turn result for the current turn */
     public TurnResult createTurnResult(Game game, PictionaryRound round) {
         PictionaryConfig config = game.getTypedConfig(PictionaryConfig.class);
         int turnNumber = config != null ? config.getCurrentTurn() : 1;
 
         return new TurnResult(
-            turnNumber,
-            round.getDrawerName(),
-            round.getWordToDraw(),
-            round.getCorrectGuesser()
-        );
+                turnNumber,
+                round.getDrawerName(),
+                round.getWordToDraw(),
+                round.getCorrectGuesser());
     }
 
-    /**
-     * Check if there are more turns in the current round
-     */
+    /** Check if there are more turns in the current round */
     public boolean hasMoreTurns(Game game) {
         PictionaryConfig config = game.getTypedConfig(PictionaryConfig.class);
         return config != null && config.hasMoreTurns();

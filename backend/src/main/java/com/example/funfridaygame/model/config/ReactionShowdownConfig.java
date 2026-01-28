@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Configuration for Reaction Showdown game.
- * Players test their reaction time - tap when the signal appears!
+ * Configuration for Reaction Showdown game. Players test their reaction time - tap when the signal
+ * appears!
  */
 @Getter
 @Setter

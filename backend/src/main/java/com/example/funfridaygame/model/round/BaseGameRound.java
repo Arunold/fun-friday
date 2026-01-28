@@ -3,9 +3,7 @@ package com.example.funfridaygame.model.round;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Base class for all game rounds. Each game type extends this with specific fields.
- */
+/** Base class for all game rounds. Each game type extends this with specific fields. */
 @Getter
 @Setter
 public abstract class BaseGameRound {
@@ -25,18 +23,12 @@ public abstract class BaseGameRound {
         this.roundStartTime = System.currentTimeMillis();
     }
 
-    /**
-     * Calculate and return the winner of this round
-     */
+    /** Calculate and return the winner of this round */
     public abstract String calculateWinner();
 
-    /**
-     * Check if a player has submitted their answer/guess
-     */
+    /** Check if a player has submitted their answer/guess */
     public abstract boolean hasPlayerAnswered(String playerName);
 
-    /**
-     * Get the number of players who have answered
-     */
+    /** Get the number of players who have answered */
     public abstract int getAnsweredCount();
 }

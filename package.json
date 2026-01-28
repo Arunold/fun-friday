@@ -1,0 +1,29 @@
+{
+  "name": "fun-friday-game",
+  "version": "1.0.0",
+  "description": "Fun Friday Game - Multiplayer party game platform",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && .\\gradlew checkstyleMain --no-daemon",
+    "format:frontend": "cd frontend && npm run format",
+    "format:backend": "cd backend && .\\gradlew spotlessApply --no-daemon",
+    "format:backend:check": "cd backend && .\\gradlew spotlessCheck --no-daemon",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "format": "npm run format:frontend && npm run format:backend",
+    "format:check": "cd frontend && npm run format:check"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2"
+  },
+  "lint-staged": {
+    "frontend/src/**/*.{ts,html,css,scss}": [
+      "npx prettier --write --config frontend/.prettierrc"
+    ],
+    "frontend/src/**/*.ts": [
+      "npx eslint --config frontend/eslint.config.js --fix"
+    ]
+  }
+}

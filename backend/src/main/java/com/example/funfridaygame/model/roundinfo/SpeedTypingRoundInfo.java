@@ -1,19 +1,15 @@
 package com.example.funfridaygame.model.roundinfo;
 
+import com.example.funfridaygame.model.round.SpeedTypingRound;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.example.funfridaygame.model.round.SpeedTypingRound;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Round info DTO for Speed Typing Race game.
- */
+/** Round info DTO for Speed Typing Race game. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,7 +35,8 @@ public class SpeedTypingRoundInfo extends BaseRoundInfo {
         this.rankings = new ArrayList<>(round.getFinishOrder());
 
         // Convert player progress
-        for (Map.Entry<String, SpeedTypingRound.PlayerProgress> entry : round.getPlayerProgress().entrySet()) {
+        for (Map.Entry<String, SpeedTypingRound.PlayerProgress> entry :
+                round.getPlayerProgress().entrySet()) {
             SpeedTypingRound.PlayerProgress progress = entry.getValue();
             PlayerProgressInfo info = new PlayerProgressInfo();
             info.setPercentage(progress.getPercentage());
@@ -50,9 +47,7 @@ public class SpeedTypingRoundInfo extends BaseRoundInfo {
         }
     }
 
-    /**
-     * Simplified progress info for frontend
-     */
+    /** Simplified progress info for frontend */
     @Getter
     @Setter
     @NoArgsConstructor

@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Request DTO for reaction tap in Reaction Showdown game.
- */
+/** Request DTO for reaction tap in Reaction Showdown game. */
 @Data
 @Builder
 @NoArgsConstructor

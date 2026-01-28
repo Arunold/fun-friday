@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Represents the result of a single turn in a Pictionary round.
- * Each player gets one turn to draw per round.
+ * Represents the result of a single turn in a Pictionary round. Each player gets one turn to draw
+ * per round.
  */
 @Data
 @Builder

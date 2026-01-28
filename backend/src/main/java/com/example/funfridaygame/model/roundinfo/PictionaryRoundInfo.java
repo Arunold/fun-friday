@@ -3,18 +3,15 @@ package com.example.funfridaygame.model.roundinfo;
 import com.example.funfridaygame.model.TurnResult;
 import com.example.funfridaygame.model.config.PictionaryConfig;
 import com.example.funfridaygame.model.round.PictionaryRound;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * Round info DTO for Pictionary game.
- */
+/** Round info DTO for Pictionary game. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,7 +27,8 @@ public class PictionaryRoundInfo extends BaseRoundInfo {
     private int totalTurns;
     private List<TurnResult> turnResults = new ArrayList<>();
 
-    public PictionaryRoundInfo(PictionaryRound round, boolean includeTarget, PictionaryConfig config) {
+    public PictionaryRoundInfo(
+            PictionaryRound round, boolean includeTarget, PictionaryConfig config) {
         super(round);
         this.drawerName = round.getDrawerName();
         this.drawingData = new ArrayList<>(round.getDrawingData());

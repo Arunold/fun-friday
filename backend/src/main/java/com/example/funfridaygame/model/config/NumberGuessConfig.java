@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Configuration for Number Guess game.
- * Currently minimal - just uses base config.
- */
+/** Configuration for Number Guess game. Currently minimal - just uses base config. */
 @Getter
 @Setter
 @NoArgsConstructor

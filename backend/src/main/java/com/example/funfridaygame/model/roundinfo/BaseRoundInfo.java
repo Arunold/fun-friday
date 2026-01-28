@@ -15,9 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Base DTO for sending round info to clients.
- * Each game type extends this with its own fields.
- * Uses Jackson polymorphism for proper JSON serialization.
+ * Base DTO for sending round info to clients. Each game type extends this with its own fields. Uses
+ * Jackson polymorphism for proper JSON serialization.
  */
 @Getter
 @Setter
@@ -42,10 +41,9 @@ public abstract class BaseRoundInfo {
         this.revealed = round.isRevealed();
     }
 
-    /**
-     * Factory method to create the appropriate RoundInfo based on round type
-     */
-    public static BaseRoundInfo fromRound(BaseGameRound round, boolean includeTarget, BaseGameConfig config) {
+    /** Factory method to create the appropriate RoundInfo based on round type */
+    public static BaseRoundInfo fromRound(
+            BaseGameRound round, boolean includeTarget, BaseGameConfig config) {
         if (round == null) {
             return null;
         }
@@ -54,7 +52,8 @@ public abstract class BaseRoundInfo {
         } else if (round instanceof WordScrambleRound wsRound) {
             return new WordScrambleRoundInfo(wsRound, includeTarget);
         } else if (round instanceof PictionaryRound pRound) {
-            PictionaryConfig pConfig = config instanceof PictionaryConfig ? (PictionaryConfig) config : null;
+            PictionaryConfig pConfig =
+                    config instanceof PictionaryConfig ? (PictionaryConfig) config : null;
             return new PictionaryRoundInfo(pRound, includeTarget, pConfig);
         } else if (round instanceof SpeedTypingRound stRound) {
             return new SpeedTypingRoundInfo(stRound, includeTarget);

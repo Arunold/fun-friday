@@ -1,14 +1,13 @@
 package com.example.funfridaygame.model.round;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
- * Round implementation for Word Scramble game.
- * Players unscramble a word, fastest correct answer wins.
+ * Round implementation for Word Scramble game. Players unscramble a word, fastest correct answer
+ * wins.
  */
 @Getter
 @Setter
@@ -67,9 +66,7 @@ public class WordScrambleRound extends BaseGameRound {
         return fastestPlayer;
     }
 
-    /**
-     * Check if the guess is correct
-     */
+    /** Check if the guess is correct */
     public boolean isCorrectGuess(String guess) {
         return originalWord != null && originalWord.equalsIgnoreCase(guess.trim());
     }

@@ -1,7 +1,5 @@
 package com.example.funfridaygame.service.game;
 
-import org.springframework.stereotype.Component;
-
 import com.example.funfridaygame.model.Game;
 import com.example.funfridaygame.model.GameState;
 import com.example.funfridaygame.model.Player;
@@ -9,10 +7,9 @@ import com.example.funfridaygame.model.config.BaseGameConfig;
 import com.example.funfridaygame.model.config.SpeedTypingConfig;
 import com.example.funfridaygame.model.round.BaseGameRound;
 import com.example.funfridaygame.model.round.SpeedTypingRound;
+import org.springframework.stereotype.Component;
 
-/**
- * Strategy implementation for Speed Typing Race game.
- */
+/** Strategy implementation for Speed Typing Race game. */
 @Component
 public class SpeedTypingStrategy implements GameStrategy {
 
@@ -35,7 +32,8 @@ public class SpeedTypingStrategy implements GameStrategy {
         game.setCurrentRoundNumber(game.getCurrentRoundNumber() + 1);
 
         SpeedTypingConfig config = game.getTypedConfig(SpeedTypingConfig.class);
-        SpeedTypingConfig.Difficulty difficulty = config != null ? config.getDifficulty() : SpeedTypingConfig.Difficulty.MEDIUM;
+        SpeedTypingConfig.Difficulty difficulty =
+                config != null ? config.getDifficulty() : SpeedTypingConfig.Difficulty.MEDIUM;
         int minAccuracy = config != null ? config.getMinAccuracy() : 95;
 
         return new SpeedTypingRound(game.getCurrentRoundNumber(), difficulty, minAccuracy);
@@ -53,10 +51,12 @@ public class SpeedTypingStrategy implements GameStrategy {
         }
 
         String targetText = round.getTargetText();
-        int roundDuration = game.getGameConfig() != null ? game.getGameConfig().getRoundDuration() : 45;
+        int roundDuration =
+                game.getGameConfig() != null ? game.getGameConfig().getRoundDuration() : 45;
 
         for (Player player : game.getPlayers()) {
-            SpeedTypingRound.PlayerProgress progress = round.getPlayerProgress().get(player.getName());
+            SpeedTypingRound.PlayerProgress progress =
+                    round.getPlayerProgress().get(player.getName());
 
             if (progress == null) {
                 continue;

@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Configuration for Word Scramble game.
- */
+/** Configuration for Word Scramble game. */
 @Getter
 @Setter
 @NoArgsConstructor

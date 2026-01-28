@@ -1,7 +1,5 @@
 package com.example.funfridaygame.service.game;
 
-import org.springframework.stereotype.Component;
-
 import com.example.funfridaygame.model.Game;
 import com.example.funfridaygame.model.GameState;
 import com.example.funfridaygame.model.Player;
@@ -9,10 +7,11 @@ import com.example.funfridaygame.model.config.BaseGameConfig;
 import com.example.funfridaygame.model.config.ReactionShowdownConfig;
 import com.example.funfridaygame.model.round.BaseGameRound;
 import com.example.funfridaygame.model.round.ReactionShowdownRound;
+import org.springframework.stereotype.Component;
 
 /**
- * Strategy implementation for Reaction Showdown game.
- * Players test their reaction time by tapping when the signal appears.
+ * Strategy implementation for Reaction Showdown game. Players test their reaction time by tapping
+ * when the signal appears.
  */
 @Component
 public class ReactionShowdownStrategy implements GameStrategy {
@@ -42,12 +41,7 @@ public class ReactionShowdownStrategy implements GameStrategy {
         int fakeOutChance = config != null ? config.getFakeOutChance() : 20;
 
         return new ReactionShowdownRound(
-            game.getCurrentRoundNumber(),
-            minDelay,
-            maxDelay,
-            includeFakeOuts,
-            fakeOutChance
-        );
+                game.getCurrentRoundNumber(), minDelay, maxDelay, includeFakeOuts, fakeOutChance);
     }
 
     @Override

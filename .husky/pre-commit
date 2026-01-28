@@ -1,0 +1,61 @@
+#!/usr/bin/env sh
+
+# Fun Friday Game Pre-commit Hook
+# Runs formatters and linters before each commit
+
+echo "🎮 Running pre-commit checks..."
+
+# Check if lint-staged is available for frontend files
+if command -v npx &> /dev/null; then
+    npx lint-staged
+    LINT_STAGED_EXIT=$?
+    
+    if [ $LINT_STAGED_EXIT -ne 0 ]; then
+        echo "❌ lint-staged failed. Please fix the issues and try again."
+        exit 1
+    fi
+else
+    echo "⚠️  npx not found, running manual frontend checks..."
+    
+    # Frontend checks
+    if [ -d "frontend" ]; then
+        echo "📦 Checking frontend..."
+        cd frontend
+        npm run format:check && npm run lint
+        FRONTEND_EXIT=$?
+        cd ..
+        
+        if [ $FRONTEND_EXIT -ne 0 ]; then
+            echo "❌ Frontend checks failed. Run 'npm run format' to fix formatting issues."
+            exit 1
+        fi
+    fi
+fi
+
+# Backend checks - always run for Java files
+JAVA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "backend/.*\.java$" || true)
+if [ -n "$JAVA_FILES" ]; then
+    echo "☕ Formatting and checking backend Java files..."
+    cd backend
+    
+    # Apply Spotless formatting
+    ./gradlew spotlessApply --no-daemon
+    SPOTLESS_EXIT=$?
+    
+    if [ $SPOTLESS_EXIT -ne 0 ]; then
+        echo "❌ Spotless formatting failed."
+        cd ..
+        exit 1
+    fi
+    
+    cd ..
+    
+    # Re-stage the formatted files
+    for file in $JAVA_FILES; do
+        git add "$file"
+    done
+    
+    echo "✅ Backend Java files formatted and re-staged."
+fi
+
+echo "✅ All pre-commit checks passed!"

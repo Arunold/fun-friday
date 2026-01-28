@@ -1,25 +1,23 @@
 package com.example.funfridaygame.model.round;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Round implementation for Reaction Showdown game.
- * Players test their reaction time by tapping when the signal appears.
- * Simple: one reaction opportunity per round, like other games.
+ * Round implementation for Reaction Showdown game. Players test their reaction time by tapping when
+ * the signal appears. Simple: one reaction opportunity per round, like other games.
  */
 @Getter
 @Setter
 public class ReactionShowdownRound extends BaseGameRound {
 
     public enum Phase {
-        WAITING,    // Players are waiting for the signal
-        REACT,      // GO signal - players should tap now!
-        FAKEOUT     // Fake-out - players should NOT tap
+        WAITING, // Players are waiting for the signal
+        REACT, // GO signal - players should tap now!
+        FAKEOUT // Fake-out - players should NOT tap
     }
 
     // Current phase
@@ -46,8 +44,12 @@ public class ReactionShowdownRound extends BaseGameRound {
         super();
     }
 
-    public ReactionShowdownRound(int roundNumber, int minDelay, int maxDelay,
-                                  boolean includeFakeOuts, int fakeOutChance) {
+    public ReactionShowdownRound(
+            int roundNumber,
+            int minDelay,
+            int maxDelay,
+            boolean includeFakeOuts,
+            int fakeOutChance) {
         super(roundNumber);
         this.minDelay = minDelay;
         this.maxDelay = maxDelay;
@@ -58,24 +60,18 @@ public class ReactionShowdownRound extends BaseGameRound {
         this.isFakeOut = includeFakeOuts && random.nextInt(100) < fakeOutChance;
     }
 
-    /**
-     * Get the random delay before signal appears
-     */
+    /** Get the random delay before signal appears */
     public int getSignalDelay() {
         return minDelay + random.nextInt(maxDelay - minDelay);
     }
 
-    /**
-     * Signal that the GO (or fake-out) signal has been shown
-     */
+    /** Signal that the GO (or fake-out) signal has been shown */
     public void triggerSignal() {
         signalTime = System.currentTimeMillis();
         phase = isFakeOut ? Phase.FAKEOUT : Phase.REACT;
     }
 
-    /**
-     * Record a player's tap
-     */
+    /** Record a player's tap */
     public void recordTap(String playerName, long tapTime) {
         if (playerReactions.containsKey(playerName)) {
             return; // Already tapped
@@ -100,9 +96,7 @@ public class ReactionShowdownRound extends BaseGameRound {
         playerReactions.put(playerName, data);
     }
 
-    /**
-     * Calculate points for a player based on their reaction
-     */
+    /** Calculate points for a player based on their reaction */
     public int calculatePlayerPoints(String playerName, String fastestPlayer) {
         ReactionData data = playerReactions.get(playerName);
         if (data == null) {
@@ -134,9 +128,7 @@ public class ReactionShowdownRound extends BaseGameRound {
         return points;
     }
 
-    /**
-     * Find the fastest valid reaction
-     */
+    /** Find the fastest valid reaction */
     public String findFastestPlayer() {
         String fastest = null;
         long fastestTime = Long.MAX_VALUE;
@@ -170,9 +162,7 @@ public class ReactionShowdownRound extends BaseGameRound {
         return this.winner;
     }
 
-    /**
-     * Inner class to track player reaction data
-     */
+    /** Inner class to track player reaction data */
     @Getter
     @Setter
     public static class ReactionData {

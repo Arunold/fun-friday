@@ -6,9 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Base configuration for game-specific settings.
- * Each game type extends this with its own configuration fields.
- * This keeps Game.java clean and game-agnostic.
+ * Base configuration for game-specific settings. Each game type extends this with its own
+ * configuration fields. This keeps Game.java clean and game-agnostic.
  */
 @Getter
 @Setter
@@ -24,13 +23,9 @@ public abstract class BaseGameConfig {
 
     protected int roundDuration = 30;
 
-    /**
-     * Called when a new round starts
-     */
+    /** Called when a new round starts */
     public abstract void onRoundStart(int playerCount);
 
-    /**
-     * Called when a round ends
-     */
+    /** Called when a round ends */
     public abstract void onRoundEnd();
 }

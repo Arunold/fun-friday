@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Request DTO for typing progress updates in Speed Typing Race game.
- */
+/** Request DTO for typing progress updates in Speed Typing Race game. */
 @Data
 @Builder
 @NoArgsConstructor

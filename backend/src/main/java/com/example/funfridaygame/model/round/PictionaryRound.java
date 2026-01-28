@@ -1,18 +1,14 @@
 package com.example.funfridaygame.model.round;
 
 import com.example.funfridaygame.model.TurnResult;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Round implementation for Pictionary game.
- * Each player draws once per round, others guess.
- */
+/** Round implementation for Pictionary game. Each player draws once per round, others guess. */
 @Getter
 @Setter
 public class PictionaryRound extends BaseGameRound {
@@ -44,7 +40,9 @@ public class PictionaryRound extends BaseGameRound {
     }
 
     public void addPictionaryGuess(String playerName, String guess) {
-        playerPictionaryGuesses.computeIfAbsent(playerName, k -> new CopyOnWriteArrayList<>()).add(guess);
+        playerPictionaryGuesses
+                .computeIfAbsent(playerName, k -> new CopyOnWriteArrayList<>())
+                .add(guess);
     }
 
     public boolean isCorrectPictionaryGuess(String guess) {
@@ -55,9 +53,7 @@ public class PictionaryRound extends BaseGameRound {
         this.turnResults.add(result);
     }
 
-    /**
-     * Reset round state for a new turn (new drawer)
-     */
+    /** Reset round state for a new turn (new drawer) */
     public void resetForNewTurn(String newDrawer, String newWord) {
         this.drawerName = newDrawer;
         this.wordToDraw = newWord;

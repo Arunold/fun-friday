@@ -14,12 +14,9 @@ public class CreateGameRequest {
     private String gameTypeId;
     private String avatar;
 
-    @Builder.Default
-    private int totalRounds = 3;
+    @Builder.Default private int totalRounds = 3;
 
-    @Builder.Default
-    private int wordLength = 7;
+    @Builder.Default private int wordLength = 7;
 
-    @Builder.Default
-    private int roundDuration = 30;
+    @Builder.Default private int roundDuration = 30;
 }

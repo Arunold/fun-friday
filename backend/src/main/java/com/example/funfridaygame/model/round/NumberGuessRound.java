@@ -1,14 +1,12 @@
 package com.example.funfridaygame.model.round;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
- * Round implementation for Number Guess game.
- * Players guess a target number, closest guess wins.
+ * Round implementation for Number Guess game. Players guess a target number, closest guess wins.
  */
 @Getter
 @Setter

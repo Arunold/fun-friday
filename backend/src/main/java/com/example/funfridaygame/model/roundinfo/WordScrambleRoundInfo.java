@@ -1,16 +1,13 @@
 package com.example.funfridaygame.model.roundinfo;
 
 import com.example.funfridaygame.model.round.WordScrambleRound;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Round info DTO for Word Scramble game.
- */
+/** Round info DTO for Word Scramble game. */
 @Getter
 @Setter
 @NoArgsConstructor

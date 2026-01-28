@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Configuration for Pictionary game.
- * Handles turn tracking (each player draws once per round).
- */
+/** Configuration for Pictionary game. Handles turn tracking (each player draws once per round). */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,23 +27,17 @@ public class PictionaryConfig extends BaseGameConfig {
         // Increment turn after each turn ends
     }
 
-    /**
-     * Move to next turn
-     */
+    /** Move to next turn */
     public void nextTurn() {
         currentTurn++;
     }
 
-    /**
-     * Check if there are more turns in current round
-     */
+    /** Check if there are more turns in current round */
     public boolean hasMoreTurns() {
         return currentTurn < totalTurns;
     }
 
-    /**
-     * Reset turns for a new round
-     */
+    /** Reset turns for a new round */
     public void resetTurnsForRound(int playerCount) {
         this.currentTurn = 0;
         this.totalTurns = playerCount;
