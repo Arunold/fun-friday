@@ -147,6 +147,41 @@ public class PictionaryController {
 
         pRound.addPictionaryGuess(request.getPlayerName(), request.getGuess());
 
+        // Calculate score for this guess
+        PictionaryConfig pConfig = game.getTypedConfig(PictionaryConfig.class);
+        int roundDuration = pConfig != null ? pConfig.getRoundDuration() : 30;
+
+        Optional<PictionaryStrategy> strategyOpt =
+                strategyRegistry
+                        .getStrategy("pictionary")
+                        .filter(s -> s instanceof PictionaryStrategy)
+                        .map(s -> (PictionaryStrategy) s);
+
+        if (strategyOpt.isEmpty()) {
+            return;
+        }
+
+        PictionaryStrategy strategy = strategyOpt.get();
+        long guessTimestamp = System.currentTimeMillis();
+        int score =
+                strategy.calculateGuessScore(
+                        request.getGuess(),
+                        pRound.getWordToDraw(),
+                        guessTimestamp,
+                        pRound.getRoundStartTime(),
+                        roundDuration);
+
+        // Update player's best guess if this score is better
+        PictionaryRound.GuessInfo existingGuess =
+                pRound.getPlayerBestGuesses().get(request.getPlayerName());
+        if (existingGuess == null || score > existingGuess.getScore()) {
+            pRound.getPlayerBestGuesses()
+                    .put(
+                            request.getPlayerName(),
+                            new PictionaryRound.GuessInfo(
+                                    request.getGuess(), guessTimestamp, score));
+        }
+
         Map<String, Object> guessMessage = new HashMap<>();
         guessMessage.put("type", "PICTIONARY_GUESS");
         guessMessage.put("playerName", request.getPlayerName());
@@ -155,10 +190,15 @@ public class PictionaryController {
 
         if (pRound.isCorrectPictionaryGuess(request.getGuess())) {
             pRound.setCorrectGuesser(request.getPlayerName());
-            roundManager.cancelRoundTimer(gameId);
-            PictionaryConfig pConfig = game.getTypedConfig(PictionaryConfig.class);
-            int currentTurn = pConfig != null ? pConfig.getCurrentTurn() : 0;
-            endPictionaryTurn(gameId, pRound.getRoundNumber(), currentTurn);
+
+            int totalGuessers = Math.max(0, game.getPlayers().size() - 1);
+            boolean allGuessedCorrect = pRound.getCorrectGuessers().size() >= totalGuessers;
+
+            if (allGuessedCorrect) {
+                roundManager.cancelRoundTimer(gameId);
+                int currentTurn = pConfig != null ? pConfig.getCurrentTurn() : 0;
+                endPictionaryTurn(gameId, pRound.getRoundNumber(), currentTurn);
+            }
         }
     }
 

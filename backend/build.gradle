@@ -63,6 +63,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	
+	// Apache Commons Text for string similarity (Levenshtein distance)
+	implementation 'org.apache.commons:commons-text:1.11.0'
+	
 	// Lombok for reducing boilerplate
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

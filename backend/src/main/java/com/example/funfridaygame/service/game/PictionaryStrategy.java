@@ -9,6 +9,7 @@ import com.example.funfridaygame.model.config.PictionaryConfig;
 import com.example.funfridaygame.model.round.BaseGameRound;
 import com.example.funfridaygame.model.round.PictionaryRound;
 import com.example.funfridaygame.service.PictionaryWordService;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.stereotype.Component;
 
 /** Strategy implementation for Pictionary game. */
@@ -16,13 +17,16 @@ import org.springframework.stereotype.Component;
 public class PictionaryStrategy implements GameStrategy {
 
     private static final String GAME_TYPE_ID = "pictionary";
-    private static final int GUESSER_POINTS = 100;
+    private static final int CORRECT_ANSWER_POINTS = 100;
     private static final int DRAWER_POINTS = 50;
+    private static final double SIMILARITY_THRESHOLD = 0.5; // 50% threshold
 
     private final PictionaryWordService pictionaryWordService;
+    private final LevenshteinDistance levenshteinDistance;
 
     public PictionaryStrategy(PictionaryWordService pictionaryWordService) {
         this.pictionaryWordService = pictionaryWordService;
+        this.levenshteinDistance = new LevenshteinDistance();
     }
 
     @Override
@@ -74,32 +78,106 @@ public class PictionaryStrategy implements GameStrategy {
             return;
         }
 
-        String correctGuesser = round.getCorrectGuesser();
         String drawerName = round.getDrawerName();
+        boolean hasAnyCorrectGuesser = !round.getCorrectGuessers().isEmpty();
 
-        if (correctGuesser != null) {
-            for (Player player : game.getPlayers()) {
-                if (player.getName().equals(correctGuesser)) {
-                    player.setScore(player.getScore() + GUESSER_POINTS);
-                }
-                if (player.getName().equals(drawerName)) {
-                    player.setScore(player.getScore() + DRAWER_POINTS);
-                }
+        for (Player player : game.getPlayers()) {
+            if (player.getName().equals(drawerName) && hasAnyCorrectGuesser) {
+                player.setScore(player.getScore() + DRAWER_POINTS);
+                continue;
+            }
+
+            PictionaryRound.GuessInfo guessInfo =
+                    round.getPlayerBestGuesses().get(player.getName());
+            if (guessInfo != null && guessInfo.getScore() > 0) {
+                player.setScore(player.getScore() + guessInfo.getScore());
             }
         }
     }
 
+    /**
+     * Calculate score for a guess based on similarity and time remaining.
+     *
+     * @param guess The player's guess
+     * @param correctAnswer The correct word
+     * @param guessTimestamp When the guess was made
+     * @param roundStartTime When the round started
+     * @param roundDuration Total round duration in seconds
+     * @return The calculated score
+     */
+    public int calculateGuessScore(
+            String guess,
+            String correctAnswer,
+            long guessTimestamp,
+            long roundStartTime,
+            int roundDuration) {
+
+        // Normalize strings for comparison
+        String normalizedGuess = guess.trim().toLowerCase();
+        String normalizedAnswer = correctAnswer.trim().toLowerCase();
+
+        // Calculate similarity percentage
+        double similarity = calculateSimilarity(normalizedGuess, normalizedAnswer);
+
+        // Calculate time bonus (1 point per second remaining)
+        long elapsedMillis = guessTimestamp - roundStartTime;
+        long elapsedSeconds = elapsedMillis / 1000;
+        int secondsRemaining = Math.max(0, roundDuration - (int) elapsedSeconds);
+
+        // Exact match = 100 + time bonus
+        if (normalizedGuess.equals(normalizedAnswer)) {
+            return CORRECT_ANSWER_POINTS + secondsRemaining;
+        }
+
+        // Similarity below threshold = 0 points
+        if (similarity < SIMILARITY_THRESHOLD) {
+            return 0;
+        }
+
+        // Similarity >= 50% = (similarity% / 2) + time bonus
+        int similarityPoints = (int) ((similarity * 100) / 2);
+        return similarityPoints + secondsRemaining;
+    }
+
+    /**
+     * Calculate similarity between two strings using Levenshtein distance.
+     *
+     * @param str1 First string
+     * @param str2 Second string
+     * @return Similarity as a value between 0 and 1
+     */
+    private double calculateSimilarity(String str1, String str2) {
+        if (str1.equals(str2)) {
+            return 1.0;
+        }
+
+        int distance = levenshteinDistance.apply(str1, str2);
+        int maxLength = Math.max(str1.length(), str2.length());
+
+        if (maxLength == 0) {
+            return 1.0;
+        }
+
+        return 1.0 - ((double) distance / maxLength);
+    }
+
     @Override
     public boolean allPlayersAnswered(Game game, BaseGameRound round) {
-        return false;
+        if (!(round instanceof PictionaryRound pRound)) {
+            return false;
+        }
+
+        int totalGuessers = Math.max(0, game.getPlayers().size() - 1);
+        if (totalGuessers == 0) {
+            return true;
+        }
+
+        return pRound.getCorrectGuessers().size() >= totalGuessers;
     }
 
     @Override
     public boolean shouldEndRoundEarly(Game game, BaseGameRound baseRound) {
-        if (!(baseRound instanceof PictionaryRound round)) {
-            return false;
-        }
-        return round.getCorrectGuesser() != null;
+        return allPlayersAnswered(game, baseRound);
     }
 
     /** Create a turn result for the current turn */

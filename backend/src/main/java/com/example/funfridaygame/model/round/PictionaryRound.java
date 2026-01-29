@@ -3,6 +3,7 @@ package com.example.funfridaygame.model.round;
 import com.example.funfridaygame.model.TurnResult;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
@@ -13,11 +14,28 @@ import lombok.Setter;
 @Setter
 public class PictionaryRound extends BaseGameRound {
 
+    /** Data class to track player guess information */
+    @Getter
+    @Setter
+    public static class GuessInfo {
+        private String guess;
+        private long timestamp;
+        private int score;
+
+        public GuessInfo(String guess, long timestamp, int score) {
+            this.guess = guess;
+            this.timestamp = timestamp;
+            this.score = score;
+        }
+    }
+
     private volatile String drawerName;
     private volatile String wordToDraw;
     private final List<Object> drawingData = new CopyOnWriteArrayList<>();
     private final Map<String, List<String>> playerPictionaryGuesses = new ConcurrentHashMap<>();
+    private final Map<String, GuessInfo> playerBestGuesses = new ConcurrentHashMap<>();
     private volatile String correctGuesser;
+    private final Set<String> correctGuessers = ConcurrentHashMap.newKeySet();
     private volatile int currentTurnNumber = 1;
     private final List<TurnResult> turnResults = new CopyOnWriteArrayList<>();
 
@@ -59,7 +77,9 @@ public class PictionaryRound extends BaseGameRound {
         this.wordToDraw = newWord;
         this.drawingData.clear();
         this.playerPictionaryGuesses.clear();
+        this.playerBestGuesses.clear();
         this.correctGuesser = null;
+        this.correctGuessers.clear();
         this.currentTurnNumber++;
         this.roundStartTime = System.currentTimeMillis();
     }
@@ -82,7 +102,16 @@ public class PictionaryRound extends BaseGameRound {
     }
 
     public void setCorrectGuesser(String correctGuesser) {
-        this.correctGuesser = correctGuesser;
-        this.winner = correctGuesser;
+        if (this.correctGuesser == null) {
+            this.correctGuesser = correctGuesser;
+            this.winner = correctGuesser;
+        }
+        if (correctGuesser != null) {
+            this.correctGuessers.add(correctGuesser);
+        }
+    }
+
+    public boolean hasPlayerGuessedCorrect(String playerName) {
+        return correctGuessers.contains(playerName);
     }
 }
