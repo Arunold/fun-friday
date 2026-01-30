@@ -1,0 +1,40 @@
+/* Error Page Component Styles */
+
+.error-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  text-align: center;
+}
+
+.error-view h1 {
+  color: var(--spotify-white);
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  font-weight: 900;
+}
+
+.error-view p {
+  color: var(--spotify-text-gray);
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.error-view .error-hint {
+  color: var(--spotify-text-subdued);
+  font-size: 1rem;
+  font-style: italic;
+  margin-bottom: 30px;
+}
+
+.error-view button {
+  font-size: 1.1rem;
+  padding: 14px 40px;
+}
+
+.error-view button mat-icon {
+  margin-right: 8px;
+}

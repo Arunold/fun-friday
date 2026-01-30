@@ -1,0 +1,253 @@
+/* ============================================
+   THEMING - Color Variables & Material Overrides
+   ============================================ */
+
+/* Spotify Theme Variables */
+:root {
+  --spotify-primary: #1db954;
+  --spotify-primary-hover: #1ed760;
+  --spotify-accent: #ffffff;
+  --spotify-accent-hover: #f2f2f2;
+  --spotify-warn: #f44336;
+  --spotify-warn-hover: #e53935;
+  --spotify-black: #121212;
+  --spotify-dark-gray: #181818;
+  --spotify-gray: #282828;
+  --spotify-light-gray: #3e3e3e;
+  --spotify-green: #1db954;
+  --spotify-green-hover: #1ed760;
+  --spotify-white: #ffffff;
+  --spotify-gold: gold;
+  --spotify-gold-op-2: rgba(255, 215, 0, 0.2);
+  --spotify-gold-op-3: rgba(255, 215, 0, 0.3);
+  --spotify-silver: #c0c0c0;
+  --spotify-silver-op-2: rgba(192, 192, 192, 0.2);
+  --spotify-silver-op-3: rgba(192, 192, 192, 0.3);
+  --spotify-bronze: #cd7f32;
+  --spotify-bronze-op-2: rgba(205, 127, 50, 0.2);
+  --spotify-bronze-op-3: rgba(205, 127, 50, 0.3);
+  --spotify-text-gray: #b3b3b3;
+  --spotify-text-subdued: #a7a7a7;
+}
+
+body {
+  font-family: "Circular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--spotify-black);
+  min-height: 100vh;
+  color: var(--spotify-white);
+}
+
+/* Override Angular Material Theme Colors for Spotify */
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--spotify-green) !important;
+  color: var(--spotify-black) !important;
+  border-radius: 500px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 9px 24px !important;
+  font-size: 0.85rem !important;
+  transition: all 0.2s ease;
+}
+
+.mat-mdc-raised-button.mat-primary:hover {
+  background-color: var(--spotify-green-hover) !important;
+  transform: scale(1.04);
+}
+
+.mat-mdc-raised-button.mat-accent {
+  background-color: var(--spotify-white) !important;
+  color: var(--spotify-black) !important;
+  border-radius: 500px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 9px 24px !important;
+  font-size: 0.85rem !important;
+  transition: all 0.2s ease;
+}
+
+.mat-mdc-raised-button.mat-accent:hover {
+  transform: scale(1.04);
+}
+
+.mat-mdc-raised-button:disabled {
+  background-color: var(--spotify-light-gray) !important;
+  color: var(--spotify-text-gray) !important;
+}
+
+/* Stroked/Outlined Buttons - Spotify Style */
+.mat-mdc-outlined-button,
+.mat-mdc-stroked-button,
+button[mat-stroked-button] {
+  background-color: transparent !important;
+  color: var(--spotify-white) !important;
+  border: 2px solid var(--spotify-white) !important;
+  border-radius: 500px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 20px !important;
+  font-size: 0.8rem !important;
+  transition: all 0.2s ease;
+}
+
+.mat-mdc-outlined-button:hover,
+.mat-mdc-stroked-button:hover,
+button[mat-stroked-button]:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  transform: scale(1.04);
+}
+
+/* Icon Buttons - Spotify Style */
+.mat-mdc-icon-button {
+  color: var(--spotify-text-gray) !important;
+  transition: all 0.2s ease;
+}
+
+.mat-mdc-icon-button:hover {
+  color: var(--spotify-white) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Material Form Fields - Spotify Style */
+.mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: var(--spotify-light-gray);
+  --mdc-outlined-text-field-outline-color: var(--spotify-text-gray);
+  --mdc-outlined-text-field-hover-outline-color: var(--spotify-white);
+  --mdc-outlined-text-field-focus-outline-color: var(--spotify-green);
+  --mdc-outlined-text-field-label-text-color: var(--spotify-text-gray);
+  --mdc-outlined-text-field-hover-label-text-color: var(--spotify-white);
+  --mdc-outlined-text-field-focus-label-text-color: var(--spotify-green);
+  --mdc-outlined-text-field-input-text-color: var(--spotify-white);
+  --mdc-outlined-text-field-caret-color: var(--spotify-green);
+}
+
+.mat-mdc-form-field .mdc-text-field--outlined {
+  background: var(--spotify-light-gray) !important;
+  border-radius: 8px;
+}
+
+.mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__notch,
+.mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__trailing {
+  border-color: var(--spotify-text-gray) !important;
+  border-width: 1px !important;
+}
+
+.mat-mdc-form-field .mdc-text-field--outlined:hover .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-text-field--outlined:hover .mdc-notched-outline__notch,
+.mat-mdc-form-field .mdc-text-field--outlined:hover .mdc-notched-outline__trailing {
+  border-color: var(--spotify-white) !important;
+}
+
+.mat-mdc-form-field .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__notch,
+.mat-mdc-form-field
+  .mdc-text-field--outlined.mdc-text-field--focused
+  .mdc-notched-outline__trailing {
+  border-color: var(--spotify-green) !important;
+  border-width: 2px !important;
+}
+
+.mat-mdc-form-field .mdc-floating-label {
+  color: var(--spotify-text-gray) !important;
+}
+
+.mat-mdc-form-field .mdc-text-field--focused .mdc-floating-label {
+  color: var(--spotify-green) !important;
+}
+
+.mat-mdc-input-element {
+  color: var(--spotify-white) !important;
+}
+
+.mat-mdc-input-element::placeholder {
+  color: var(--spotify-text-subdued) !important;
+}
+
+/* Material Cards - Spotify Style */
+.mat-mdc-card {
+  background: var(--spotify-gray) !important;
+  color: var(--spotify-white) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  transition: background-color 0.3s ease;
+}
+
+.mat-mdc-card-title {
+  color: var(--spotify-white) !important;
+}
+
+.mat-mdc-card-subtitle {
+  color: var(--spotify-text-gray) !important;
+}
+
+/* Mat Select Dropdown Text Fix */
+.mat-mdc-select {
+  color: var(--spotify-white) !important;
+}
+
+.mat-mdc-select-value {
+  color: var(--spotify-white) !important;
+}
+
+.mat-mdc-select-arrow {
+  color: var(--spotify-text-gray) !important;
+}
+
+/* Mat Select Panel (Dropdown) Styling */
+.mat-mdc-select-panel {
+  background: var(--spotify-gray) !important;
+}
+
+.mat-mdc-option {
+  color: var(--spotify-white) !important;
+  background: var(--spotify-gray) !important;
+}
+
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: var(--spotify-light-gray) !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: rgba(29, 185, 84, 0.2) !important;
+  color: var(--spotify-green) !important;
+}
+
+.mat-mdc-option .mdc-list-item__primary-text {
+  color: inherit !important;
+}
+
+/* Additional Spotify-style enhancements */
+::selection {
+  background: var(--spotify-green);
+  color: var(--spotify-black);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--spotify-dark-gray);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--spotify-light-gray);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--spotify-text-gray);
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--spotify-green);
+  outline-offset: 2px;
+}

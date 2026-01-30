@@ -13,8 +13,8 @@
   (leaveGame)="leaveGame()"
   (exitGame)="exitGame()"
   (copyCode)="copyGameCode()"
-  (removePlayer)="removePlayer($event)">
-  
+  (removePlayer)="removePlayer($event)"
+>
   <!-- DRAWING STATE - Pictionary specific content -->
   @if ((game?.gameState === 'GUESSING' || game?.gameState === 'DRAWING') && roundInfo) {
     <div class="drawing-view">
@@ -35,7 +35,9 @@
       <div class="drawer-info" [class.you-drawing]="isDrawer()">
         @if (isDrawer()) {
           <mat-icon>brush</mat-icon>
-          <span>You are drawing: <strong>{{ roundInfo.wordToDraw }}</strong></span>
+          <span
+            >You are drawing: <strong>{{ roundInfo.wordToDraw }}</strong></span
+          >
         } @else {
           <mat-icon>visibility</mat-icon>
           <span>{{ roundInfo.drawerName }} is drawing...</span>
@@ -46,18 +48,20 @@
       <div class="pictionary-layout">
         <!-- Canvas Section -->
         <div class="canvas-section">
-          <canvas #drawingCanvas 
-                  width="600" 
-                  height="400"
-                  class="drawing-canvas"
-                  [class.drawing-mode]="isDrawer()"
-                  (mousedown)="startDrawing($event)"
-                  (mousemove)="draw($event)"
-                  (mouseup)="stopDrawing()"
-                  (mouseleave)="stopDrawing()"
-                  (touchstart)="startDrawing($event)"
-                  (touchmove)="draw($event)"
-                  (touchend)="stopDrawing()">
+          <canvas
+            #drawingCanvas
+            width="600"
+            height="400"
+            class="drawing-canvas"
+            [class.drawing-mode]="isDrawer()"
+            (mousedown)="startDrawing($event)"
+            (mousemove)="draw($event)"
+            (mouseup)="stopDrawing()"
+            (mouseleave)="stopDrawing()"
+            (touchstart)="startDrawing($event)"
+            (touchmove)="draw($event)"
+            (touchend)="stopDrawing()"
+          >
           </canvas>
 
           <!-- Drawing Tools (only for drawer) -->
@@ -65,18 +69,22 @@
             <div class="drawing-tools-panel">
               <!-- Undo/Redo Section -->
               <div class="tool-section undo-redo-section">
-                <button mat-icon-button 
-                        class="tool-btn"
-                        [disabled]="strokeHistory.length === 0"
-                        (click)="undo()"
-                        matTooltip="Undo (Ctrl+Z)">
+                <button
+                  mat-icon-button
+                  class="tool-btn"
+                  [disabled]="strokeHistory.length === 0"
+                  (click)="undo()"
+                  matTooltip="Undo (Ctrl+Z)"
+                >
                   <mat-icon>undo</mat-icon>
                 </button>
-                <button mat-icon-button 
-                        class="tool-btn"
-                        [disabled]="redoStack.length === 0"
-                        (click)="redo()"
-                        matTooltip="Redo (Ctrl+Y)">
+                <button
+                  mat-icon-button
+                  class="tool-btn"
+                  [disabled]="redoStack.length === 0"
+                  (click)="redo()"
+                  matTooltip="Redo (Ctrl+Y)"
+                >
                   <mat-icon>redo</mat-icon>
                 </button>
               </div>
@@ -89,26 +97,31 @@
                 <span class="section-label">Color</span>
                 <div class="color-palette">
                   @for (color of COLORS; track color) {
-                    <button class="color-btn" 
-                            [style.background-color]="color"
-                            [class.selected]="brushColor === color"
-                            [class.light-color]="color === '#FFFFFF' || color === '#FFEB3B'"
-                            (click)="brushColor = color"
-                            [matTooltip]="color">
-                    </button>
+                    <button
+                      class="color-btn"
+                      [style.background-color]="color"
+                      [class.selected]="brushColor === color"
+                      [class.light-color]="color === '#FFFFFF' || color === '#FFEB3B'"
+                      (click)="brushColor = color"
+                      [matTooltip]="color"
+                    ></button>
                   }
                   <!-- Custom Color Picker -->
-                  <button class="color-btn color-picker-btn"
-                          [style.background]="'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)'"
-                          (click)="openColorPicker()"
-                          matTooltip="Custom color">
+                  <button
+                    class="color-btn color-picker-btn"
+                    [style.background]="'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)'"
+                    (click)="openColorPicker()"
+                    matTooltip="Custom color"
+                  >
                     <mat-icon class="picker-icon">colorize</mat-icon>
                   </button>
-                  <input #colorPickerInput 
-                         type="color" 
-                         class="hidden-color-input"
-                         [value]="brushColor"
-                         (change)="onCustomColorChange($event)">
+                  <input
+                    #colorPickerInput
+                    type="color"
+                    class="hidden-color-input"
+                    [value]="brushColor"
+                    (change)="onCustomColorChange($event)"
+                  />
                 </div>
               </div>
 
@@ -119,13 +132,14 @@
               <div class="tool-section size-section">
                 <span class="section-label">Brush Size</span>
                 <div class="brush-size-control">
-                  <div class="size-preview" 
-                       [style.width.px]="brushSize" 
-                       [style.height.px]="brushSize"
-                       [style.background-color]="brushColor">
-                  </div>
+                  <div
+                    class="size-preview"
+                    [style.width.px]="brushSize"
+                    [style.height.px]="brushSize"
+                    [style.background-color]="brushColor"
+                  ></div>
                   <mat-slider min="1" max="30" step="1" class="size-slider">
-                    <input matSliderThumb [(ngModel)]="brushSize">
+                    <input matSliderThumb [(ngModel)]="brushSize" />
                   </mat-slider>
                   <span class="size-value">{{ brushSize }}px</span>
                 </div>
@@ -136,10 +150,12 @@
 
               <!-- Clear Canvas -->
               <div class="tool-section">
-                <button mat-icon-button 
-                        class="tool-btn clear-btn" 
-                        (click)="clearCanvasAction()" 
-                        matTooltip="Clear canvas">
+                <button
+                  mat-icon-button
+                  class="tool-btn clear-btn"
+                  (click)="clearCanvasAction()"
+                  matTooltip="Clear canvas"
+                >
                   <mat-icon>delete_forever</mat-icon>
                 </button>
               </div>
@@ -157,15 +173,18 @@
               <mat-card-content>
                 @if (!hasGuessed) {
                   <div class="guess-input-section">
-                    <mat-form-field appearance="outline" class="word-guess-input">
+                    <mat-form-field appearance="outline" class="word-guess-input" subscriptSizing="dynamic">
                       <mat-label>Your Guess</mat-label>
-                      <input matInput type="text" [(ngModel)]="guessValue" 
-                             (keyup.enter)="submitGuess()"
-                             autocomplete="off"
-                             spellcheck="false">
+                      <input
+                        matInput
+                        type="text"
+                        [(ngModel)]="guessValue"
+                        (keyup.enter)="submitGuess()"
+                        autocomplete="off"
+                        spellcheck="false"
+                      />
                     </mat-form-field>
-                    <button mat-raised-button color="primary" (click)="submitGuess()" 
-                            [disabled]="!guessValue.trim()">
+                    <button mat-raised-button color="primary" (click)="submitGuess()" [disabled]="!guessValue.trim()">
                       Guess
                     </button>
                   </div>
@@ -196,10 +215,12 @@
         <h4>Players:</h4>
         <div class="guess-status-list">
           @for (player of game!.players; track player.name) {
-            <span class="guess-status" 
-                  [class.drawing]="player.name === roundInfo!.drawerName"
-                  [class.correct]="hasPlayerGuessedCorrectly(player.name)"
-                  [class.guessing]="hasPlayerAnswered(player.name) && !hasPlayerGuessedCorrectly(player.name)">
+            <span
+              class="guess-status"
+              [class.drawing]="player.name === roundInfo!.drawerName"
+              [class.correct]="hasPlayerGuessedCorrectly(player.name)"
+              [class.guessing]="hasPlayerAnswered(player.name) && !hasPlayerGuessedCorrectly(player.name)"
+            >
               <span class="status-avatar">{{ player.avatar || '👤' }}</span>
               {{ player.name }}
               @if (player.name === roundInfo!.drawerName) {
@@ -218,11 +239,11 @@
 
   <!-- ROUND RESULT STATE (Turn Result) -->
   @if (game?.gameState === 'ROUND_RESULT' && roundInfo) {
-    <div class="result-content">
+    <div class="round-result-content">
       <div class="turn-result-header">
         <span class="turn-label">Turn {{ currentTurn }} of {{ totalTurns }} Complete</span>
       </div>
-      
+
       <div class="target-reveal">
         <span class="target-label">The word was:</span>
         <span class="target-word">{{ roundInfo.wordToDraw }}</span>
@@ -232,12 +253,12 @@
         <mat-card-header>
           @if (roundInfo.correctGuesser) {
             <mat-card-title>
-              <mat-icon class="winner-icon">celebration</mat-icon> 
+              <mat-icon class="winner-icon">celebration</mat-icon>
               {{ roundInfo.correctGuesser }} guessed it first!
             </mat-card-title>
           } @else {
             <mat-card-title>
-              <mat-icon class="no-winner-icon">sentiment_dissatisfied</mat-icon> 
+              <mat-icon class="no-winner-icon">sentiment_dissatisfied</mat-icon>
               No one guessed the word!
             </mat-card-title>
           }
@@ -275,5 +296,4 @@
       </mat-card>
     </div>
   }
-  
 </app-game-layout>

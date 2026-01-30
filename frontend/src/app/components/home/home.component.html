@@ -7,13 +7,22 @@
     <div class="join-section">
       <h2>Join an Existing Game</h2>
       <div class="join-input-row">
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Game Code</mat-label>
-          <input matInput placeholder="Enter 6-character code" [(ngModel)]="gameCode"
-                 maxlength="6" style="text-transform: uppercase;">
+          <input
+            matInput
+            placeholder="6-character code"
+            [(ngModel)]="gameCode"
+            maxlength="6"
+            style="text-transform: uppercase"
+          />
         </mat-form-field>
-        <button mat-raised-button color="accent" (click)="goToJoinSetup()"
-                [disabled]="!gameCode.trim() || gameCode.trim().length < 6">
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="goToJoinSetup()"
+          [disabled]="!gameCode.trim() || gameCode.trim().length < 6"
+        >
           <mat-icon>login</mat-icon>
           Join Game
         </button>
@@ -32,9 +41,7 @@
         <p class="hint-text">Click a game card to start hosting</p>
         <div class="game-types-grid">
           @for (gameType of gameTypes; track gameType.id) {
-            <mat-card matRipple class="game-type-card"
-                      [class.selected]="selectedGameType?.id === gameType.id"
-                      (click)="selectGameType(gameType)">
+            <mat-card matRipple class="game-type-card" (click)="selectGameType(gameType)">
               <mat-card-header>
                 <span class="game-icon">{{ gameType.icon }}</span>
                 <mat-card-title>{{ gameType.name }}</mat-card-title>

@@ -1,0 +1,111 @@
+/* ============================================
+   UTILITY - Global Utility Classes and Icons
+   ============================================ */
+
+/* Global Utility Classes */
+.full-width {
+  width: 100%;
+}
+
+/* Global Error Message */
+.error-message {
+  background: #e22134;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-top: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+/* Material Icon Styles */
+.title-icon {
+  vertical-align: middle;
+  font-size: 2.5rem !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  margin-right: 8px;
+  color: var(--spotify-green);
+}
+
+.pulse-animation {
+  font-size: 5rem;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.pulse-icon {
+  font-size: 4rem !important;
+  width: 4rem !important;
+  height: 4rem !important;
+  color: var(--spotify-green);
+}
+
+.loading-spinner-large {
+  font-size: 4rem !important;
+  width: 4rem !important;
+  height: 4rem !important;
+  color: var(--spotify-green);
+  animation: spin 1.5s linear infinite;
+}
+
+.error-icon {
+  font-size: 6rem !important;
+  width: 6rem !important;
+  height: 6rem !important;
+  color: var(--spotify-text-gray);
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+/* Avatar Styles */
+.player-avatar,
+.status-avatar,
+.result-avatar,
+.score-avatar {
+  font-size: 1.5rem;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.status-avatar {
+  font-size: 1.2rem;
+  margin-right: 4px;
+}
+
+.score-avatar {
+  font-size: 1.2rem;
+  margin-right: 8px;
+}
+
+.result-avatar {
+  font-size: 1.3rem;
+  margin-right: 10px;
+}
+
+/* Player indicator badge */
+.indicator-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  background: var(--spotify-green);
+  color: var(--spotify-black);
+  border-radius: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .action-card {
+    width: 100%;
+  }
+}

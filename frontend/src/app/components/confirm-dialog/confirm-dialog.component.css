@@ -1,0 +1,42 @@
+.confirm-dialog {
+  padding: 8px;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.dialog-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.dialog-icon.warn {
+  color: var(--spotify-warn);
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--spotify-gray);
+}
+
+mat-dialog-content {
+  color: var(--spotify-text-gray, #b3b3b3);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+mat-dialog-actions {
+  padding-top: 16px;
+  gap: 5px;
+}
+
+::ng-deep .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: var(--spotify-dark);
+}

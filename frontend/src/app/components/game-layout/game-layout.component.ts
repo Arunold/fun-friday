@@ -1,7 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Game } from '../../models';
@@ -16,6 +16,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 @Component({
   selector: 'app-game-layout',
   templateUrl: './game-layout.component.html',
+  styleUrls: ['./game-layout.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -24,8 +25,8 @@ import { NavbarComponent } from '../navbar/navbar.component';
     MatIconModule,
     MatTooltipModule,
     OrderByPipe,
-    NavbarComponent
-  ]
+    NavbarComponent,
+  ],
 })
 export class GameLayoutComponent {
   @Input() game!: Game;
@@ -37,10 +38,10 @@ export class GameLayoutComponent {
   @Input() countdown = 0;
   @Input() roundTimer = 0;
   @Input() gameIcon = 'casino';
-  
+
   /** Controls whether to show the sidebar during gameplay. Default true. */
   @Input() showSidebar = true;
-  
+
   /** Controls whether to show the round header in main content area. Default false (layout handles it). */
   @Input() showRoundHeader = true;
 

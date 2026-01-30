@@ -1,100 +1,107 @@
 <!-- Navbar Component - handles its own state from sessionStorage -->
 @if (!isLoading && game) {
-<app-navbar 
+  <app-navbar
     [gameTypeName]="game.gameTypeName"
     [gameId]="gameId"
     [showGameCode]="true"
     [showExitOptions]="false"
-    [showHomeButton]="true">
-</app-navbar>
+    [showHomeButton]="true"
+  >
+  </app-navbar>
 }
 
 <div class="finished-view">
-    @if (isLoading) {
+  @if (isLoading) {
     <div class="loading-view">
-        <mat-icon class="loading-spinner">hourglass_empty</mat-icon>
-        <h2>Loading results...</h2>
+      <mat-icon class="loading-spinner">hourglass_empty</mat-icon>
+      <h2>Loading results...</h2>
     </div>
-    }
+  }
 
-    @if (!isLoading && game) {
+  @if (!isLoading && game) {
     <!-- Winner Announcement -->
     <div class="winner-section">
-        <div class="trophy-container">
-            <div class="trophy-glow"></div>
-            <mat-icon class="trophy-icon">emoji_events</mat-icon>
-        </div>
-
+      <div class="flex items-end">
         <h1 class="game-over-title">Game Over!</h1>
-
-        <div class="winner-card">
-            <span class="winner-label">Winner</span>
-            <h2 class="winner-name">{{ getWinner() }}</h2>
-            <span class="winner-score">{{ getWinnerScore() }} points</span>
-        </div>
+        <mat-icon class="trophy-icon">emoji_events</mat-icon>
+      </div>
+      <div class="winner-card">
+        <span class="winner-label">Winner</span>
+        <h2 class="winner-name">{{ getWinner() }}</h2>
+        <span class="winner-score">{{ getWinnerScore() }} points</span>
+      </div>
     </div>
 
     <!-- Final Leaderboard -->
     <mat-card class="leaderboard-card">
-        <mat-card-header>
-            <mat-card-title>
-                <mat-icon>leaderboard</mat-icon>
-                Final Standings
-            </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            <div class="leaderboard-list">
-                @for (player of game.players | orderBy:'score':'desc'; track player.name; let i = $index) {
-                <div class="leaderboard-item" [class.current-player]="player.name === playerName"
-                    [class.first]="i === 0" [class.second]="i === 1" [class.third]="i === 2">
-                    <div class="rank-section">
-                        <span class="rank">{{ i + 1 }}</span>
-                        @if (i < 3) { <span class="rank-emoji">{{ getRankIcon(i) }}</span>
-                            }
-                    </div>
-                    <span class="player-avatar">{{ player.avatar || '👤' }}</span>
-                    <div class="player-info">
-                        <span class="player-name">{{ player.name }}</span>
-                        @if (player.name === playerName) {
-                        <span class="you-badge">You</span>
-                        }
-                    </div>
-                    <div class="score-section">
-                        <span class="player-score">{{ player.score }}</span>
-                        <span class="points-label">pts</span>
-                    </div>
-                </div>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>leaderboard</mat-icon>
+          Final Standings
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="leaderboard-list">
+          @for (player of game.players | orderBy: 'score' : 'desc'; track player.name; let i = $index) {
+            <div
+              class="leaderboard-item"
+              [class.current-player]="player.name === playerName"
+              [class.first]="i === 0"
+              [class.second]="i === 1"
+              [class.third]="i === 2"
+            >
+              <div class="rank-section">
+                <span class="rank">{{ i + 1 }}</span>
+                @if (i < 3) {
+                  <span class="rank-emoji">{{ getRankIcon(i) }}</span>
                 }
+              </div>
+              <span class="player-avatar">{{ player.avatar || '👤' }}</span>
+              <div class="player-info">
+                <span class="player-name">{{ player.name }}</span>
+                @if (player.name === playerName) {
+                  <span class="indicator-badge">You</span>
+                }
+                @if (isHost && player.name === game.host) {
+                  <span class="indicator-badge">Host</span>
+                }
+              </div>
+              <div class="score-section">
+                <span class="player-score">{{ player.score }}</span>
+                <span class="points-label">pts</span>
+              </div>
             </div>
-        </mat-card-content>
+          }
+        </div>
+      </mat-card-content>
     </mat-card>
 
     <!-- Action Buttons -->
     <div class="action-buttons">
-        @if (isHost) {
+      @if (isHost) {
         <button mat-raised-button color="primary" (click)="playAgain()" class="play-again-btn">
-            <mat-icon>replay</mat-icon>
-            Play Again
+          <mat-icon>replay</mat-icon>
+          Play Again
         </button>
-        } @else {
+      } @else {
         <p class="waiting-host">Waiting for host to start a new game...</p>
-        }
+      }
     </div>
 
     <!-- Game Stats -->
     <div class="game-stats">
-        <div class="stat-item">
-            <mat-icon>sports_esports</mat-icon>
-            <span>{{ game.gameTypeName }}</span>
-        </div>
-        <div class="stat-item">
-            <mat-icon>loop</mat-icon>
-            <span>{{ game.totalRounds }} Rounds</span>
-        </div>
-        <div class="stat-item">
-            <mat-icon>group</mat-icon>
-            <span>{{ game.players.length }} Players</span>
-        </div>
+      <div class="stat-item">
+        <mat-icon>sports_esports</mat-icon>
+        <span>{{ game.gameTypeName }}</span>
+      </div>
+      <div class="stat-item">
+        <mat-icon>loop</mat-icon>
+        <span>{{ game.totalRounds }} Rounds</span>
+      </div>
+      <div class="stat-item">
+        <mat-icon>group</mat-icon>
+        <span>{{ game.players.length }} Players</span>
+      </div>
     </div>
-    }
+  }
 </div>

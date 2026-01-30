@@ -10,24 +10,28 @@
 
 @if (!isLoading && game) {
   <!-- Navbar Component - handles its own state from sessionStorage -->
-  <app-navbar 
+  <app-navbar
     [gameTypeName]="game.gameTypeName"
     [gameId]="gameId"
     [showGameCode]="game.gameState !== 'LOBBY' && game.gameState !== 'STARTING'"
     [showExitOptions]="true"
-    [showHomeButton]="false">
+    [showHomeButton]="false"
+  >
   </app-navbar>
 
   <div class="game-container with-header">
-    
     <!-- LOBBY STATE -->
     @if (game.gameState === 'LOBBY') {
       <div class="lobby-view">
         <div class="lobby-header">
-          <h1><mat-icon class="title-icon">{{ gameIcon }}</mat-icon> {{ game.gameTypeName }}</h1>
+          <h1>
+            <mat-icon class="title-icon">{{ gameIcon }}</mat-icon> {{ game.gameTypeName }}
+          </h1>
           <div class="game-code-display">
             <span class="label">Game Code:</span>
-            <span class="code" tabindex="0" role="button" (click)="onCopyCode()" (keydown.enter)="onCopyCode()">{{ gameId }}</span>
+            <span class="code" tabindex="0" role="button" (click)="onCopyCode()" (keydown.enter)="onCopyCode()">{{
+              gameId
+            }}</span>
             <button mat-icon-button (click)="onCopyCode()" title="Copy code">
               <mat-icon>content_copy</mat-icon>
             </button>
@@ -46,16 +50,19 @@
                   <span class="player-avatar">{{ player.avatar || '👤' }}</span>
                   <span class="player-name">{{ player.name }}</span>
                   @if (player.name === playerName) {
-                    <span class="you-badge">You</span>
+                    <span class="indicator-badge">You</span>
                   }
                   @if (player.name === game.host) {
-                    <span class="host-badge">HOST</span>
+                    <span class="indicator-badge">HOST</span>
                   }
                   @if (isHost && player.name !== game.host) {
-                    <button mat-icon-button 
-                            class="remove-player-btn"
-                            matTooltip="Remove player"
-                            (click)="onRemovePlayer(player.name)">
+                    <button
+                      matMiniFab
+                      matTooltip="Remove player"
+                      class="remove-player-btn"
+                      color="secondary"
+                      (click)="onRemovePlayer(player.name)"
+                    >
                       <mat-icon>person_remove</mat-icon>
                     </button>
                   }
@@ -65,8 +72,7 @@
           </mat-card-content>
           @if (isHost) {
             <mat-card-actions>
-              <button mat-raised-button color="primary" (click)="onStartGame()" 
-                      [disabled]="game.players.length < 2">
+              <button mat-raised-button color="primary" (click)="onStartGame()" [disabled]="game.players.length < 2">
                 Start Game
               </button>
             </mat-card-actions>
@@ -114,11 +120,11 @@
               }
             </div>
           }
-          
+
           <!-- Game-specific content slot -->
           <ng-content></ng-content>
         </div>
-        
+
         <!-- Sidebar with scores -->
         @if (showSidebar) {
           <div class="sidebar">
@@ -128,19 +134,21 @@
               </mat-card-header>
               <mat-card-content>
                 <div class="scores-list">
-                  @for (player of game.players | orderBy:'score':'desc'; track player.name) {
+                  @for (player of game.players | orderBy: 'score' : 'desc'; track player.name) {
                     <div class="score-item" [class.current-player]="player.name === playerName">
                       <span class="score-avatar">{{ player.avatar || '👤' }}</span>
                       <span class="player-name">{{ player.name }}</span>
                       @if (player.name === playerName) {
-                        <span class="you-badge">You</span>
+                        <span class="indicator-badge">You</span>
                       }
                       <span class="player-score">{{ player.score }}</span>
                       @if (isHost && player.name !== game.host) {
-                        <button mat-icon-button 
-                                class="remove-player-btn-small"
-                                matTooltip="Remove player"
-                                (click)="onRemovePlayer(player.name)">
+                        <button
+                          mat-icon-button
+                          class="remove-player-btn-small"
+                          matTooltip="Remove player"
+                          (click)="onRemovePlayer(player.name)"
+                        >
                           <mat-icon>person_remove</mat-icon>
                         </button>
                       }

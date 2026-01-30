@@ -1,0 +1,161 @@
+/* ============================================
+   COMMON REUSABLE STYLES
+   Shared across multiple components
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes shimmer-text-animation {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes countdown-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 10px 40px rgba(29, 185, 84, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 15px 50px rgba(29, 185, 84, 0.6);
+  }
+}
+
+@keyframes winnerShine {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(255, 215, 0, 0.5),
+      0 0 20px rgba(255, 215, 0, 0.3);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes timer-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Round Timer */
+.round-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--spotify-gray);
+  padding: 5px 10px;
+  border-radius: 500px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--spotify-white);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.round-timer mat-icon {
+  font-size: 1.1rem;
+  width: 20px;
+  height: 20px;
+  color: var(--spotify-green);
+}
+
+.round-timer.warning {
+  background: var(--spotify-gray);
+  color: #ffa42b;
+  animation: timer-pulse 1s ease-in-out infinite;
+}
+
+.round-timer.warning mat-icon {
+  color: #ffa42b;
+}
+
+.round-timer.critical {
+  background: var(--spotify-gray);
+  color: #e22134;
+  animation: timer-pulse 0.5s ease-in-out infinite;
+}
+
+.round-timer.critical mat-icon {
+  color: #e22134;
+}
+
+.round-result-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.round-result-content .target-reveal {
+  text-align: center;
+  margin: 10px auto;
+}
+
+.round-result-content .target-label {
+  display: block;
+  font-size: 1rem;
+  color: var(--spotify-text-gray);
+}
+
+.round-result-content .target-word {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--spotify-green);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+/* ============================================
+   END OF COMMON REUSABLE STYLES
+   ============================================ */

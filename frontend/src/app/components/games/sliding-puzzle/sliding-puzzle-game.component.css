@@ -209,19 +209,9 @@
 }
 
 /* Results */
-.result-content {
+.round-result-content {
   max-width: 600px;
   margin: 0 auto;
-}
-
-.results-card {
-  margin-bottom: 1.5rem;
-}
-
-.results-card mat-card-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .winner-icon {

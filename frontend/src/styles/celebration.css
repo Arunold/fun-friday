@@ -1,0 +1,442 @@
+/* ============================================
+   DIWALI FIREWORKS CELEBRATION
+   Rockets shooting up and exploding
+   ============================================ */
+
+/* Container setup */
+.finished-view {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #0a0a1a 0%, #121212 100%);
+}
+
+/* Ensure content stays above fireworks */
+.finished-view > * {
+  position: relative;
+  z-index: 10;
+}
+
+/* ============================================
+   FIREWORK ROCKETS - Shooting up trails
+   ============================================ */
+
+/* Rocket 1 - Gold */
+.finished-view .firework-1,
+.finished-view::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 15%;
+  width: 4px;
+  height: 4px;
+  background: var(--spotify-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 6px 2px rgba(255, 215, 0, 0.6);
+  animation: rocket-launch 3s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* Rocket 2 - Pink */
+.finished-view::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 25%;
+  width: 4px;
+  height: 4px;
+  background: #ff69b4;
+  border-radius: 50%;
+  box-shadow: 0 0 6px 2px rgba(255, 105, 180, 0.6);
+  animation: rocket-launch-2 3.5s ease-in-out infinite 0.5s;
+  z-index: 1;
+}
+
+/* Rocket launch animation */
+@keyframes rocket-launch {
+  0% {
+    bottom: -10px;
+    opacity: 1;
+    transform: scale(1);
+    box-shadow:
+      0 0 6px 2px rgba(255, 215, 0, 0.8),
+      0 10px 4px rgba(255, 215, 0, 0.6),
+      0 20px 4px rgba(255, 165, 0, 0.4),
+      0 30px 3px rgba(255, 140, 0, 0.3),
+      0 40px 2px rgba(255, 100, 0, 0.2);
+  }
+  40% {
+    bottom: 65%;
+    opacity: 1;
+    transform: scale(1);
+    box-shadow:
+      0 0 6px 2px rgba(255, 215, 0, 0.8),
+      0 10px 4px rgba(255, 215, 0, 0.6),
+      0 20px 4px rgba(255, 165, 0, 0.4),
+      0 30px 3px rgba(255, 140, 0, 0.3),
+      0 40px 2px rgba(255, 100, 0, 0.2);
+  }
+  45% {
+    bottom: 70%;
+    opacity: 1;
+    transform: scale(2);
+    box-shadow: 
+            /* Explosion burst */
+      0 0 20px 10px rgba(255, 215, 0, 1),
+      -40px -40px 0 3px #ffd700,
+      40px -40px 0 3px #ffa500,
+      -40px 40px 0 3px #ff8c00,
+      40px 40px 0 3px #ffd700,
+      0 -55px 0 3px #ffff00,
+      0 55px 0 3px #ffa500,
+      -55px 0 0 3px #ffd700,
+      55px 0 0 3px #ff8c00,
+      -30px -50px 0 2px #ffd700,
+      30px -50px 0 2px #ffa500,
+      -50px -30px 0 2px #ff8c00,
+      50px -30px 0 2px #ffd700,
+      -30px 50px 0 2px #ffff00,
+      30px 50px 0 2px #ffa500,
+      -50px 30px 0 2px #ffd700,
+      50px 30px 0 2px #ff8c00;
+  }
+  70% {
+    bottom: 70%;
+    opacity: 0.8;
+    transform: scale(1.5);
+    box-shadow:
+      0 0 30px 15px rgba(255, 215, 0, 0.4),
+      -70px -70px 0 2px rgba(255, 215, 0, 0.6),
+      70px -70px 0 2px rgba(255, 165, 0, 0.6),
+      -70px 70px 0 2px rgba(255, 140, 0, 0.6),
+      70px 70px 0 2px rgba(255, 215, 0, 0.6),
+      0 -90px 0 2px rgba(255, 255, 0, 0.5),
+      0 90px 0 2px rgba(255, 165, 0, 0.5),
+      -90px 0 0 2px rgba(255, 215, 0, 0.5),
+      90px 0 0 2px rgba(255, 140, 0, 0.5),
+      -50px -80px 0 1px rgba(255, 215, 0, 0.4),
+      50px -80px 0 1px rgba(255, 165, 0, 0.4),
+      -80px -50px 0 1px rgba(255, 140, 0, 0.4),
+      80px -50px 0 1px rgba(255, 215, 0, 0.4),
+      -50px 80px 0 1px rgba(255, 255, 0, 0.4),
+      50px 80px 0 1px rgba(255, 165, 0, 0.4),
+      -80px 50px 0 1px rgba(255, 215, 0, 0.4),
+      80px 50px 0 1px rgba(255, 140, 0, 0.4);
+  }
+  100% {
+    bottom: 70%;
+    opacity: 0;
+    transform: scale(0.5);
+    box-shadow:
+      0 0 0 0 transparent,
+      -100px -100px 0 0 transparent,
+      100px -100px 0 0 transparent,
+      -100px 100px 0 0 transparent,
+      100px 100px 0 0 transparent,
+      0 -120px 0 0 transparent,
+      0 120px 0 0 transparent,
+      -120px 0 0 0 transparent,
+      120px 0 0 0 transparent,
+      -70px -110px 0 0 transparent,
+      70px -110px 0 0 transparent,
+      -110px -70px 0 0 transparent,
+      110px -70px 0 0 transparent,
+      -70px 110px 0 0 transparent,
+      70px 110px 0 0 transparent,
+      -110px 70px 0 0 transparent,
+      110px 70px 0 0 transparent;
+  }
+}
+
+/* Rocket 2 - Pink/Purple explosion */
+@keyframes rocket-launch-2 {
+  0% {
+    bottom: -10px;
+    opacity: 1;
+    transform: scale(1);
+    box-shadow:
+      0 0 6px 2px rgba(255, 105, 180, 0.8),
+      0 10px 4px rgba(255, 105, 180, 0.6),
+      0 20px 4px rgba(218, 112, 214, 0.4),
+      0 30px 3px rgba(186, 85, 211, 0.3),
+      0 40px 2px rgba(148, 0, 211, 0.2);
+  }
+  40% {
+    bottom: 55%;
+    opacity: 1;
+    transform: scale(1);
+    box-shadow:
+      0 0 6px 2px rgba(255, 105, 180, 0.8),
+      0 10px 4px rgba(255, 105, 180, 0.6),
+      0 20px 4px rgba(218, 112, 214, 0.4),
+      0 30px 3px rgba(186, 85, 211, 0.3),
+      0 40px 2px rgba(148, 0, 211, 0.2);
+  }
+  45% {
+    bottom: 60%;
+    opacity: 1;
+    transform: scale(2);
+    box-shadow:
+      0 0 20px 10px rgba(255, 105, 180, 1),
+      -40px -40px 0 3px #ff69b4,
+      40px -40px 0 3px #da70d6,
+      -40px 40px 0 3px #ba55d3,
+      40px 40px 0 3px #ff69b4,
+      0 -55px 0 3px #ff1493,
+      0 55px 0 3px #da70d6,
+      -55px 0 0 3px #ff69b4,
+      55px 0 0 3px #ba55d3,
+      -30px -50px 0 2px #ff69b4,
+      30px -50px 0 2px #da70d6,
+      -50px -30px 0 2px #ba55d3,
+      50px -30px 0 2px #ff69b4,
+      -30px 50px 0 2px #ff1493,
+      30px 50px 0 2px #da70d6,
+      -50px 30px 0 2px #ff69b4,
+      50px 30px 0 2px #ba55d3;
+  }
+  70% {
+    bottom: 60%;
+    opacity: 0.8;
+    transform: scale(1.5);
+    box-shadow:
+      0 0 30px 15px rgba(255, 105, 180, 0.4),
+      -70px -70px 0 2px rgba(255, 105, 180, 0.6),
+      70px -70px 0 2px rgba(218, 112, 214, 0.6),
+      -70px 70px 0 2px rgba(186, 85, 211, 0.6),
+      70px 70px 0 2px rgba(255, 105, 180, 0.6),
+      0 -90px 0 2px rgba(255, 20, 147, 0.5),
+      0 90px 0 2px rgba(218, 112, 214, 0.5),
+      -90px 0 0 2px rgba(255, 105, 180, 0.5),
+      90px 0 0 2px rgba(186, 85, 211, 0.5),
+      -50px -80px 0 1px rgba(255, 105, 180, 0.4),
+      50px -80px 0 1px rgba(218, 112, 214, 0.4),
+      -80px -50px 0 1px rgba(186, 85, 211, 0.4),
+      80px -50px 0 1px rgba(255, 105, 180, 0.4),
+      -50px 80px 0 1px rgba(255, 20, 147, 0.4),
+      50px 80px 0 1px rgba(218, 112, 214, 0.4),
+      -80px 50px 0 1px rgba(255, 105, 180, 0.4),
+      80px 50px 0 1px rgba(186, 85, 211, 0.4);
+  }
+  100% {
+    bottom: 60%;
+    opacity: 0;
+    transform: scale(0.5);
+    box-shadow:
+      0 0 0 0 transparent,
+      -100px -100px 0 0 transparent,
+      100px -100px 0 0 transparent,
+      -100px 100px 0 0 transparent,
+      100px 100px 0 0 transparent,
+      0 -120px 0 0 transparent,
+      0 120px 0 0 transparent,
+      -120px 0 0 0 transparent,
+      120px 0 0 0 transparent,
+      -70px -110px 0 0 transparent,
+      70px -110px 0 0 transparent,
+      -110px -70px 0 0 transparent,
+      110px -70px 0 0 transparent,
+      -70px 110px 0 0 transparent,
+      70px 110px 0 0 transparent,
+      -110px 70px 0 0 transparent,
+      110px 70px 0 0 transparent;
+  }
+}
+
+/* ============================================
+   ADDITIONAL FIREWORKS - More variety
+   ============================================ */
+
+/* Extra firework elements using gradients */
+.finished-view {
+  --fw-green: #1db954;
+  --fw-blue: #00d4ff;
+  --fw-red: #ff4500;
+  --fw-cyan: #00ffff;
+}
+
+/* Sparkle overlay */
+.finished-view {
+  background-image:
+        /* Twinkling stars */
+    radial-gradient(circle at 5% 15%, #fff 1px, transparent 1px),
+    radial-gradient(circle at 15% 8%, #ffd700 1px, transparent 1px),
+    radial-gradient(circle at 25% 20%, #fff 1px, transparent 1px),
+    radial-gradient(circle at 35% 5%, #ff69b4 1px, transparent 1px),
+    radial-gradient(circle at 45% 18%, #fff 1px, transparent 1px),
+    radial-gradient(circle at 55% 10%, #00d4ff 1px, transparent 1px),
+    radial-gradient(circle at 65% 22%, #fff 1px, transparent 1px),
+    radial-gradient(circle at 75% 6%, #1db954 1px, transparent 1px),
+    radial-gradient(circle at 85% 15%, #fff 1px, transparent 1px),
+    radial-gradient(circle at 95% 12%, #ffd700 1px, transparent 1px),
+    radial-gradient(circle at 10% 88%, #fff 1px, transparent 1px),
+    radial-gradient(circle at 90% 85%, #ff69b4 1px, transparent 1px),
+    /* Dark sky gradient */ linear-gradient(to bottom, #0a0a1a 0%, #121212 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  animation: stars-twinkle 2s ease-in-out infinite alternate;
+}
+
+@keyframes stars-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ============================================
+   WINNER CELEBRATION ENHANCEMENTS
+   ============================================ */
+
+/* Winner announcement pop animation */
+.winner-announcement {
+  animation: celebrationPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes celebrationPop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Winner display glow and float */
+.winner-display {
+  animation:
+    winnerGlow 2s ease-in-out infinite alternate,
+    winnerFloat 3s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes winnerGlow {
+  0% {
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(29, 185, 84, 0.3),
+      0 0 60px rgba(29, 185, 84, 0.2);
+  }
+  100% {
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.3),
+      0 0 50px rgba(29, 185, 84, 0.5),
+      0 0 100px rgba(29, 185, 84, 0.3),
+      0 0 150px rgba(255, 215, 0, 0.2);
+  }
+}
+
+@keyframes winnerFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Trophy spin and bounce */
+.trophy-display {
+  animation:
+    trophySpin 1s ease-out,
+    trophyBounce 2s ease-in-out infinite 1s;
+}
+
+@keyframes trophySpin {
+  0% {
+    transform: rotateY(0deg) scale(0);
+  }
+  50% {
+    transform: rotateY(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotateY(360deg) scale(1);
+  }
+}
+
+@keyframes trophyBounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Winner leaderboard highlight */
+.leaderboard-item.winner {
+  animation: winnerHighlight 1.5s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.leaderboard-item.winner::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.15) 50%, transparent 70%);
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes winnerHighlight {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px rgba(29, 185, 84, 0.3),
+      inset 0 0 20px rgba(29, 185, 84, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 25px rgba(29, 185, 84, 0.5),
+      0 0 50px rgba(255, 215, 0, 0.3),
+      inset 0 0 30px rgba(29, 185, 84, 0.2);
+  }
+}
+
+/* Gold medal shine */
+.medal.gold {
+  animation: medalShine 2s ease-in-out infinite;
+}
+
+@keyframes medalShine {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+    transform: scale(1.15);
+  }
+}
+
+/* Winner name gradient text */
+.winner-display h2 {
+  background: linear-gradient(90deg, #1db954, #ffd700, #1db954);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientText 3s linear infinite;
+}
+
+@keyframes gradientText {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}

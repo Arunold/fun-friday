@@ -10,8 +10,8 @@
 .setup-card {
   background: var(--spotify-dark-gray);
   border-radius: 16px;
-  padding: 40px;
-  max-width: 500px;
+  padding: 20px;
+  max-width: 600px;
   width: 100%;
   position: relative;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
@@ -20,8 +20,12 @@
 
 .setup-card h2 {
   color: var(--spotify-white);
-  font-size: 1.8rem;
-  margin-bottom: 30px;
+  font-size: 1.5rem;
+  margin: 15px auto;
+}
+
+.setup-card mat-form-field {
+  margin-bottom: 15px;
 }
 
 .back-btn {
@@ -39,11 +43,11 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   border-radius: 30px;
-  padding: 10px 20px;
-  margin-bottom: 20px;
+  padding: 5px 10px;
   font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .host-badge {
@@ -70,55 +74,161 @@
 
 /* Avatar Selector */
 .avatar-selector {
-  cursor: pointer;
-  margin-bottom: 25px;
+  margin-bottom: 10px;
   transition: transform 0.2s ease;
 }
 
-.avatar-selector:hover {
+.avatar-selector .avatar-display:hover {
   transform: scale(1.05);
-}
-
-.avatar-selector:hover .avatar-display {
   border-color: var(--spotify-green);
   box-shadow: 0 0 30px rgba(29, 185, 84, 0.4);
 }
 
 .avatar-display {
-  width: 120px;
-  height: 120px;
+  cursor: pointer;
+  width: 90px;
+  height: 90px;
+  font-size: 90px;
   border-radius: 50%;
   background: var(--spotify-gray);
-  border: 4px solid var(--spotify-light-gray);
+  border: 3px solid var(--spotify-light-gray);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 10px;
+  margin: 0 auto 5px;
   transition: all 0.2s ease;
 }
 
 .avatar-emoji {
-  font-size: 4rem;
+  font-size: 3rem;
 }
 
 .avatar-hint {
   color: var(--spotify-text-gray);
-  font-size: 0.85rem;
+  font-size: 0.75rem;
 }
 
-.avatar-selector:hover .avatar-hint {
+.avatar-selector .avatar-display:hover + .avatar-hint {
   color: var(--spotify-green);
 }
 
-/* Form Fields */
-.full-width {
-  width: 100%;
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #f44336;
+  background: rgba(244, 67, 54, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
-/* Config Section */
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 10px 15px !important;
+  font-size: 1rem !important;
+}
+
+/* Gender Selection */
+.gender-section {
+  margin: 18px 0;
+}
+
+.gender-section label,
+.avatar-section label {
+  display: block;
+  color: var(--spotify-text-gray);
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.gender-options {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.gender-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 22px;
+  background: var(--spotify-gray);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.gender-option:hover {
+  background: var(--spotify-light-gray);
+}
+
+.gender-option.selected {
+  border-color: var(--spotify-green);
+  background: rgba(29, 185, 84, 0.15);
+}
+
+.gender-icon {
+  font-size: 1.5rem;
+}
+
+.gender-label {
+  font-size: 0.75rem;
+  color: var(--spotify-text-gray);
+}
+
+.gender-option.selected .gender-label {
+  color: var(--spotify-green);
+}
+
+/* Avatar Selection */
+.avatar-section {
+  margin: 18px 0;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.avatar-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--spotify-gray);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.avatar-option:hover {
+  background: var(--spotify-light-gray);
+  transform: scale(1.1);
+}
+
+.avatar-option.selected {
+  border-color: var(--spotify-green);
+  background: rgba(29, 185, 84, 0.2);
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(29, 185, 84, 0.4);
+}
+
+/* Game Configuration */
 .config-section {
-  margin: 25px 0;
-  padding: 20px;
+  margin-bottom: 15px;
+  padding: 15px;
   background: var(--spotify-gray);
   border-radius: 12px;
   text-align: left;
@@ -127,12 +237,13 @@
 .config-section h3 {
   color: var(--spotify-white);
   margin-bottom: 15px;
+  margin-top: 0;
   font-size: 1rem;
 }
 
 .config-row {
   display: flex;
-  gap: 15px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -141,37 +252,24 @@
   min-width: 150px;
 }
 
-/* Error Message */
-.error-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #f44336;
-  background: rgba(244, 67, 54, 0.1);
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-}
-
-/* Submit Button */
-.submit-btn {
-  width: 100%;
-  margin-top: 20px;
-  padding: 16px 32px !important;
-  font-size: 1rem !important;
-}
-
-/* Loading Spinner */
-.spinning {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .setup-card h2 {
+    margin: 10px auto;
   }
-  to {
-    transform: rotate(360deg);
+  .back-text {
+    display: none;
+  }
+
+  .avatar-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .gender-options {
+    flex-wrap: wrap;
+  }
+
+  .setup-page {
+    padding: 10px;
   }
 }

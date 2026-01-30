@@ -1,0 +1,49 @@
+<div class="avatar-dialog">
+  <button mat-icon-button class="close-btn" (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+  </button>
+  <h2 mat-dialog-title>Choose Your Avatar</h2>
+  <mat-dialog-content>
+    <mat-tab-group>
+      <mat-tab label="Male">
+        <div class="avatar-grid">
+          @for (avatar of maleAvatars; track avatar.id) {
+            <button
+              class="avatar-btn"
+              [class.selected]="selectedAvatar === avatar.id"
+              (click)="selectAndClose(avatar.id)"
+            >
+              {{ avatar.emoji }}
+            </button>
+          }
+        </div>
+      </mat-tab>
+      <mat-tab label="Female">
+        <div class="avatar-grid">
+          @for (avatar of femaleAvatars; track avatar.id) {
+            <button
+              class="avatar-btn"
+              [class.selected]="selectedAvatar === avatar.id"
+              (click)="selectAndClose(avatar.id)"
+            >
+              {{ avatar.emoji }}
+            </button>
+          }
+        </div>
+      </mat-tab>
+      <mat-tab label="Other">
+        <div class="avatar-grid">
+          @for (avatar of othersAvatars; track avatar.id) {
+            <button
+              class="avatar-btn"
+              [class.selected]="selectedAvatar === avatar.id"
+              (click)="selectAndClose(avatar.id)"
+            >
+              {{ avatar.emoji }}
+            </button>
+          }
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+</div>

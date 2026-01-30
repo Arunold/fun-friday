@@ -1,0 +1,56 @@
+.avatar-dialog {
+  min-width: 250px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+h2[mat-dialog-title] {
+  color: var(--spotify-black);
+  text-align: center;
+  font-weight: 700;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.avatar-btn {
+  width: 70px;
+  height: 70px;
+  font-size: 2.5rem;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  background: var(--spotify-light-gray);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-btn:hover {
+  background: var(--spotify-gray);
+  transform: scale(1.1);
+  border-color: var(--spotify-green);
+}
+
+.avatar-btn.selected {
+  border-color: var(--spotify-green);
+  background: rgba(29, 185, 84, 0.2);
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(29, 185, 84, 0.4);
+}
+
+mat-dialog-actions {
+  padding: 16px;
+}

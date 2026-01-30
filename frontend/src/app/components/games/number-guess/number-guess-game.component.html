@@ -12,8 +12,8 @@
   (leaveGame)="leaveGame()"
   (exitGame)="exitGame()"
   (copyCode)="copyGameCode()"
-  (removePlayer)="removePlayer($event)">
-  
+  (removePlayer)="removePlayer($event)"
+>
   <!-- GUESSING STATE - Number Guess specific content -->
   @if (game?.gameState === 'GUESSING' && roundInfo) {
     <mat-card class="guess-card">
@@ -26,22 +26,27 @@
       <mat-card-content>
         @if (!hasGuessed) {
           <div class="guess-input-section">
-            <mat-form-field appearance="outline" class="guess-input">
+            <mat-form-field appearance="outline" class="guess-input" subscriptSizing="dynamic">
               <mat-label>Your Guess</mat-label>
-              <input matInput type="number" [(ngModel)]="guessValue" 
-                     [min]="roundInfo.minRange" 
-                     [max]="roundInfo.maxRange"
-                     (keyup.enter)="submitGuess()">
+              <input
+                matInput
+                type="number"
+                [(ngModel)]="guessValue"
+                [min]="roundInfo.minRange"
+                [max]="roundInfo.maxRange"
+                (keyup.enter)="submitGuess()"
+              />
             </mat-form-field>
-            <button mat-raised-button color="primary" (click)="submitGuess()" 
-                    [disabled]="guessValue === null">
+            <button mat-raised-button color="primary" (click)="submitGuess()" [disabled]="guessValue === null">
               Submit Guess
             </button>
           </div>
         } @else {
           <div class="guess-submitted">
             <p><mat-icon class="success-icon">check_circle</mat-icon> Your guess has been submitted!</p>
-            <p class="your-guess">You guessed: <strong>{{ getPlayerGuess(playerName) }}</strong></p>
+            <p class="your-guess">
+              You guessed: <strong>{{ getPlayerGuess(playerName) }}</strong>
+            </p>
           </div>
         }
 
@@ -51,7 +56,7 @@
             @for (player of game!.players; track player.name) {
               <span class="guess-status" [class.guessed]="hasPlayerAnswered(player.name)">
                 <span class="status-avatar">{{ player.avatar || '👤' }}</span>
-                {{ player.name }} 
+                {{ player.name }}
                 @if (hasPlayerAnswered(player.name)) {
                   <mat-icon class="status-icon">check_circle</mat-icon>
                 } @else {
@@ -67,7 +72,7 @@
 
   <!-- ROUND RESULT STATE -->
   @if (game?.gameState === 'ROUND_RESULT' && roundInfo) {
-    <div class="result-content">
+    <div class="round-result-content">
       <div class="target-reveal">
         <span class="target-label">The number was:</span>
         <span class="target-number">{{ roundInfo.targetNumber }}</span>
@@ -77,12 +82,12 @@
         <mat-card-header>
           @if (roundInfo.winner) {
             <mat-card-title>
-              <mat-icon class="winner-icon">celebration</mat-icon> 
+              <mat-icon class="winner-icon">celebration</mat-icon>
               {{ roundInfo.winner }} wins this round!
             </mat-card-title>
           } @else {
             <mat-card-title>
-              <mat-icon class="no-winner-icon">sentiment_dissatisfied</mat-icon> 
+              <mat-icon class="no-winner-icon">sentiment_dissatisfied</mat-icon>
               No winner this round!
             </mat-card-title>
           }
@@ -95,9 +100,7 @@
                 <span class="player-name">{{ player.name }}</span>
                 <span class="player-guess">Guessed: {{ getPlayerGuess(player.name) ?? 'No guess' }}</span>
                 @if (isRoundWinner(player.name)) {
-                  <span class="winner-badge">
-                    <mat-icon class="trophy-icon">emoji_events</mat-icon> Winner!
-                  </span>
+                  <span class="winner-badge"> <mat-icon class="trophy-icon">emoji_events</mat-icon> Winner! </span>
                 }
               </div>
             }
@@ -112,5 +115,4 @@
       </mat-card>
     </div>
   }
-  
 </app-game-layout>

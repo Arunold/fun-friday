@@ -12,6 +12,7 @@ import { GameType } from '../../models';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -19,11 +20,10 @@ import { GameType } from '../../models';
     MatCardModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
-  ]
+    MatIconModule,
+  ],
 })
 export class HomeComponent implements OnInit {
-
   // Form fields
   gameCode = '';
   errorMessage = '';
@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
       },
       error: () => {
         this.errorMessage = 'Failed to load game types. Is the backend running?';
-      }
+      },
     });
   }
 

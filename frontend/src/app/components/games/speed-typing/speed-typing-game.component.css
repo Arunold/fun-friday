@@ -8,7 +8,7 @@
 .typing-card mat-card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
 }
 
 /* Target Text Display */
@@ -17,7 +17,7 @@
   border-radius: 12px;
   padding: 24px;
   margin: 16px 0;
-  font-family: 'Fira Code', 'Consolas', monospace;
+  font-family: "Fira Code", "Consolas", monospace;
   font-size: 1.4rem;
   line-height: 1.8;
   letter-spacing: 0.5px;
@@ -57,7 +57,7 @@
 }
 
 .typing-input input {
-  font-family: 'Fira Code', 'Consolas', monospace;
+  font-family: "Fira Code", "Consolas", monospace;
   font-size: 1.2rem;
   letter-spacing: 0.5px;
 }
@@ -111,8 +111,13 @@
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Players Progress */
@@ -125,7 +130,7 @@
   color: #cdd6f4;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
 }
 
 .progress-list {
@@ -149,7 +154,7 @@
 .player-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   margin-bottom: 8px;
 }
 
@@ -187,43 +192,14 @@
   color: #f38ba8;
 }
 
-/* Result Content */
-.result-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 16px;
-}
-
-.target-reveal {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.target-label {
-  display: block;
-  font-size: 1rem;
-  color: #a6adc8;
-  margin-bottom: 8px;
-}
-
 .target-sentence {
   display: block;
   font-size: 1.3rem;
-  font-family: 'Fira Code', 'Consolas', monospace;
+  font-family: "Fira Code", "Consolas", monospace;
   color: #cdd6f4;
   background: #313244;
   padding: 16px 24px;
   border-radius: 8px;
-}
-
-.results-card {
-  margin: 16px 0;
-}
-
-.results-card mat-card-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .winner-icon {
@@ -274,7 +250,7 @@
 }
 
 .ranking-item .time {
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   color: #89b4fa;
 }
 
@@ -302,7 +278,7 @@
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .target-text-container {
     font-size: 1.1rem;
     padding: 16px;
@@ -310,7 +286,7 @@
 
   .typing-stats {
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
     align-items: center;
   }
 
