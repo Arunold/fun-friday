@@ -252,6 +252,14 @@
   min-width: 150px;
 }
 
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 0;
+  width: 100%;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .setup-card h2 {

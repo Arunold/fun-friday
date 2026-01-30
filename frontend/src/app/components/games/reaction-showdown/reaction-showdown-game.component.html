@@ -1,68 +1,68 @@
 <app-game-layout
-    [game]="game!"
-    [gameId]="gameId"
-    [playerName]="playerName"
-    [isHost]="isHost"
-    [playerAvatar]="playerAvatar"
-    [gameIcon]="gameIcon"
-    [countdown]="countdown"
-    [roundTimer]="roundTimer"
-    [isLoading]="isLoading"
-    [showSidebar]="true"
-    (startGame)="startGame()"
-    (leaveGame)="leaveGame()"
-    (exitGame)="exitGame()"
-    (copyCode)="copyGameCode()"
-    (removePlayer)="removePlayer($event)">
-    
-    <div class="reaction-game-content">
-        <!-- Main reaction area -->
-        <div class="reaction-area" [ngClass]="getReactionClass()">
-            <button
-                class="reaction-circle"
-                type="button"
-                (click)="onTap()"
-                [disabled]="hasTapped"
-                [attr.aria-label]="'Tap to react - ' + getPhaseText()">
-                <mat-icon class="reaction-icon">{{ getPhaseIcon() }}</mat-icon>
-                <div class="reaction-text">{{ getPhaseText() }}</div>
-            </button>
-            
-            @if (hasTapped) {
-                <div class="tap-status">
-                    ✓ Tapped! Waiting for round to end...
-                </div>
-            }
-        </div>
+  [game]="game!"
+  [gameId]="gameId"
+  [playerName]="playerName"
+  [isHost]="isHost"
+  [playerAvatar]="playerAvatar"
+  [gameIcon]="gameIcon"
+  [countdown]="countdown"
+  [roundTimer]="roundTimer"
+  [isLoading]="isLoading"
+  [showSidebar]="true"
+  (startGame)="startGame()"
+  (leaveGame)="leaveGame()"
+  (exitGame)="exitGame()"
+  (copyCode)="copyGameCode()"
+  (copyUrl)="copyJoinUrl()"
+  (removePlayer)="removePlayer($event)"
+>
+  <div class="reaction-game-content">
+    <!-- Main reaction area -->
+    <div class="reaction-area" [ngClass]="getReactionClass()">
+      <button
+        class="reaction-circle"
+        type="button"
+        (click)="onTap()"
+        [disabled]="hasTapped"
+        [attr.aria-label]="'Tap to react - ' + getPhaseText()"
+      >
+        <mat-icon class="reaction-icon">{{ getPhaseIcon() }}</mat-icon>
+        <div class="reaction-text">{{ getPhaseText() }}</div>
+      </button>
 
-        <!-- Player reactions during round -->
-        <div class="players-status">
-            @for (player of game?.players; track player.name) {
-                <div class="player-status-card" [class.fastest]="isFastest(player.name)">
-                    <span class="avatar">{{ getPlayerAvatar(player.name) }}</span>
-                    <span class="name">{{ player.name }}</span>
-                    <span class="status">{{ getReactionStatus(getPlayerReaction(player.name)) }}</span>
-                    @if (isFastest(player.name)) {
-                        <span class="fastest-badge">🏆</span>
-                    }
-                </div>
-            }
-        </div>
-
-        <!-- Instructions -->
-        <div class="instructions">
-            @switch (phase) {
-                @case ('WAITING') {
-                    <p>Get ready! When you see <strong>TAP NOW!</strong>, tap the circle as fast as you can!</p>
-                    <p>⚠️ Don't tap too early - that's a false start penalty!</p>
-                }
-                @case ('REACT') {
-                    <p class="go-text">GO! TAP NOW!</p>
-                }
-                @case ('FAKEOUT') {
-                    <p class="fakeout-text">FAKE OUT! Don't tap!</p>
-                }
-            }
-        </div>
+      @if (hasTapped) {
+        <div class="tap-status">✓ Tapped! Waiting for round to end...</div>
+      }
     </div>
+
+    <!-- Player reactions during round -->
+    <div class="players-status">
+      @for (player of game?.players; track player.name) {
+        <div class="player-status-card" [class.fastest]="isFastest(player.name)">
+          <span class="avatar">{{ getPlayerAvatar(player.name) }}</span>
+          <span class="name">{{ player.name }}</span>
+          <span class="status">{{ getReactionStatus(getPlayerReaction(player.name)) }}</span>
+          @if (isFastest(player.name)) {
+            <span class="fastest-badge">🏆</span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions">
+      @switch (phase) {
+        @case ('WAITING') {
+          <p>Get ready! When you see <strong>TAP NOW!</strong>, tap the circle as fast as you can!</p>
+          <p>⚠️ Don't tap too early - that's a false start penalty!</p>
+        }
+        @case ('REACT') {
+          <p class="go-text">GO! TAP NOW!</p>
+        }
+        @case ('FAKEOUT') {
+          <p class="fakeout-text">FAKE OUT! Don't tap!</p>
+        }
+      }
+    </div>
+  </div>
 </app-game-layout>

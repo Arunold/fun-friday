@@ -30,7 +30,6 @@ export interface PictionaryConfig extends BaseGameConfig {
 export interface SpeedTypingConfig extends BaseGameConfig {
   type: 'speed-typing';
   difficulty: 'EASY' | 'MEDIUM' | 'HARD';
-  minAccuracy: number;
 }
 
 // Reaction Showdown specific config
@@ -39,7 +38,6 @@ export interface ReactionShowdownConfig extends BaseGameConfig {
   minDelay: number;
   maxDelay: number;
   includeFakeOuts: boolean;
-  fakeOutChance: number;
 }
 
 // Sliding Puzzle specific config
@@ -136,7 +134,6 @@ export interface SpeedTypingRoundInfo extends BaseRoundInfo {
   gameType: 'speed-typing';
   targetText: string;
   difficulty: 'EASY' | 'MEDIUM' | 'HARD';
-  minAccuracy: number;
   startTime: number;
   playerProgress: Record<string, PlayerProgressInfo>;
   rankings: string[];

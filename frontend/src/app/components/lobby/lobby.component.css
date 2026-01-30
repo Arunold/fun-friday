@@ -1,0 +1,132 @@
+/* Lobby Component Styles */
+:host {
+  width: 100%;
+}
+
+.lobby-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lobby-header {
+  text-align: center;
+}
+
+.lobby-header h1 {
+  color: var(--spotify-white);
+  font-size: 2rem;
+  margin: 0;
+  font-weight: 900;
+}
+
+/* Game Code Display */
+.game-code-display {
+  background: var(--spotify-gray);
+  padding: 14px 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.game-code-display .label {
+  font-size: 0.85rem;
+  color: var(--spotify-text-gray);
+}
+
+.game-code-display .code {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--spotify-green);
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.game-code-display .code:hover {
+  color: var(--spotify-green-hover);
+}
+
+.share-text {
+  color: var(--spotify-text-gray);
+  margin-top: 15px;
+}
+
+/* Players Section */
+.players-card {
+  max-width: 900px;
+  min-width: 300px;
+  z-index: 1;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.players-card mat-card-header {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.players-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+}
+
+.players-card mat-card-title mat-icon {
+  color: var(--spotify-green);
+}
+
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 10px;
+  border-radius: 8px;
+  background: var(--spotify-dark-gray);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.player-item:hover {
+  background: var(--spotify-light-gray);
+}
+
+.player-item .player-name {
+  flex: 1;
+}
+
+.remove-player-btn {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: var(--spotify-text-gray);
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+}
+
+.player-item:hover .remove-player-btn {
+  opacity: 1;
+  display: inline-flex;
+}
+
+.remove-player-btn:hover {
+  color: #f44336;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.waiting-text {
+  color: var(--spotify-text-gray);
+  font-style: italic;
+}

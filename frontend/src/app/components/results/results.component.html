@@ -83,6 +83,10 @@
           <mat-icon>replay</mat-icon>
           Play Again
         </button>
+        <button mat-stroked-button color="accent" (click)="changeGame()" class="change-game-btn">
+          <mat-icon>swap_horiz</mat-icon>
+          Change Game
+        </button>
       } @else {
         <p class="waiting-host">Waiting for host to start a new game...</p>
       }

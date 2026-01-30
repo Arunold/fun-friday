@@ -1,14 +1,15 @@
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter, withHashLocation } from '@angular/router';
 import { AppComponent } from './app/app';
 import { routes } from './app/app.routes';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withHashLocation()),
     provideHttpClient(withInterceptorsFromDi()),
-    provideAnimations(),
-  ]
+    // @deprecated: Required for Angular Material until it migrates to CSS-based animations
+    provideAnimationsAsync(),
+  ],
 });

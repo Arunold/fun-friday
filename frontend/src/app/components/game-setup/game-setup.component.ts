@@ -8,6 +8,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Game, GameType } from '../../models';
 import { GameService, WebsocketService } from '../../services';
@@ -18,6 +19,11 @@ export interface GameConfig {
   wordLength: number;
   roundDuration: number;
   difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+  // Number Guess settings
+  minRange: number;
+  maxRange: number;
+  // Reaction Showdown settings
+  includeFakeOuts: boolean;
 }
 
 export interface SetupResult {
@@ -39,6 +45,7 @@ export interface SetupResult {
     MatSelectModule,
     MatOptionModule,
     MatDialogModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './game-setup.component.html',
   styleUrl: './game-setup.component.css',
@@ -59,6 +66,9 @@ export class GameSetupComponent implements OnInit {
     wordLength: 7,
     roundDuration: 30,
     difficulty: 'MEDIUM',
+    minRange: 1,
+    maxRange: 100,
+    includeFakeOuts: true,
   };
 
   private dialog = inject(MatDialog);
@@ -166,6 +176,9 @@ export class GameSetupComponent implements OnInit {
       wordLength: this.gameConfig.wordLength,
       roundDuration: this.gameConfig.roundDuration,
       difficulty: this.gameConfig.difficulty,
+      minRange: this.gameConfig.minRange,
+      maxRange: this.gameConfig.maxRange,
+      includeFakeOuts: this.gameConfig.includeFakeOuts,
     });
   }
 

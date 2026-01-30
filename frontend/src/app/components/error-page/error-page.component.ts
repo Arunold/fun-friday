@@ -70,15 +70,6 @@ interface ErrorConfig {
         animation: spin 2s linear infinite;
       }
 
-      @keyframes spin {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
       h1 {
         color: var(--spotify-white);
         font-size: 2rem;

@@ -1,0 +1,59 @@
+// ============================================
+// SCSS Variables
+// ============================================
+
+// Spotify Color Palette
+$spotify-primary: #1db954;
+$spotify-primary-hover: #1ed760;
+$spotify-accent: #ffffff;
+$spotify-accent-hover: #f2f2f2;
+$spotify-warn: #f44336;
+$spotify-warn-hover: #e53935;
+
+$spotify-black: #121212;
+$spotify-dark-gray: #181818;
+$spotify-gray: #282828;
+$spotify-light-gray: #3e3e3e;
+$spotify-medium-gray: #535353;
+$spotify-lightest-gray: #b3b3b3;
+
+$spotify-green: #1db954;
+$spotify-green-hover: #1ed760;
+$spotify-white: #ffffff;
+$spotify-text-gray: #b3b3b3;
+$spotify-text-subdued: #a7a7a7;
+
+// Medal Colors
+$spotify-gold: gold;
+$spotify-gold-op-2: rgba(255, 215, 0, 0.2);
+$spotify-gold-op-3: rgba(255, 215, 0, 0.3);
+$spotify-silver: #c0c0c0;
+$spotify-silver-op-2: rgba(192, 192, 192, 0.2);
+$spotify-silver-op-3: rgba(192, 192, 192, 0.3);
+$spotify-bronze: #cd7f32;
+$spotify-bronze-op-2: rgba(205, 127, 50, 0.2);
+$spotify-bronze-op-3: rgba(205, 127, 50, 0.3);
+
+// Spacing Scale
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// Border Radius
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 16px;
+$radius-pill: 500px;
+
+// Transitions
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;
+
+// Z-Index layers
+$z-dropdown: 100;
+$z-modal: 200;
+$z-overlay: 300;
+$z-toast: 400;

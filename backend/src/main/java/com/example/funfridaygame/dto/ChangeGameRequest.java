@@ -9,25 +9,21 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateGameRequest {
-    private String hostName;
+public class ChangeGameRequest {
+    private String gameId;
     private String gameTypeId;
-    private String avatar;
 
     @Builder.Default private int totalRounds = 3;
 
-    @Builder.Default private int wordLength = 7;
-
     @Builder.Default private int roundDuration = 30;
 
-    // Difficulty for games that support it (e.g., sliding-puzzle, speed-typing)
+    @Builder.Default private int wordLength = 7;
+
     @Builder.Default private String difficulty = "MEDIUM";
 
-    // Number Guess settings
     @Builder.Default private int minRange = 1;
 
     @Builder.Default private int maxRange = 100;
 
-    // Reaction Showdown settings
     @Builder.Default private boolean includeFakeOuts = true;
 }
