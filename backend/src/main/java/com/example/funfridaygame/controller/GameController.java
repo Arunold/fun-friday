@@ -1,5 +1,6 @@
 package com.example.funfridaygame.controller;
 
+import com.example.funfridaygame.dto.ChangeGameRequest;
 import com.example.funfridaygame.dto.CreateGameRequest;
 import com.example.funfridaygame.dto.GameMessage;
 import com.example.funfridaygame.dto.JoinGameRequest;
@@ -10,11 +11,15 @@ import com.example.funfridaygame.model.Player;
 import com.example.funfridaygame.model.config.BaseGameConfig;
 import com.example.funfridaygame.model.config.NumberGuessConfig;
 import com.example.funfridaygame.model.config.PictionaryConfig;
+import com.example.funfridaygame.model.config.ReactionShowdownConfig;
 import com.example.funfridaygame.model.config.SlidingPuzzleConfig;
+import com.example.funfridaygame.model.config.SpeedTypingConfig;
 import com.example.funfridaygame.model.config.WordScrambleConfig;
 import com.example.funfridaygame.service.GameTypeRegistry;
 import com.example.funfridaygame.service.game.GameStrategy;
 import com.example.funfridaygame.service.game.GameStrategyRegistry;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -38,16 +43,19 @@ public class GameController {
     private final GameTypeRegistry gameTypeRegistry;
     private final GameStrategyRegistry strategyRegistry;
     private final GameRoundManager roundManager;
+    private final ObjectMapper objectMapper;
 
     public GameController(
             SimpMessagingTemplate messagingTemplate,
             GameTypeRegistry gameTypeRegistry,
             GameStrategyRegistry strategyRegistry,
-            GameRoundManager roundManager) {
+            GameRoundManager roundManager,
+            ObjectMapper objectMapper) {
         this.messagingTemplate = messagingTemplate;
         this.gameTypeRegistry = gameTypeRegistry;
         this.strategyRegistry = strategyRegistry;
         this.roundManager = roundManager;
+        this.objectMapper = objectMapper;
     }
 
     // ==================== Game Lifecycle ====================
@@ -84,8 +92,8 @@ public class GameController {
         if (config instanceof WordScrambleConfig wsConfig) {
             wsConfig.setWordLength(request.getWordLength() > 0 ? request.getWordLength() : 7);
         } else if (config instanceof NumberGuessConfig ngConfig) {
-            ngConfig.setMinRange(1);
-            ngConfig.setMaxRange(100);
+            ngConfig.setMinRange(request.getMinRange() > 0 ? request.getMinRange() : 1);
+            ngConfig.setMaxRange(request.getMaxRange() > 0 ? request.getMaxRange() : 100);
         } else if (config instanceof PictionaryConfig pConfig) {
             pConfig.setTotalTurns(game.getPlayers().size());
         } else if (config instanceof SlidingPuzzleConfig spConfig) {
@@ -93,6 +101,11 @@ public class GameController {
             spConfig.setDifficulty(diff);
             spConfig.setGridSize(getGridSizeForDifficulty(diff));
             config.setRoundDuration(getDurationForDifficulty(diff, roundDuration));
+        } else if (config instanceof SpeedTypingConfig stConfig) {
+            SpeedTypingConfig.Difficulty diff = parseSpeedTypingDifficulty(request.getDifficulty());
+            stConfig.setDifficulty(diff);
+        } else if (config instanceof ReactionShowdownConfig rsConfig) {
+            rsConfig.setIncludeFakeOuts(request.isIncludeFakeOuts());
         }
 
         game.setGameConfig(config);
@@ -214,6 +227,88 @@ public class GameController {
         }
     }
 
+    @MessageMapping("/changeGame")
+    public void changeGame(GameMessage message) {
+        try {
+            ChangeGameRequest request =
+                    objectMapper.readValue(message.getContent(), ChangeGameRequest.class);
+            String gameId = request.getGameId().toUpperCase();
+            Game game = GameTypeController.getGame(gameId);
+
+            if (game == null
+                    || !game.getHost().equals(message.getSender())
+                    || game.getGameState() != GameState.FINISHED) {
+                sendError(message.getSender(), "Cannot change game");
+                return;
+            }
+
+            Optional<GameType> gameType = gameTypeRegistry.getGameTypeById(request.getGameTypeId());
+            if (gameType.isEmpty()) {
+                sendError(message.getSender(), "Invalid game type");
+                return;
+            }
+
+            Optional<GameStrategy> strategyOpt =
+                    strategyRegistry.getStrategy(request.getGameTypeId());
+            if (strategyOpt.isEmpty()) {
+                sendError(message.getSender(), "No strategy found for game type");
+                return;
+            }
+
+            // Update game type and config
+            game.setGameTypeId(request.getGameTypeId());
+            game.setGameTypeName(gameType.get().getName());
+            game.setTotalRounds(request.getTotalRounds() > 0 ? request.getTotalRounds() : 3);
+            game.setGameState(GameState.LOBBY);
+            game.setCurrentRoundNumber(0);
+            game.setCurrentRound(null);
+            game.setCurrentRoundInfo(null);
+
+            // Create new config for the new game type
+            BaseGameConfig config = strategyOpt.get().createDefaultConfig();
+            int roundDuration = request.getRoundDuration() > 0 ? request.getRoundDuration() : 30;
+            config.setRoundDuration(roundDuration);
+
+            // Apply game-specific settings
+            if (config instanceof WordScrambleConfig wsConfig) {
+                wsConfig.setWordLength(request.getWordLength() > 0 ? request.getWordLength() : 7);
+            } else if (config instanceof NumberGuessConfig ngConfig) {
+                ngConfig.setMinRange(request.getMinRange() > 0 ? request.getMinRange() : 1);
+                ngConfig.setMaxRange(request.getMaxRange() > 0 ? request.getMaxRange() : 100);
+            } else if (config instanceof PictionaryConfig pConfig) {
+                pConfig.setTotalTurns(game.getPlayers().size());
+            } else if (config instanceof SlidingPuzzleConfig spConfig) {
+                SlidingPuzzleConfig.Difficulty diff = parseDifficulty(request.getDifficulty());
+                spConfig.setDifficulty(diff);
+                spConfig.setGridSize(getGridSizeForDifficulty(diff));
+                config.setRoundDuration(getDurationForDifficulty(diff, roundDuration));
+            } else if (config instanceof SpeedTypingConfig stConfig) {
+                SpeedTypingConfig.Difficulty diff =
+                        parseSpeedTypingDifficulty(request.getDifficulty());
+                stConfig.setDifficulty(diff);
+            } else if (config instanceof ReactionShowdownConfig rsConfig) {
+                rsConfig.setIncludeFakeOuts(request.isIncludeFakeOuts());
+            }
+
+            game.setGameConfig(config);
+
+            // Reset player scores
+            for (Player player : game.getPlayers()) {
+                player.setScore(0);
+            }
+
+            messagingTemplate.convertAndSend("/topic/game/" + gameId, game);
+            log.info(
+                    "Game {} changed to {} by host {}",
+                    gameId,
+                    request.getGameTypeId(),
+                    message.getSender());
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse change game request", e);
+            sendError(message.getSender(), "Invalid request format");
+        }
+    }
+
     // ==================== Player Management ====================
 
     @MessageMapping("/leave")
@@ -303,6 +398,17 @@ public class GameController {
             return SlidingPuzzleConfig.Difficulty.valueOf(difficulty.toUpperCase());
         } catch (IllegalArgumentException e) {
             return SlidingPuzzleConfig.Difficulty.MEDIUM;
+        }
+    }
+
+    private SpeedTypingConfig.Difficulty parseSpeedTypingDifficulty(String difficulty) {
+        if (difficulty == null || difficulty.isBlank()) {
+            return SpeedTypingConfig.Difficulty.MEDIUM;
+        }
+        try {
+            return SpeedTypingConfig.Difficulty.valueOf(difficulty.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return SpeedTypingConfig.Difficulty.MEDIUM;
         }
     }
 

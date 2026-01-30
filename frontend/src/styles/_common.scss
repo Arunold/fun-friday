@@ -1,3 +1,4 @@
+@use 'variables';
 /* ============================================
    COMMON REUSABLE STYLES
    Shared across multiple components
@@ -5,6 +6,15 @@
 
 * {
   box-sizing: border-box;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes shimmer {
@@ -43,6 +53,21 @@
   50% {
     transform: translate(-50%, -50%) scale(1.2);
     opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(5px);
   }
 }
 
@@ -88,6 +113,82 @@
   }
   50% {
     transform: scale(1.05);
+  }
+}
+
+@keyframes celebrate {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.warn {
+  color: var(--spotify-warn) !important;
+}
+
+// Dialog Styles
+.dialog {
+  padding: 15px;
+  background: var(--spotify-dark-gray);
+  color: var(--spotify-white);
+  z-index: #{variables.$z-modal};
+
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 10px 10px 10px;
+    border-bottom: 1px solid var(--spotify-gray);
+
+    .dialog-header-icon {
+      font-size: 30px;
+      width: 30px;
+      height: 30px;
+      color: var(--spotify-white);
+    }
+  }
+
+  h2[mat-dialog-title] {
+    margin: 0;
+    padding: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--spotify-white);
+    display: flex;
+    align-items: center;
+  }
+
+  mat-dialog-content {
+    color: var(--spotify-text-gray) !important;
+    padding: 15px 0 !important;
+    min-width: 250px !important;
+  }
+
+  mat-dialog-actions {
+    border-top: 1px solid var(--spotify-gray);
+    padding: 15px 15px 0 15px;
+    gap: 5px;
+
+    .cancel-btn {
+      background: var(--spotify-medium-gray);
+      color: var(--spotify-white) !important;
+    }
   }
 }
 

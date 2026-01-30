@@ -1,0 +1,116 @@
+<div class="dialog">
+  <div class="dialog-header">
+    <mat-icon class="dialog-header-icon">swap_horiz</mat-icon>
+    <h2 mat-dialog-title>Change Game</h2>
+  </div>
+  <mat-dialog-content>
+    <div class="game-type-grid">
+      @for (gameType of gameTypes; track gameType.id) {
+        <div
+          class="game-type-card"
+          [class.selected]="selectedGameTypeId === gameType.id"
+          (click)="selectGameType(gameType)"
+          tabindex="0"
+          (keydown.enter)="selectGameType(gameType)"
+        >
+          <span class="game-icon">{{ gameType.icon }}</span>
+          <span class="game-name">{{ gameType.name }}</span>
+        </div>
+      }
+    </div>
+
+    @if (selectedGameType) {
+      <div class="settings-section">
+        <h3>Game Settings</h3>
+        <div class="settings-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Rounds</mat-label>
+            <mat-select [(ngModel)]="config.totalRounds">
+              <mat-option [value]="2">2</mat-option>
+              <mat-option [value]="3">3</mat-option>
+              <mat-option [value]="5">5</mat-option>
+              <mat-option [value]="7">7</mat-option>
+              <mat-option [value]="10">10</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Timer</mat-label>
+            <mat-select [(ngModel)]="config.roundDuration">
+              <mat-option [value]="15">15s</mat-option>
+              <mat-option [value]="30">30s</mat-option>
+              <mat-option [value]="45">45s</mat-option>
+              <mat-option [value]="60">60s</mat-option>
+              <mat-option [value]="90">90s</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        @if (selectedGameTypeId === 'word-scramble') {
+          <div class="settings-row">
+            <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+              <mat-label>Word Length</mat-label>
+              <mat-select [(ngModel)]="config.wordLength">
+                <mat-option [value]="4">4 Letters</mat-option>
+                <mat-option [value]="5">5 Letters</mat-option>
+                <mat-option [value]="6">6 Letters</mat-option>
+                <mat-option [value]="7">7 Letters</mat-option>
+                <mat-option [value]="8">8 Letters</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+
+        @if (selectedGameTypeId === 'sliding-puzzle' || selectedGameTypeId === 'speed-typing') {
+          <div class="settings-row">
+            <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+              <mat-label>Difficulty</mat-label>
+              <mat-select [(ngModel)]="config.difficulty">
+                <mat-option value="EASY">Easy</mat-option>
+                <mat-option value="MEDIUM">Medium</mat-option>
+                <mat-option value="HARD">Hard</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+
+        @if (selectedGameTypeId === 'number-guess') {
+          <div class="settings-row">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" color="accent">
+              <mat-label>Min</mat-label>
+              <mat-select [(ngModel)]="config.minRange">
+                <mat-option [value]="1">1</mat-option>
+                <mat-option [value]="10">10</mat-option>
+                <mat-option [value]="50">50</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Max</mat-label>
+              <mat-select [(ngModel)]="config.maxRange">
+                <mat-option [value]="50">50</mat-option>
+                <mat-option [value]="100">100</mat-option>
+                <mat-option [value]="500">500</mat-option>
+                <mat-option [value]="1000">1000</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+
+        @if (selectedGameTypeId === 'reaction-showdown') {
+          <div class="toggle-row">
+            <mat-slide-toggle color="primary" [(ngModel)]="config.includeFakeOuts">
+              Include Fake-outs
+            </mat-slide-toggle>
+          </div>
+        }
+      </div>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button class="cancel-btn" (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!selectedGameTypeId" (click)="confirm()">
+      <mat-icon>play_arrow</mat-icon>
+      Start Game
+    </button>
+  </mat-dialog-actions>
+</div>

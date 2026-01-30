@@ -110,16 +110,6 @@
   font-size: 1rem;
 }
 
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
 /* Players Progress */
 .players-progress {
   margin-top: 32px;

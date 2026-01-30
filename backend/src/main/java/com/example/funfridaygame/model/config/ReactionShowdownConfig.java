@@ -22,9 +22,6 @@ public class ReactionShowdownConfig extends BaseGameConfig {
     // Whether to include fake-out rounds
     private boolean includeFakeOuts = true;
 
-    // Chance of a fake-out round (percentage, 0-100)
-    private int fakeOutChance = 20;
-
     @Override
     public void onRoundStart(int playerCount) {
         // No special initialization needed

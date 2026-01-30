@@ -3,7 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { WebsocketService, GameService } from '../../services';
 import { Game } from '../../models';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../confirm-dialog/confirm-dialog.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../confirm-dialog/confirm-dialog.component';
 import { getRoundDuration, getCurrentTurn } from '../../utils/game-config.utils';
 
 /**
@@ -11,7 +14,7 @@ import { getRoundDuration, getCurrentTurn } from '../../utils/game-config.utils'
  * Provides common functionality for lobby, countdown, timers, and game state management.
  */
 @Component({
-  template: ''
+  template: '',
 })
 export abstract class BaseGameComponent implements OnInit, OnDestroy {
   game: Game | undefined;
@@ -51,7 +54,7 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
     if (!this.gameId) return;
 
     this.gameService.getGameStatus(this.gameId).subscribe({
-      next: (status) => {
+      next: status => {
         this.isLoading = false;
 
         if (!status.exists) {
@@ -74,7 +77,7 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
       error: () => {
         this.isLoading = false;
         this.router.navigate(['/error', 'not-found']);
-      }
+      },
     });
   }
 
@@ -103,21 +106,24 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
       });
 
       // Subscribe to player removal notifications
-      this.websocketService.subscribe('/topic/game/' + this.gameId + '/removed/' + this.playerName, () => {
-        this.clearCountdown();
-        this.clearRoundTimer();
-        this.router.navigate(['/error', 'removed']);
-      });
+      this.websocketService.subscribe(
+        '/topic/game/' + this.gameId + '/removed/' + this.playerName,
+        () => {
+          this.clearCountdown();
+          this.clearRoundTimer();
+          this.router.navigate(['/error', 'removed']);
+        }
+      );
 
       // If no initial game data (e.g., coming from Play Again), fetch the game details
       if (!this.game) {
         this.gameService.getGameDetails(this.gameId).subscribe({
-          next: (game) => {
+          next: game => {
             this.game = game;
           },
           error: () => {
             // Will rely on WebSocket update
-          }
+          },
         });
       }
     }
@@ -139,15 +145,15 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
     // Handle both GUESSING (most games) and DRAWING (Pictionary) states
     const isPlayingRound = game.gameState === 'GUESSING' || game.gameState === 'DRAWING';
     const wasPlayingRound = wasGuessing || wasDrawing;
-    
+
     // Detect new round/turn: state transition OR round/turn number changed while in playing state
     const currentTurn = getCurrentTurn(game);
-    const isNewRoundOrTurn = (!wasPlayingRound && isPlayingRound) ||
-      (isPlayingRound && (
-        game.currentRoundNumber !== previousRoundNumber ||
-        (currentTurn !== 0 && currentTurn !== previousTurn)
-      ));
-    
+    const isNewRoundOrTurn =
+      (!wasPlayingRound && isPlayingRound) ||
+      (isPlayingRound &&
+        (game.currentRoundNumber !== previousRoundNumber ||
+          (currentTurn !== 0 && currentTurn !== previousTurn)));
+
     if (isNewRoundOrTurn) {
       this.hasGuessed = false;
       this.onNewRound();
@@ -179,7 +185,9 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
     if (this.gameId) {
       this.websocketService.unsubscribe('/topic/game/' + this.gameId);
       this.websocketService.unsubscribe('/topic/game/' + this.gameId + '/terminated');
-      this.websocketService.unsubscribe('/topic/game/' + this.gameId + '/removed/' + this.playerName);
+      this.websocketService.unsubscribe(
+        '/topic/game/' + this.gameId + '/removed/' + this.playerName
+      );
     }
   }
 
@@ -235,7 +243,7 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
     if (this.gameId && this.isHost) {
       this.websocketService.sendMessage('/app/start', {
         sender: this.playerName,
-        content: this.gameId
+        content: this.gameId,
       });
     }
   }
@@ -249,7 +257,7 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
     if (this.gameId) {
       this.websocketService.sendMessage('/app/leave', {
         sender: this.playerName,
-        content: this.gameId
+        content: this.gameId,
       });
     }
     this.goHome();
@@ -260,7 +268,7 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
       // Host leaving will terminate the game for all players via the /leave endpoint
       this.websocketService.sendMessage('/app/leave', {
         sender: this.playerName,
-        content: this.gameId
+        content: this.gameId,
       });
     }
     this.goHome();
@@ -269,6 +277,19 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
   copyGameCode(): void {
     if (this.gameId) {
       navigator.clipboard.writeText(this.gameId);
+    }
+  }
+
+  copyJoinUrl(): void {
+    if (this.gameId) {
+      // Use current URL's origin and pathname (handles dynamic prefixes and hash routing)
+      const currentUrl = window.location.href;
+      // Extract the base URL (everything before the route path)
+      const hashIndex = currentUrl.indexOf('#');
+      const baseUrl =
+        hashIndex !== -1 ? currentUrl.substring(0, hashIndex + 1) : window.location.origin;
+      const joinUrl = `${baseUrl}/setup/join/${this.gameId}`;
+      navigator.clipboard.writeText(joinUrl);
     }
   }
 
@@ -281,19 +302,19 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
       confirmText: 'Remove',
       cancelText: 'Cancel',
       confirmColor: 'warn',
-      icon: 'person_remove'
+      icon: 'person_remove',
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: dialogData
+      data: dialogData,
     });
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed && this.gameId) {
         this.websocketService.sendMessage('/app/removePlayer', {
           sender: this.playerName,
-          content: `${this.gameId}:${playerToRemove}`
+          content: `${this.gameId}:${playerToRemove}`,
         });
       }
     });

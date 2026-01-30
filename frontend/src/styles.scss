@@ -1,0 +1,11 @@
+// Import modular stylesheets
+@use './styles/variables';
+@use './styles/theming';
+@use './styles/common';
+@use './styles/flex-layout';
+@use './styles/spacing';
+@use './styles/utility';
+@use './styles/celebration';
+
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import 'font-awesome/css/font-awesome.css';

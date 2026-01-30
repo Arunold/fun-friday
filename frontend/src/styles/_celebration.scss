@@ -23,7 +23,7 @@
 /* Rocket 1 - Gold */
 .finished-view .firework-1,
 .finished-view::before {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 15%;
@@ -38,7 +38,7 @@
 
 /* Rocket 2 - Pink */
 .finished-view::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   right: 25%;
@@ -380,7 +380,7 @@
 }
 
 .leaderboard-item.winner::before {
-  content: "";
+  content: '';
   position: absolute;
   top: -50%;
   left: -50%;

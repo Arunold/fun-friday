@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Game } from '../../models';
 import { OrderByPipe } from '../../pipes';
+import { LobbyComponent } from '../lobby/lobby.component';
 import { NavbarComponent } from '../navbar/navbar.component';
 
 /**
@@ -25,6 +26,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
     MatIconModule,
     MatTooltipModule,
     OrderByPipe,
+    LobbyComponent,
     NavbarComponent,
   ],
 })
@@ -49,6 +51,7 @@ export class GameLayoutComponent {
   @Output() leaveGame = new EventEmitter<void>();
   @Output() exitGame = new EventEmitter<void>();
   @Output() copyCode = new EventEmitter<void>();
+  @Output() copyUrl = new EventEmitter<void>();
   @Output() removePlayer = new EventEmitter<string>();
 
   onStartGame(): void {
@@ -65,6 +68,10 @@ export class GameLayoutComponent {
 
   onCopyCode(): void {
     this.copyCode.emit();
+  }
+
+  onCopyUrl(): void {
+    this.copyUrl.emit();
   }
 
   onRemovePlayer(playerName: string): void {

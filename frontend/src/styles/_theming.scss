@@ -2,36 +2,89 @@
    THEMING - Color Variables & Material Overrides
    ============================================ */
 
-/* Spotify Theme Variables */
+@use 'variables' as *;
+@use '@angular/material' as mat;
+
+/* Spotify Theme Variables - Generated from SCSS variables */
 :root {
-  --spotify-primary: #1db954;
-  --spotify-primary-hover: #1ed760;
-  --spotify-accent: #ffffff;
-  --spotify-accent-hover: #f2f2f2;
-  --spotify-warn: #f44336;
-  --spotify-warn-hover: #e53935;
-  --spotify-black: #121212;
-  --spotify-dark-gray: #181818;
-  --spotify-gray: #282828;
-  --spotify-light-gray: #3e3e3e;
-  --spotify-green: #1db954;
-  --spotify-green-hover: #1ed760;
-  --spotify-white: #ffffff;
-  --spotify-gold: gold;
-  --spotify-gold-op-2: rgba(255, 215, 0, 0.2);
-  --spotify-gold-op-3: rgba(255, 215, 0, 0.3);
-  --spotify-silver: #c0c0c0;
-  --spotify-silver-op-2: rgba(192, 192, 192, 0.2);
-  --spotify-silver-op-3: rgba(192, 192, 192, 0.3);
-  --spotify-bronze: #cd7f32;
-  --spotify-bronze-op-2: rgba(205, 127, 50, 0.2);
-  --spotify-bronze-op-3: rgba(205, 127, 50, 0.3);
-  --spotify-text-gray: #b3b3b3;
-  --spotify-text-subdued: #a7a7a7;
+  --spotify-primary: #{$spotify-primary};
+  --spotify-primary-hover: #{$spotify-primary-hover};
+  --spotify-accent: #{$spotify-accent};
+  --spotify-accent-hover: #{$spotify-accent-hover};
+  --spotify-warn: #{$spotify-warn};
+  --spotify-warn-hover: #{$spotify-warn-hover};
+  --spotify-black: #{$spotify-black};
+  --spotify-dark-gray: #{$spotify-dark-gray};
+  --spotify-gray: #{$spotify-gray};
+  --spotify-light-gray: #{$spotify-light-gray};
+  --spotify-medium-gray: #{$spotify-medium-gray};
+  --spotify-lightest-gray: #{$spotify-lightest-gray};
+  --spotify-green: #{$spotify-green};
+  --spotify-green-hover: #{$spotify-green-hover};
+  --spotify-white: #{$spotify-white};
+  --spotify-gold: #{$spotify-gold};
+  --spotify-gold-op-2: #{$spotify-gold-op-2};
+  --spotify-gold-op-3: #{$spotify-gold-op-3};
+  --spotify-silver: #{$spotify-silver};
+  --spotify-silver-op-2: #{$spotify-silver-op-2};
+  --spotify-silver-op-3: #{$spotify-silver-op-3};
+  --spotify-bronze: #{$spotify-bronze};
+  --spotify-bronze-op-2: #{$spotify-bronze-op-2};
+  --spotify-bronze-op-3: #{$spotify-bronze-op-3};
+  --spotify-text-gray: #{$spotify-text-gray};
+  --spotify-text-subdued: #{$spotify-text-subdued};
+
+  /* Material Slide Toggle - Spotify Style */
+  @include mat.slide-toggle-overrides(
+    (
+      label-text-color: var(--spotify-white),
+      disabled-label-text-color: var(--spotify-text-gray),
+      disabled-selected-handle-color: var(--spotify-text-gray),
+      disabled-selected-track-color: var(--spotify-light-gray),
+      disabled-unselected-handle-color: var(--spotify-text-gray),
+      disabled-unselected-track-color: var(--spotify-light-gray),
+      selected-track-color: var(--spotify-green),
+      selected-handle-color: var(--spotify-green-hover),
+      unselected-track-color: var(--spotify-medium-gray),
+      unselected-handle-color: var(--spotify-white),
+      selected-hover-handle-color: var(--spotify-green-hover),
+      selected-hover-track-color: var(--spotify-green),
+      unselected-hover-handle-color: var(--spotify-lightest-gray),
+      unselected-hover-track-color: var(--spotify-medium-gray),
+      selected-focus-handle-color: var(--spotify-green-hover),
+      selected-focus-track-color: var(--spotify-green),
+      unselected-focus-handle-color: var(--spotify-lightest-gray),
+      unselected-focus-track-color: var(--spotify-medium-gray),
+      selected-pressed-handle-color: var(--spotify-white),
+      selected-pressed-track-color: var(--spotify-green-hover),
+      unselected-pressed-handle-color: var(--spotify-white),
+      unselected-pressed-track-color: var(--spotify-medium-gray),
+      unselected-icon-color: var(--spotify-gray),
+      selected-icon-color: var(--spotify-gray),
+    )
+  );
+
+  /* Material Tabs - Spotify Style */
+  --mat-tab-header-active-label-text-color: orange;
+  --mat-tab-active-label-text-color: var(--spotify-green);
+  --mat-tab-header-with-background-background-color: #ff0000 @include
+    mat.tabs-overrides(
+      (
+        active-focus-indicator-color: orange,
+        active-label-text-color: var(--spotify-white),
+        foreground-color: var(--spotify-white),
+        active-focus-label-text-color: var(--spotify-green),
+        active-hover-label-text-color: var(--spotify-green-hover),
+        inactive-focus-label-text-color: var(--spotify-white),
+        inactive-hover-label-text-color: var(--spotify-white),
+        inactive-label-text-color: var(--spotify-text-gray),
+        divider-color: var(--spotify-white),
+      )
+    );
 }
 
 body {
-  font-family: "Circular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Circular', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
   background: var(--spotify-black);
@@ -166,6 +219,17 @@ button[mat-stroked-button]:hover {
 
 .mat-mdc-input-element::placeholder {
   color: var(--spotify-text-subdued) !important;
+}
+
+/* Material Tabs - Spotify Style */
+.mat-mdc-tab.mdc-tab .mdc-tab__text-label {
+  color: var(--spotify-lightest-gray) !important;
+}
+.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: var(--spotify-green) !important;
+}
+.mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: var(--spotify-green) !important;
 }
 
 /* Material Cards - Spotify Style */

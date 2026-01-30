@@ -1,0 +1,64 @@
+<div class="lobby-view">
+  <div class="lobby-header">
+    <h1>
+      <mat-icon class="title-icon">{{ gameIcon }}</mat-icon> {{ game.gameTypeName }}
+    </h1>
+    <div class="game-code-display">
+      <span class="label">Game Code:</span>
+      <span class="code" tabindex="0" role="button" (click)="onCopyCode()" (keydown.enter)="onCopyCode()">{{
+        gameId
+      }}</span>
+      <button mat-icon-button (click)="onCopyCode()" matTooltip="Copy code">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button mat-icon-button (click)="onCopyUrl()" matTooltip="Copy join URL">
+        <mat-icon>link</mat-icon>
+      </button>
+    </div>
+    <p class="share-text">Share this code with your friends to join!</p>
+  </div>
+
+  <mat-card class="players-card">
+    <mat-card-header>
+      <mat-card-title>Players ({{ game.players.length }})</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="players-list">
+        @for (player of game.players; track player.name) {
+          <div class="player-item">
+            <span class="player-avatar">{{ player.avatar || '👤' }}</span>
+            <span class="player-name">{{ player.name }}</span>
+            @if (player.name === playerName) {
+              <span class="indicator-badge">You</span>
+            }
+            @if (player.name === game.host) {
+              <span class="indicator-badge">HOST</span>
+            }
+            @if (isHost && player.name !== game.host) {
+              <button
+                matMiniFab
+                matTooltip="Remove player"
+                class="remove-player-btn"
+                color="secondary"
+                (click)="onRemovePlayer(player.name)"
+              >
+                <mat-icon>person_remove</mat-icon>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </mat-card-content>
+    @if (isHost) {
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="onStartGame()" [disabled]="game.players.length < 2">
+          Start Game
+        </button>
+      </mat-card-actions>
+    } @else {
+      <mat-card-actions>
+        <p class="waiting-text">Waiting for {{ game.host }} to start the game...</p>
+      </mat-card-actions>
+    }
+  </mat-card>
+</div>

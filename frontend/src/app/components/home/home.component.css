@@ -8,6 +8,11 @@
   text-align: center;
 }
 
+.title {
+  display: flex;
+  justify-content: center;
+}
+
 .container h1 {
   font-size: 2rem;
   margin: 0;
@@ -15,18 +20,15 @@
   letter-spacing: -0.5px;
   position: relative;
   overflow: hidden;
-
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-
   background-image: linear-gradient(
     100deg,
     var(--spotify-white) 45%,
     var(--spotify-green) 50%,
     var(--spotify-white) 55%
   );
-
   background-size: 200% 100%;
   animation: shimmer-text-animation 10s infinite linear;
 }
@@ -41,16 +43,7 @@
 }
 
 .step-content {
-  animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  animation: fadeIn 1s ease-out;
 }
 
 /* Game Types Section */
