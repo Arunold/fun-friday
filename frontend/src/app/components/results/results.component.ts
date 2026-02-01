@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -30,12 +30,12 @@ import { NavbarComponent } from '../navbar/navbar.component';
   ],
 })
 export class ResultsComponent implements OnInit, OnDestroy {
-  game: Game | undefined;
+  game = signal<Game | undefined>(undefined);
   gameId: string | null = null;
   playerName = '';
   playerAvatar = '👤';
   isHost = false;
-  isLoading = true;
+  isLoading = signal(true);
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -52,8 +52,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
     // Try to get game data from navigation state first
     const navState = history.state;
     if (navState?.game) {
-      this.game = navState.game;
-      this.isLoading = false;
+      this.game.set(navState.game);
+      this.isLoading.set(false);
       this.subscribeToGameUpdates();
       return;
     }
@@ -71,7 +71,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
     this.gameService.getGameStatus(this.gameId).subscribe({
       next: status => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         if (!status.exists) {
           this.router.navigate(['/error', 'game-ended']);
           return;
@@ -79,7 +79,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
         this.subscribeToGameUpdates();
       },
       error: () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.router.navigate(['/error', 'game-ended']);
       },
     });
@@ -90,15 +90,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
     this.websocketService.connect();
     this.websocketService.subscribe('/topic/game/' + this.gameId, (message: unknown) => {
-      this.game = message as Game;
+      const game = message as Game;
+      this.game.set(game);
 
       // If host started a new game (play again), redirect to game
-      if (this.game.gameState === 'LOBBY') {
-        this.router.navigate(['/game', this.game.gameTypeId, this.gameId]);
+      if (game.gameState === 'LOBBY') {
+        this.router.navigate(['/game', game.gameTypeId, this.gameId]);
       }
       // If game is starting, redirect to the game
-      if (this.game.gameState === 'STARTING') {
-        this.router.navigate(['/game', this.game.gameTypeId, this.gameId]);
+      if (game.gameState === 'STARTING') {
+        this.router.navigate(['/game', game.gameTypeId, this.gameId]);
       }
     });
   }
@@ -110,14 +111,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   getWinner(): string {
-    if (!this.game || this.game.players.length === 0) return '';
-    const sorted = [...this.game.players].sort((a, b) => b.score - a.score);
+    const game = this.game();
+    if (!game || game.players.length === 0) return '';
+    const sorted = [...game.players].sort((a, b) => b.score - a.score);
     return sorted[0].name;
   }
 
   getWinnerScore(): number {
-    if (!this.game || this.game.players.length === 0) return 0;
-    const sorted = [...this.game.players].sort((a, b) => b.score - a.score);
+    const game = this.game();
+    if (!game || game.players.length === 0) return 0;
+    const sorted = [...game.players].sort((a, b) => b.score - a.score);
     return sorted[0].score;
   }
 
@@ -131,10 +134,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   changeGame(): void {
-    if (!this.gameId || !this.isHost || !this.game) return;
+    const game = this.game();
+    if (!this.gameId || !this.isHost || !game) return;
 
     const dialogRef = this.dialog.open(ChangeGameDialogComponent, {
-      data: { currentGameTypeId: this.game.gameTypeId },
+      data: { currentGameTypeId: game.gameTypeId },
       panelClass: 'change-game-dialog-panel',
     });
 

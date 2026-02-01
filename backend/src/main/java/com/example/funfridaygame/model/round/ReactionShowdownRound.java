@@ -80,17 +80,22 @@ public class ReactionShowdownRound extends BaseGameRound {
         ReactionData data = new ReactionData();
         data.setTapTime(tapTime);
 
-        if (phase == Phase.WAITING) {
-            // False start - tapped before signal
-            data.setFalseStart(true);
-            data.setReactionTime(-1);
-        } else if (phase == Phase.FAKEOUT) {
-            // Tapped on fake-out
-            data.setTappedFakeOut(true);
-            data.setReactionTime(-1);
-        } else {
-            // Valid tap - calculate reaction time
-            data.setReactionTime(tapTime - signalTime);
+        switch (phase) {
+            case WAITING -> {
+                // False start - tapped before signal
+                data.setFalseStart(true);
+                data.setReactionTime(-1);
+            }
+            case FAKEOUT -> {
+                // Tapped on fake-out
+                data.setTappedFakeOut(true);
+                data.setReactionTime(-1);
+            }
+            case REACT -> {
+                // Valid tap - calculate reaction time
+                data.setReactionTime(tapTime - signalTime);
+            }
+            default -> throw new IllegalStateException("Unexpected phase: " + phase);
         }
 
         playerReactions.put(playerName, data);

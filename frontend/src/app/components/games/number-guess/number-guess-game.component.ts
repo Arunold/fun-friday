@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -17,16 +17,16 @@ import { isNumberGuessRoundInfo } from '../../../utils/game-config.utils';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatInputModule,
     MatIconModule,
-    GameLayoutComponent
-  ]
+    GameLayoutComponent,
+  ],
 })
 export class NumberGuessGameComponent extends BaseGameComponent {
-  guessValue: number | null = null;
+  guessControl = new FormControl<number | null>(null);
   readonly gameIcon = 'casino';
 
   // Typed getter for round info
@@ -36,7 +36,7 @@ export class NumberGuessGameComponent extends BaseGameComponent {
   }
 
   protected onNewRound(): void {
-    this.guessValue = null;
+    this.guessControl.setValue(null);
   }
 
   protected checkIfPlayerAnswered(): void {
@@ -46,12 +46,12 @@ export class NumberGuessGameComponent extends BaseGameComponent {
   }
 
   submitGuess(): void {
-    if (!this.gameId || this.guessValue === null || this.hasGuessed) return;
+    if (!this.gameId || this.guessControl.value === null || this.hasGuessed) return;
 
     this.websocketService.sendMessage('/app/guess', {
       gameId: this.gameId,
       playerName: this.playerName,
-      guess: this.guessValue
+      guess: this.guessControl.value,
     });
     this.hasGuessed = true;
   }

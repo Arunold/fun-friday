@@ -20,7 +20,7 @@ RUN npm run build -- --configuration=production
 # ==========================================
 # Stage 2: Build Backend (Spring Boot)
 # ==========================================
-FROM gradle:8.8-jdk17-alpine AS backend-build
+FROM gradle:8.10-jdk21-alpine AS backend-build
 
 WORKDIR /app/backend
 
@@ -43,7 +43,7 @@ RUN gradle bootJar --no-daemon -x test -x checkstyleMain -x checkstyleTest
 # ==========================================
 # Stage 3: Runtime Image
 # ==========================================
-FROM eclipse-temurin:17-jre-alpine AS runtime
+FROM eclipse-temurin:21-jre-alpine AS runtime
 
 WORKDIR /app
 

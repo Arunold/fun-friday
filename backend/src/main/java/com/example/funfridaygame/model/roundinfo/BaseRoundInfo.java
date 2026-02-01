@@ -49,22 +49,19 @@ public abstract class BaseRoundInfo {
         if (round == null) {
             return null;
         }
-        if (round instanceof NumberGuessRound ngRound) {
-            return new NumberGuessRoundInfo(ngRound, includeTarget);
-        } else if (round instanceof WordScrambleRound wsRound) {
-            return new WordScrambleRoundInfo(wsRound, includeTarget);
-        } else if (round instanceof PictionaryRound pRound) {
-            PictionaryConfig pConfig =
-                    config instanceof PictionaryConfig ? (PictionaryConfig) config : null;
-            return new PictionaryRoundInfo(pRound, includeTarget, pConfig);
-        } else if (round instanceof SpeedTypingRound stRound) {
-            return new SpeedTypingRoundInfo(stRound, includeTarget);
-        } else if (round instanceof ReactionShowdownRound rsRound) {
-            return new ReactionShowdownRoundInfo(rsRound);
-        } else if (round instanceof SlidingPuzzleRound spRound) {
-            return new SlidingPuzzleRoundInfo(spRound);
-        }
-
-        throw new IllegalArgumentException("Unknown round type: " + round.getClass().getName());
+        return switch (round) {
+            case NumberGuessRound ngRound -> new NumberGuessRoundInfo(ngRound, includeTarget);
+            case WordScrambleRound wsRound -> new WordScrambleRoundInfo(wsRound, includeTarget);
+            case PictionaryRound pRound -> {
+                PictionaryConfig pConfig = config instanceof PictionaryConfig c ? c : null;
+                yield new PictionaryRoundInfo(pRound, includeTarget, pConfig);
+            }
+            case SpeedTypingRound stRound -> new SpeedTypingRoundInfo(stRound, includeTarget);
+            case ReactionShowdownRound rsRound -> new ReactionShowdownRoundInfo(rsRound);
+            case SlidingPuzzleRound spRound -> new SlidingPuzzleRoundInfo(spRound);
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unknown round type: " + round.getClass().getName());
+        };
     }
 }

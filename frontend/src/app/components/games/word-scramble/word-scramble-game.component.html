@@ -36,13 +36,18 @@
               <input
                 matInput
                 type="text"
-                [(ngModel)]="wordGuessValue"
+                [formControl]="wordGuessControl"
                 (keyup.enter)="submitWordGuess()"
                 autocomplete="off"
                 spellcheck="false"
               />
             </mat-form-field>
-            <button mat-raised-button color="primary" (click)="submitWordGuess()" [disabled]="!wordGuessValue.trim()">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="submitWordGuess()"
+              [disabled]="!wordGuessControl.value?.trim()"
+            >
               Submit Answer
             </button>
           </div>

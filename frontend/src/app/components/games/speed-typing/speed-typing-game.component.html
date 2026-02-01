@@ -46,8 +46,8 @@
                 #typingInput
                 matInput
                 type="text"
-                [(ngModel)]="typedText"
-                (ngModelChange)="onTyping()"
+                [formControl]="typedTextControl"
+                (input)="onTyping()"
                 autocomplete="off"
                 spellcheck="false"
                 autocapitalize="off"

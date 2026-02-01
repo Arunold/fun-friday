@@ -186,7 +186,7 @@ public class SpeedTypingRound extends BaseGameRound {
         }
 
         // First to finish wins
-        this.winner = finishOrder.get(0);
+        this.winner = finishOrder.getFirst();
         return this.winner;
     }
 

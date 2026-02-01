@@ -14,17 +14,12 @@
           <input
             matInput
             placeholder="6-character code"
-            [(ngModel)]="gameCode"
+            [formControl]="gameCodeControl"
             maxlength="6"
             style="text-transform: uppercase"
           />
         </mat-form-field>
-        <button
-          mat-raised-button
-          color="accent"
-          (click)="goToJoinSetup()"
-          [disabled]="!gameCode.trim() || gameCode.trim().length < 6"
-        >
+        <button mat-raised-button color="accent" (click)="goToJoinSetup()" [disabled]="isJoinDisabled">
           <mat-icon>login</mat-icon>
           Join Game
         </button>
@@ -37,16 +32,18 @@
     </div>
 
     <!-- Game Types Selection -->
-    @if (gameTypes.length > 0) {
+    @if (gameTypes().length > 0) {
       <div class="game-types-section">
         <h2>Host a New Game</h2>
         <p class="hint-text">Click a game card to start hosting</p>
         <div class="game-types-grid">
-          @for (gameType of gameTypes; track gameType.id) {
+          @for (gameType of gameTypes(); track gameType.id) {
             <mat-card matRipple class="game-type-card" (click)="selectGameType(gameType)">
               <mat-card-header>
-                <span class="game-icon">{{ gameType.icon }}</span>
-                <mat-card-title>{{ gameType.name }}</mat-card-title>
+                <div class="w-full flex justify-between">
+                  <mat-card-title>{{ gameType.name }}</mat-card-title>
+                  <span class="game-icon">{{ gameType.icon }}</span>
+                </div>
               </mat-card-header>
               <mat-card-content>
                 <p>{{ gameType.description }}</p>
@@ -59,9 +56,9 @@
     }
   </div>
 
-  @if (errorMessage) {
+  @if (errorMessage()) {
     <div class="error-message">
-      {{ errorMessage }}
+      {{ errorMessage() }}
     </div>
   }
 </div>

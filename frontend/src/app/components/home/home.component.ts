@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -16,7 +16,7 @@ import { GameType } from '../../models';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatInputModule,
     MatButtonModule,
@@ -24,13 +24,13 @@ import { GameType } from '../../models';
   ],
 })
 export class HomeComponent implements OnInit {
-  // Form fields
-  gameCode = '';
-  errorMessage = '';
+  // Form control for game code
+  gameCodeControl = new FormControl('');
 
-  // Game selection
-  gameTypes: GameType[] = [];
-  selectedGameType: GameType | null = null;
+  // Signals for reactive state
+  gameTypes = signal<GameType[]>([]);
+  errorMessage = signal('');
+  selectedGameType = signal<GameType | null>(null);
 
   private websocketService = inject(WebsocketService);
   private gameService = inject(GameService);
@@ -44,23 +44,29 @@ export class HomeComponent implements OnInit {
   loadGameTypes(): void {
     this.gameService.getGameTypes().subscribe({
       next: (types: GameType[]) => {
-        this.gameTypes = types;
+        this.gameTypes.set(types);
       },
       error: () => {
-        this.errorMessage = 'Failed to load game types. Is the backend running?';
+        this.errorMessage.set('Failed to load game types. Is the backend running?');
       },
     });
   }
 
   /** Select game type and immediately navigate to host setup */
   selectGameType(gameType: GameType): void {
-    this.selectedGameType = gameType;
+    this.selectedGameType.set(gameType);
     this.router.navigate(['/setup/host', gameType.id]);
   }
 
   goToJoinSetup(): void {
-    if (this.gameCode.trim().length >= 6) {
-      this.router.navigate(['/setup/join', this.gameCode.toUpperCase()]);
+    const code = this.gameCodeControl.value?.trim() || '';
+    if (code.length >= 6) {
+      this.router.navigate(['/setup/join', code.toUpperCase()]);
     }
+  }
+
+  get isJoinDisabled(): boolean {
+    const code = this.gameCodeControl.value?.trim() || '';
+    return code.length < 6;
   }
 }

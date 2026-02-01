@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -17,16 +17,16 @@ import { isWordScrambleRoundInfo } from '../../../utils/game-config.utils';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatInputModule,
     MatIconModule,
-    GameLayoutComponent
-  ]
+    GameLayoutComponent,
+  ],
 })
 export class WordScrambleGameComponent extends BaseGameComponent {
-  wordGuessValue = '';
+  wordGuessControl = new FormControl('');
   readonly gameIcon = 'text_rotation_none';
 
   // Typed getter for round info
@@ -36,7 +36,7 @@ export class WordScrambleGameComponent extends BaseGameComponent {
   }
 
   protected onNewRound(): void {
-    this.wordGuessValue = '';
+    this.wordGuessControl.setValue('');
   }
 
   protected checkIfPlayerAnswered(): void {
@@ -46,12 +46,13 @@ export class WordScrambleGameComponent extends BaseGameComponent {
   }
 
   submitWordGuess(): void {
-    if (!this.gameId || !this.wordGuessValue.trim() || this.hasGuessed) return;
+    const guess = this.wordGuessControl.value?.trim();
+    if (!this.gameId || !guess || this.hasGuessed) return;
 
     this.websocketService.sendMessage('/app/wordGuess', {
       gameId: this.gameId,
       playerName: this.playerName,
-      guess: this.wordGuessValue.trim()
+      guess,
     });
     this.hasGuessed = true;
   }

@@ -206,7 +206,7 @@ public class SlidingPuzzleRound extends BaseGameRound {
         if (solveOrder.isEmpty()) {
             return null;
         }
-        return solveOrder.get(0); // First player to solve wins
+        return solveOrder.getFirst(); // First player to solve wins
     }
 
     @Override

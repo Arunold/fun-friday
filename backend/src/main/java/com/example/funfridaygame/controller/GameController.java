@@ -89,23 +89,28 @@ public class GameController {
         config.setRoundDuration(roundDuration);
 
         // Apply request-specific settings to config
-        if (config instanceof WordScrambleConfig wsConfig) {
-            wsConfig.setWordLength(request.getWordLength() > 0 ? request.getWordLength() : 7);
-        } else if (config instanceof NumberGuessConfig ngConfig) {
-            ngConfig.setMinRange(request.getMinRange() > 0 ? request.getMinRange() : 1);
-            ngConfig.setMaxRange(request.getMaxRange() > 0 ? request.getMaxRange() : 100);
-        } else if (config instanceof PictionaryConfig pConfig) {
-            pConfig.setTotalTurns(game.getPlayers().size());
-        } else if (config instanceof SlidingPuzzleConfig spConfig) {
-            SlidingPuzzleConfig.Difficulty diff = parseDifficulty(request.getDifficulty());
-            spConfig.setDifficulty(diff);
-            spConfig.setGridSize(getGridSizeForDifficulty(diff));
-            config.setRoundDuration(getDurationForDifficulty(diff, roundDuration));
-        } else if (config instanceof SpeedTypingConfig stConfig) {
-            SpeedTypingConfig.Difficulty diff = parseSpeedTypingDifficulty(request.getDifficulty());
-            stConfig.setDifficulty(diff);
-        } else if (config instanceof ReactionShowdownConfig rsConfig) {
-            rsConfig.setIncludeFakeOuts(request.isIncludeFakeOuts());
+        switch (config) {
+            case WordScrambleConfig wsConfig ->
+                    wsConfig.setWordLength(
+                            request.getWordLength() > 0 ? request.getWordLength() : 7);
+            case NumberGuessConfig ngConfig -> {
+                ngConfig.setMinRange(request.getMinRange() > 0 ? request.getMinRange() : 1);
+                ngConfig.setMaxRange(request.getMaxRange() > 0 ? request.getMaxRange() : 100);
+            }
+            case PictionaryConfig pConfig -> pConfig.setTotalTurns(game.getPlayers().size());
+            case SlidingPuzzleConfig spConfig -> {
+                var diff = parseDifficulty(request.getDifficulty());
+                spConfig.setDifficulty(diff);
+                spConfig.setGridSize(getGridSizeForDifficulty(diff));
+                config.setRoundDuration(getDurationForDifficulty(diff, roundDuration));
+            }
+            case SpeedTypingConfig stConfig -> {
+                var diff = parseSpeedTypingDifficulty(request.getDifficulty());
+                stConfig.setDifficulty(diff);
+            }
+            case ReactionShowdownConfig rsConfig ->
+                    rsConfig.setIncludeFakeOuts(request.isIncludeFakeOuts());
+            default -> {}
         }
 
         game.setGameConfig(config);
@@ -270,24 +275,28 @@ public class GameController {
             config.setRoundDuration(roundDuration);
 
             // Apply game-specific settings
-            if (config instanceof WordScrambleConfig wsConfig) {
-                wsConfig.setWordLength(request.getWordLength() > 0 ? request.getWordLength() : 7);
-            } else if (config instanceof NumberGuessConfig ngConfig) {
-                ngConfig.setMinRange(request.getMinRange() > 0 ? request.getMinRange() : 1);
-                ngConfig.setMaxRange(request.getMaxRange() > 0 ? request.getMaxRange() : 100);
-            } else if (config instanceof PictionaryConfig pConfig) {
-                pConfig.setTotalTurns(game.getPlayers().size());
-            } else if (config instanceof SlidingPuzzleConfig spConfig) {
-                SlidingPuzzleConfig.Difficulty diff = parseDifficulty(request.getDifficulty());
-                spConfig.setDifficulty(diff);
-                spConfig.setGridSize(getGridSizeForDifficulty(diff));
-                config.setRoundDuration(getDurationForDifficulty(diff, roundDuration));
-            } else if (config instanceof SpeedTypingConfig stConfig) {
-                SpeedTypingConfig.Difficulty diff =
-                        parseSpeedTypingDifficulty(request.getDifficulty());
-                stConfig.setDifficulty(diff);
-            } else if (config instanceof ReactionShowdownConfig rsConfig) {
-                rsConfig.setIncludeFakeOuts(request.isIncludeFakeOuts());
+            switch (config) {
+                case WordScrambleConfig wsConfig ->
+                        wsConfig.setWordLength(
+                                request.getWordLength() > 0 ? request.getWordLength() : 7);
+                case NumberGuessConfig ngConfig -> {
+                    ngConfig.setMinRange(request.getMinRange() > 0 ? request.getMinRange() : 1);
+                    ngConfig.setMaxRange(request.getMaxRange() > 0 ? request.getMaxRange() : 100);
+                }
+                case PictionaryConfig pConfig -> pConfig.setTotalTurns(game.getPlayers().size());
+                case SlidingPuzzleConfig spConfig -> {
+                    var diff = parseDifficulty(request.getDifficulty());
+                    spConfig.setDifficulty(diff);
+                    spConfig.setGridSize(getGridSizeForDifficulty(diff));
+                    config.setRoundDuration(getDurationForDifficulty(diff, roundDuration));
+                }
+                case SpeedTypingConfig stConfig -> {
+                    var diff = parseSpeedTypingDifficulty(request.getDifficulty());
+                    stConfig.setDifficulty(diff);
+                }
+                case ReactionShowdownConfig rsConfig ->
+                        rsConfig.setIncludeFakeOuts(request.isIncludeFakeOuts());
+                default -> {}
             }
 
             game.setGameConfig(config);

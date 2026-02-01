@@ -32,13 +32,13 @@
               <input
                 matInput
                 type="number"
-                [(ngModel)]="guessValue"
+                [formControl]="guessControl"
                 [min]="roundInfo.minRange"
                 [max]="roundInfo.maxRange"
                 (keyup.enter)="submitGuess()"
               />
             </mat-form-field>
-            <button mat-raised-button color="primary" (click)="submitGuess()" [disabled]="guessValue === null">
+            <button mat-raised-button color="primary" (click)="submitGuess()" [disabled]="guessControl.value === null">
               Submit Guess
             </button>
           </div>

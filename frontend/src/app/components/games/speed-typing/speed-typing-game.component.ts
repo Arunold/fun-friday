@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -18,17 +18,17 @@ import { isSpeedTypingRoundInfo } from '../../../utils/game-config.utils';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatInputModule,
     MatIconModule,
     MatProgressBarModule,
-    GameLayoutComponent
-  ]
+    GameLayoutComponent,
+  ],
 })
 export class SpeedTypingGameComponent extends BaseGameComponent {
-  typedText = '';
+  typedTextControl = new FormControl('');
   readonly gameIcon = 'keyboard';
 
   @ViewChild('typingInput') typingInput!: ElementRef<HTMLInputElement>;
@@ -43,6 +43,10 @@ export class SpeedTypingGameComponent extends BaseGameComponent {
     return this.roundInfo?.targetText ?? '';
   }
 
+  get typedText(): string {
+    return this.typedTextControl.value ?? '';
+  }
+
   get myProgress(): PlayerProgressInfo | null {
     return this.roundInfo?.playerProgress?.[this.playerName] ?? null;
   }
@@ -52,7 +56,7 @@ export class SpeedTypingGameComponent extends BaseGameComponent {
   }
 
   protected onNewRound(): void {
-    this.typedText = '';
+    this.typedTextControl.setValue('');
     this.hasGuessed = false;
     // Focus the typing input after a short delay to ensure DOM is ready
     setTimeout(() => {
@@ -72,7 +76,7 @@ export class SpeedTypingGameComponent extends BaseGameComponent {
     this.websocketService.sendMessage('/app/typingProgress', {
       gameId: this.gameId,
       playerName: this.playerName,
-      typedText: this.typedText
+      typedText: this.typedText,
     });
   }
 
@@ -120,10 +124,14 @@ export class SpeedTypingGameComponent extends BaseGameComponent {
   getDifficultyLabel(): string {
     const difficulty = this.roundInfo?.difficulty;
     switch (difficulty) {
-      case 'EASY': return '🟢 Easy';
-      case 'MEDIUM': return '🟡 Medium';
-      case 'HARD': return '🔴 Hard';
-      default: return '';
+      case 'EASY':
+        return '🟢 Easy';
+      case 'MEDIUM':
+        return '🟡 Medium';
+      case 'HARD':
+        return '🔴 Hard';
+      default:
+        return '';
     }
   }
 

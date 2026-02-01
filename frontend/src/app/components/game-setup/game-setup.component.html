@@ -5,20 +5,20 @@
     </button>
 
     <!-- Badge showing what we're doing -->
-    @if (mode === 'host' && selectedGameType) {
+    @if (mode() === 'host' && selectedGameType()) {
       <div class="badge host-badge">
-        <span class="game-icon">{{ selectedGameType.icon }}</span>
-        <span>{{ selectedGameType.name }}</span>
+        <span class="game-icon">{{ selectedGameType()!.icon }}</span>
+        <span>{{ selectedGameType()!.name }}</span>
       </div>
     }
-    @if (mode === 'join') {
+    @if (mode() === 'join') {
       <div class="badge join-badge">
         <mat-icon>vpn_key</mat-icon>
-        <span>Joining: {{ gameCode }}</span>
+        <span>Joining: {{ gameCode() }}</span>
       </div>
     }
 
-    <h2>{{ mode === 'host' ? 'Setup Your Game' : 'Setup Your Profile' }}</h2>
+    <h2>{{ mode() === 'host' ? 'Setup Your Game' : 'Setup Your Profile' }}</h2>
 
     <!-- Avatar Selection (clickable) -->
     <div class="avatar-selector">
@@ -29,7 +29,7 @@
         (click)="openAvatarDialog()"
         (keydown.enter)="openAvatarDialog()"
       >
-        <span class="avatar-emoji">{{ selectedAvatarEmoji }}</span>
+        <span class="avatar-emoji">{{ selectedAvatarEmoji() }}</span>
       </div>
       <span class="avatar-hint">Click to change avatar</span>
     </div>
@@ -37,17 +37,17 @@
     <!-- Player Name -->
     <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>Your Name</mat-label>
-      <input matInput placeholder="Enter your name" [(ngModel)]="playerName" (keyup.enter)="onSubmit()" />
+      <input matInput placeholder="Enter your name" [formControl]="playerNameControl" (keyup.enter)="onSubmit()" />
     </mat-form-field>
 
     <!-- Game Config (Host only) -->
-    @if (mode === 'host') {
-      <div class="config-section">
+    @if (mode() === 'host') {
+      <div class="config-section" [formGroup]="configForm">
         <h3>Game Settings</h3>
         <div class="config-row">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Number of Rounds</mat-label>
-            <mat-select [(ngModel)]="gameConfig.totalRounds">
+            <mat-select formControlName="totalRounds">
               <mat-option [value]="2">2 Rounds</mat-option>
               <mat-option [value]="3">3 Rounds</mat-option>
               <mat-option [value]="5">5 Rounds</mat-option>
@@ -58,7 +58,7 @@
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Round Timer</mat-label>
-            <mat-select [(ngModel)]="gameConfig.roundDuration">
+            <mat-select formControlName="roundDuration">
               <mat-option [value]="15">15 seconds</mat-option>
               <mat-option [value]="30">30 seconds</mat-option>
               <mat-option [value]="45">45 seconds</mat-option>
@@ -69,97 +69,95 @@
             </mat-select>
           </mat-form-field>
 
-          @if (selectedGameType?.id === 'word-scramble') {
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Word Length</mat-label>
-              <mat-select [(ngModel)]="gameConfig.wordLength">
-                <mat-option [value]="3">3 Letters</mat-option>
-                <mat-option [value]="4">4 Letters</mat-option>
-                <mat-option [value]="5">5 Letters</mat-option>
-                <mat-option [value]="6">6 Letters</mat-option>
-                <mat-option [value]="7">7 Letters</mat-option>
-                <mat-option [value]="8">8 Letters</mat-option>
-                <mat-option [value]="9">9 Letters</mat-option>
-                <mat-option [value]="10">10 Letters</mat-option>
-              </mat-select>
-            </mat-form-field>
-          }
-
-          @if (selectedGameType?.id === 'sliding-puzzle') {
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Difficulty</mat-label>
-              <mat-select [(ngModel)]="gameConfig.difficulty">
-                <mat-option value="EASY">Easy (3x3)</mat-option>
-                <mat-option value="MEDIUM">Medium (4x4)</mat-option>
-                <mat-option value="HARD">Hard (5x5)</mat-option>
-              </mat-select>
-            </mat-form-field>
-          }
-
-          @if (selectedGameType?.id === 'number-guess') {
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Min Range</mat-label>
-              <mat-select [(ngModel)]="gameConfig.minRange">
-                <mat-option [value]="1">1</mat-option>
-                <mat-option [value]="10">10</mat-option>
-                <mat-option [value]="50">50</mat-option>
-                <mat-option [value]="100">100</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Max Range</mat-label>
-              <mat-select [(ngModel)]="gameConfig.maxRange">
-                <mat-option [value]="50">50</mat-option>
-                <mat-option [value]="100">100</mat-option>
-                <mat-option [value]="500">500</mat-option>
-                <mat-option [value]="1000">1000</mat-option>
-              </mat-select>
-            </mat-form-field>
-          }
-
-          @if (selectedGameType?.id === 'speed-typing') {
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Difficulty</mat-label>
-              <mat-select [(ngModel)]="gameConfig.difficulty">
-                <mat-option value="EASY">Easy (Short text)</mat-option>
-                <mat-option value="MEDIUM">Medium</mat-option>
-                <mat-option value="HARD">Hard (Long text)</mat-option>
-              </mat-select>
-            </mat-form-field>
-          }
-
-          @if (selectedGameType?.id === 'reaction-showdown') {
-            <div class="toggle-row">
-              <mat-slide-toggle color="primary" [(ngModel)]="gameConfig.includeFakeOuts">
-                Include Fake-outs
-              </mat-slide-toggle>
-            </div>
+          @switch (selectedGameType()?.id) {
+            @case ('word-scramble') {
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Word Length</mat-label>
+                <mat-select formControlName="wordLength">
+                  <mat-option [value]="3">3 Letters</mat-option>
+                  <mat-option [value]="4">4 Letters</mat-option>
+                  <mat-option [value]="5">5 Letters</mat-option>
+                  <mat-option [value]="6">6 Letters</mat-option>
+                  <mat-option [value]="7">7 Letters</mat-option>
+                  <mat-option [value]="8">8 Letters</mat-option>
+                  <mat-option [value]="9">9 Letters</mat-option>
+                  <mat-option [value]="10">10 Letters</mat-option>
+                </mat-select>
+              </mat-form-field>
+            }
+            @case ('sliding-puzzle') {
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Difficulty</mat-label>
+                <mat-select formControlName="difficulty">
+                  <mat-option value="EASY">Easy (3x3)</mat-option>
+                  <mat-option value="MEDIUM">Medium (4x4)</mat-option>
+                  <mat-option value="HARD">Hard (5x5)</mat-option>
+                </mat-select>
+              </mat-form-field>
+            }
+            @case ('number-guess') {
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Min Range</mat-label>
+                <mat-select formControlName="minRange">
+                  <mat-option [value]="1">1</mat-option>
+                  <mat-option [value]="10">10</mat-option>
+                  <mat-option [value]="50">50</mat-option>
+                  <mat-option [value]="100">100</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Max Range</mat-label>
+                <mat-select formControlName="maxRange">
+                  <mat-option [value]="50">50</mat-option>
+                  <mat-option [value]="100">100</mat-option>
+                  <mat-option [value]="500">500</mat-option>
+                  <mat-option [value]="1000">1000</mat-option>
+                </mat-select>
+              </mat-form-field>
+            }
+            @case ('speed-typing') {
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Difficulty</mat-label>
+                <mat-select formControlName="difficulty">
+                  <mat-option value="EASY">Easy (Short text)</mat-option>
+                  <mat-option value="MEDIUM">Medium</mat-option>
+                  <mat-option value="HARD">Hard (Long text)</mat-option>
+                </mat-select>
+              </mat-form-field>
+            }
+            @case ('reaction-showdown') {
+              <div class="toggle-row">
+                <mat-slide-toggle color="primary" formControlName="includeFakeOuts">
+                  Include Fake-outs
+                </mat-slide-toggle>
+              </div>
+            }
           }
         </div>
       </div>
     }
 
-    @if (errorMessage) {
+    @if (errorMessage()) {
       <div class="error-message">
         <mat-icon>error</mat-icon>
-        {{ errorMessage }}
+        {{ errorMessage() }}
       </div>
     }
 
     <button
       mat-raised-button
-      [color]="mode === 'host' ? 'primary' : 'accent'"
+      [color]="mode() === 'host' ? 'primary' : 'accent'"
       class="submit-btn"
-      [disabled]="!playerName.trim() || !selectedAvatarId || isLoading"
+      [disabled]="isSubmitDisabled"
       (click)="onSubmit()"
     >
-      @if (isLoading) {
+      @if (isLoading()) {
         <ng-container>
           <mat-icon class="spinning">refresh</mat-icon>
-          {{ mode === 'host' ? 'Creating...' : 'Joining...' }}
+          {{ mode() === 'host' ? 'Creating...' : 'Joining...' }}
         </ng-container>
       } @else {
-        {{ mode === 'host' ? 'Create Game' : 'Join Game' }}
+        {{ mode() === 'host' ? 'Create Game' : 'Join Game' }}
       }
     </button>
   </div>

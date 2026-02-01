@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, NgZone, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { WebsocketService, GameService } from '../../services';
@@ -23,10 +23,23 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
   isHost = false;
   playerAvatar = '👤';
   hasGuessed = false;
-  countdown = 0;
-  roundTimer = 0;
 
-  isLoading = true;
+  // Signals for reactive state
+  private _countdown = signal(0);
+  private _roundTimer = signal(0);
+  private _isLoading = signal(true);
+
+  get countdown(): number {
+    return this._countdown();
+  }
+
+  get roundTimer(): number {
+    return this._roundTimer();
+  }
+
+  get isLoading(): boolean {
+    return this._isLoading();
+  }
 
   protected countdownInterval: ReturnType<typeof setInterval> | null = null;
   protected roundTimerInterval: ReturnType<typeof setInterval> | null = null;
@@ -55,7 +68,7 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
 
     this.gameService.getGameStatus(this.gameId).subscribe({
       next: status => {
-        this.isLoading = false;
+        this._isLoading.set(false);
 
         if (!status.exists) {
           this.router.navigate(['/error', 'not-found']);
@@ -75,7 +88,7 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
         this.initializeGame();
       },
       error: () => {
-        this.isLoading = false;
+        this._isLoading.set(false);
         this.router.navigate(['/error', 'not-found']);
       },
     });
@@ -193,12 +206,12 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
 
   protected startCountdown(seconds: number): void {
     this.clearCountdown();
-    this.countdown = seconds;
+    this._countdown.set(seconds);
     this.ngZone.runOutsideAngular(() => {
       this.countdownInterval = setInterval(() => {
         this.ngZone.run(() => {
-          this.countdown--;
-          if (this.countdown <= 0) {
+          this._countdown.update(v => v - 1);
+          if (this._countdown() <= 0) {
             this.clearCountdown();
           }
         });
@@ -211,19 +224,19 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;
     }
-    this.countdown = 0;
+    this._countdown.set(0);
   }
 
   protected startRoundTimer(): void {
     this.clearRoundTimer();
     // Use game's configured round duration from gameConfig
     const duration = getRoundDuration(this.game);
-    this.roundTimer = duration;
+    this._roundTimer.set(duration);
     this.ngZone.runOutsideAngular(() => {
       this.roundTimerInterval = setInterval(() => {
         this.ngZone.run(() => {
-          this.roundTimer--;
-          if (this.roundTimer <= 0) {
+          this._roundTimer.update(v => v - 1);
+          if (this._roundTimer() <= 0) {
             this.clearRoundTimer();
           }
         });
@@ -236,7 +249,7 @@ export abstract class BaseGameComponent implements OnInit, OnDestroy {
       clearInterval(this.roundTimerInterval);
       this.roundTimerInterval = null;
     }
-    this.roundTimer = 0;
+    this._roundTimer.set(0);
   }
 
   startGame(): void {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
@@ -37,7 +37,7 @@ export interface SetupResult {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatInputModule,
     MatButtonModule,
@@ -51,25 +51,25 @@ export interface SetupResult {
   styleUrl: './game-setup.component.css',
 })
 export class GameSetupComponent implements OnInit {
-  mode: 'host' | 'join' = 'host';
-  selectedGameType: GameType | null = null;
-  gameCode = '';
+  mode = signal<'host' | 'join'>('host');
+  selectedGameType = signal<GameType | null>(null);
+  gameCode = signal('');
 
-  playerName = '';
-  selectedAvatarId = '';
-  selectedAvatarEmoji = '👨';
-  errorMessage = '';
-  isLoading = false;
+  playerNameControl = new FormControl('');
+  selectedAvatarId = signal('');
+  selectedAvatarEmoji = signal('👨');
+  errorMessage = signal('');
+  isLoading = signal(false);
 
-  gameConfig: GameConfig = {
-    totalRounds: 3,
-    wordLength: 7,
-    roundDuration: 30,
-    difficulty: 'MEDIUM',
-    minRange: 1,
-    maxRange: 100,
-    includeFakeOuts: true,
-  };
+  configForm = new FormGroup({
+    totalRounds: new FormControl(3),
+    wordLength: new FormControl(7),
+    roundDuration: new FormControl(30),
+    difficulty: new FormControl<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM'),
+    minRange: new FormControl(1),
+    maxRange: new FormControl(100),
+    includeFakeOuts: new FormControl(true),
+  });
 
   private dialog = inject(MatDialog);
   private router = inject(Router);
@@ -77,53 +77,57 @@ export class GameSetupComponent implements OnInit {
   private websocketService = inject(WebsocketService);
   private gameService = inject(GameService);
 
+  get isSubmitDisabled(): boolean {
+    return !this.playerNameControl.value?.trim() || !this.selectedAvatarId() || this.isLoading();
+  }
+
   ngOnInit(): void {
     // Determine mode based on route
     const url = this.router.url;
 
     if (url.includes('/setup/host/')) {
-      this.mode = 'host';
+      this.mode.set('host');
       const gameTypeId = this.route.snapshot.paramMap.get('gameTypeId');
       if (gameTypeId) {
         this.loadGameType(gameTypeId);
       }
     } else if (url.includes('/setup/join/')) {
-      this.mode = 'join';
-      this.gameCode = this.route.snapshot.paramMap.get('gameCode') || '';
+      this.mode.set('join');
+      this.gameCode.set(this.route.snapshot.paramMap.get('gameCode') || '');
     }
 
     // Connect WebSocket
     this.websocketService.connect();
 
     // Set default avatar
-    this.selectedAvatarId = 'm1';
-    this.selectedAvatarEmoji = '👨';
+    this.selectedAvatarId.set('m1');
+    this.selectedAvatarEmoji.set('👨');
   }
 
   loadGameType(gameTypeId: string): void {
     this.gameService.getGameTypes().subscribe({
       next: (types: GameType[]) => {
-        this.selectedGameType = types.find(t => t.id === gameTypeId) || null;
-        if (!this.selectedGameType) {
+        this.selectedGameType.set(types.find(t => t.id === gameTypeId) || null);
+        if (!this.selectedGameType()) {
           this.router.navigate(['/']);
         }
       },
       error: () => {
-        this.errorMessage = 'Failed to load game type';
+        this.errorMessage.set('Failed to load game type');
       },
     });
   }
 
   openAvatarDialog(): void {
     const dialogRef = this.dialog.open(AvatarDialogComponent, {
-      data: { selectedAvatar: this.selectedAvatarId },
+      data: { selectedAvatar: this.selectedAvatarId() },
       panelClass: 'avatar-dialog-panel',
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.selectedAvatarId = result.avatarId;
-        this.selectedAvatarEmoji = result.emoji;
+        this.selectedAvatarId.set(result.avatarId);
+        this.selectedAvatarEmoji.set(result.emoji);
       }
     });
   }
@@ -133,12 +137,12 @@ export class GameSetupComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.playerName.trim() || !this.selectedAvatarId) return;
+    if (!this.playerNameControl.value?.trim() || !this.selectedAvatarId()) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.isLoading.set(true);
+    this.errorMessage.set('');
 
-    if (this.mode === 'host') {
+    if (this.mode() === 'host') {
       this.createGame();
     } else {
       this.joinGame();
@@ -146,16 +150,17 @@ export class GameSetupComponent implements OnInit {
   }
 
   private createGame(): void {
-    if (!this.selectedGameType) return;
+    if (!this.selectedGameType()) return;
 
-    const hostName = this.playerName.trim();
-    const gameTypeId = this.selectedGameType.id;
+    const hostName = this.playerNameControl.value!.trim();
+    const gameTypeId = this.selectedGameType()!.id;
+    const config = this.configForm.value;
 
     this.websocketService.subscribe('/topic/created/' + hostName, (message: unknown) => {
       const game = message as Game;
       sessionStorage.setItem('playerName', hostName);
       sessionStorage.setItem('isHost', 'true');
-      sessionStorage.setItem('playerAvatar', this.selectedAvatarEmoji);
+      sessionStorage.setItem('playerAvatar', this.selectedAvatarEmoji());
       sessionStorage.setItem('initialGame', JSON.stringify(game));
       this.websocketService.unsubscribe('/topic/created/' + hostName);
       this.websocketService.unsubscribe('/topic/error/' + hostName);
@@ -164,33 +169,33 @@ export class GameSetupComponent implements OnInit {
 
     this.websocketService.subscribe('/topic/error/' + hostName, (message: unknown) => {
       const error = message as { error?: string };
-      this.isLoading = false;
-      this.errorMessage = error.error || 'Failed to create game';
+      this.isLoading.set(false);
+      this.errorMessage.set(error.error || 'Failed to create game');
     });
 
     this.websocketService.sendMessage('/app/create', {
       hostName,
       gameTypeId,
-      avatar: this.selectedAvatarEmoji,
-      totalRounds: this.gameConfig.totalRounds,
-      wordLength: this.gameConfig.wordLength,
-      roundDuration: this.gameConfig.roundDuration,
-      difficulty: this.gameConfig.difficulty,
-      minRange: this.gameConfig.minRange,
-      maxRange: this.gameConfig.maxRange,
-      includeFakeOuts: this.gameConfig.includeFakeOuts,
+      avatar: this.selectedAvatarEmoji(),
+      totalRounds: config.totalRounds,
+      wordLength: config.wordLength,
+      roundDuration: config.roundDuration,
+      difficulty: config.difficulty,
+      minRange: config.minRange,
+      maxRange: config.maxRange,
+      includeFakeOuts: config.includeFakeOuts,
     });
   }
 
   private joinGame(): void {
-    const playerName = this.playerName.trim();
-    const gameId = this.gameCode.toUpperCase();
+    const playerName = this.playerNameControl.value!.trim();
+    const gameId = this.gameCode().toUpperCase();
 
     this.websocketService.subscribe('/topic/game/' + gameId, (message: unknown) => {
       const game = message as Game;
       sessionStorage.setItem('playerName', playerName);
       sessionStorage.setItem('isHost', 'false');
-      sessionStorage.setItem('playerAvatar', this.selectedAvatarEmoji);
+      sessionStorage.setItem('playerAvatar', this.selectedAvatarEmoji());
       sessionStorage.setItem('initialGame', JSON.stringify(game));
       this.websocketService.unsubscribe('/topic/game/' + gameId);
       this.websocketService.unsubscribe('/topic/error/' + playerName);
@@ -199,14 +204,14 @@ export class GameSetupComponent implements OnInit {
 
     this.websocketService.subscribe('/topic/error/' + playerName, (message: unknown) => {
       const error = message as { error?: string };
-      this.isLoading = false;
-      this.errorMessage = error.error || 'Failed to join game';
+      this.isLoading.set(false);
+      this.errorMessage.set(error.error || 'Failed to join game');
     });
 
     this.websocketService.sendMessage('/app/joinWithProfile', {
       playerName,
       gameCode: gameId,
-      avatar: this.selectedAvatarEmoji,
+      avatar: this.selectedAvatarEmoji(),
     });
   }
 }
