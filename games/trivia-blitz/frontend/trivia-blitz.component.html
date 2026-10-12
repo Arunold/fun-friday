@@ -1,0 +1,156 @@
+@if (view(); as v) {
+  <div class="trivia" [class.revealed]="v.revealed">
+    <!-- Keyed by the question number: a new question re-creates the card and replays the entrance. -->
+    @for (key of [v.number]; track key) {
+      <section class="card" animate.enter="ff-enter-fade-up">
+        <div class="meta">
+          <span class="pill category" data-testid="category">
+            <span aria-hidden="true">{{ v.categoryIcon }}</span> {{ v.category }}
+          </span>
+          <span class="pill difficulty" [attr.data-level]="v.difficulty" data-testid="difficulty">
+            {{ difficultyLabel() }}
+          </span>
+          <span class="ff-spacer"></span>
+          @if (api.isPlaying()) {
+            <span class="pill streak" [class.hot]="myStreak() >= 2" [title]="streakHint()" data-testid="my-streak">
+              @if (myStreak() > 0) {
+                <span class="flame" aria-hidden="true">🔥</span>
+                <span
+                  ><b>{{ myStreak() }}</b> in a row</span
+                >
+              } @else {
+                No streak
+              }
+            </span>
+          }
+        </div>
+        <h2 class="question" [class.long]="longQuestion()" data-testid="question">{{ v.question }}</h2>
+      </section>
+
+      <div class="answers" role="group" aria-label="Answers">
+        @for (card of answers(); track card.index) {
+          <button
+            type="button"
+            class="answer"
+            [style.--i]="card.index"
+            [class.mine]="card.mine"
+            [class.correct]="card.correct"
+            [class.wrong]="card.wrong"
+            [class.dim]="card.dim"
+            [class.open]="canAnswer()"
+            [disabled]="!canAnswer()"
+            [attr.aria-pressed]="card.mine"
+            [attr.aria-label]="card.label"
+            [attr.data-testid]="'answer-' + card.index"
+            (click)="answer(card.index)"
+          >
+            <span class="badge" aria-hidden="true">
+              @if (card.correct) {
+                <mat-icon svgIcon="check" />
+              } @else if (card.wrong) {
+                <mat-icon svgIcon="close" />
+              } @else {
+                {{ card.letter }}
+              }
+            </span>
+            <span class="body">
+              <span class="text">{{ card.text }}</span>
+              @if (v.revealed && (card.pickers.length || card.hiddenPickers)) {
+                <span class="pickers" [attr.data-testid]="'pickers-' + card.index">
+                  @for (picker of card.pickers; track picker.player.id; let j = $index) {
+                    <span class="picker" [style.--j]="j" [title]="picker.title" [attr.data-player]="picker.player.name">
+                      <ff-player-chip [player]="picker.player" size="sm" [showName]="false" />
+                      @if (picker.streak >= 2) {
+                        <span class="picker-flame" aria-hidden="true">🔥</span>
+                      }
+                    </span>
+                  }
+                  @if (card.hiddenPickers) {
+                    <span class="more">+{{ card.hiddenPickers }}</span>
+                  }
+                </span>
+              }
+            </span>
+            @if (card.mine && !v.revealed) {
+              <span class="locked" data-testid="locked-in"><mat-icon svgIcon="check-circle" /> Locked in</span>
+            } @else if (card.mine) {
+              <span class="yours">Your pick</span>
+            }
+          </button>
+        }
+      </div>
+    }
+
+    <footer class="status">
+      @if (v.revealed) {
+        <div class="row" aria-live="polite">
+          @if (myResult(); as result) {
+            <span class="result" [attr.data-result]="result" data-testid="reveal-result">
+              @switch (result) {
+                @case ('correct') {
+                  <mat-icon svgIcon="check-circle" /> Correct · {{ seconds(myStatus()?.answerMillis) }}
+                }
+                @case ('wrong') {
+                  <mat-icon svgIcon="close" /> Not quite
+                }
+                @default {
+                  <mat-icon svgIcon="timer" /> No answer
+                }
+              }
+            </span>
+            @if (myStreak() >= 2) {
+              <span class="note hot" data-testid="streak-note">🔥 {{ myStreak() }} in a row</span>
+            } @else if (myStatus()?.lostStreak; as lost) {
+              <span class="note">💔 {{ lost }}-answer streak lost</span>
+            }
+            <span class="ff-spacer"></span>
+          }
+          @if (fastest(); as best) {
+            <span class="fastest" data-testid="fastest">
+              <mat-icon svgIcon="bolt" /> Fastest
+              <ff-player-chip [player]="best.player" size="sm" />
+              <b class="ff-tabular">{{ best.time }}</b>
+            </span>
+          } @else {
+            <span class="fastest none">Nobody got this one</span>
+          }
+        </div>
+        @if (v.fact) {
+          <p class="fact" data-testid="fact"><span aria-hidden="true">💡</span> {{ v.fact }}</p>
+        }
+      } @else {
+        <div class="row">
+          <span class="hint" aria-live="polite">
+            @if (!api.isPlaying()) {
+              Picks stay hidden until the reveal
+            } @else if (chosen() != null) {
+              Waiting for {{ plural(waitingFor(), 'more player') }}…
+            } @else if (error(); as message) {
+              <span class="error" role="alert">{{ message }}</span>
+            } @else {
+              Faster right answers score more — press <kbd class="ff-kbd">1</kbd>–<kbd class="ff-kbd">4</kbd> or
+              <kbd class="ff-kbd">A</kbd>–<kbd class="ff-kbd">D</kbd>
+            }
+          </span>
+          <span class="ff-spacer"></span>
+          <span class="answered ff-tabular" data-testid="answered-count">
+            {{ v.answeredCount }} of {{ v.players.length }} answered
+          </span>
+          <span class="seats" [class.crowded]="seats().length > 12" aria-hidden="true">
+            @for (seat of seats(); track seat.player.id) {
+              <span class="seat" [class.done]="seat.status.answered" [title]="seatTitle(seat)">
+                <ff-player-chip [player]="seat.player" size="sm" [showName]="false" />
+                @if (seat.status.streak >= 2) {
+                  <span class="seat-flame">🔥</span>
+                }
+                @if (seat.status.answered) {
+                  <span class="tick"><mat-icon svgIcon="check" /></span>
+                }
+              </span>
+            }
+          </span>
+        </div>
+      }
+    </footer>
+  </div>
+}

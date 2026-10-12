@@ -1,0 +1,44 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    // Downloads a matching JDK automatically when the requested toolchain isn't installed.
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'fun-friday'
+
+include 'sdk', 'runtime', 'testkit', 'app'
+
+/*
+ * Game modules are discovered automatically: every folder in ../games that has a "backend"
+ * directory becomes the subproject ":games:<folder>" (folders starting with "_" are templates).
+ * Adding a game therefore needs no Gradle changes.
+ *
+ * -PffGames=number-guess,word-scramble limits the build to some games (isolated work on one game).
+ */
+def selectedGames = providers.gradleProperty('ffGames')
+        .map { value -> value.split(',').collect { it.trim() }.findAll { it } as Set }
+        .getOrElse(null)
+
+def gamesDir = file('../games')
+if (gamesDir.isDirectory()) {
+    gamesDir.listFiles()
+            .findAll { dir ->
+                dir.isDirectory() && !dir.name.startsWith('_') &&
+                        new File(dir, 'backend').isDirectory() &&
+                        (selectedGames == null || selectedGames.contains(dir.name))
+            }
+            .sort { it.name }
+            .each { dir ->
+                def path = ":games:${dir.name}"
+                include path
+                project(path).projectDir = new File(dir, 'backend')
+                // Gradle 9 requires the intermediate ":games" project to have a real directory.
+                project(':games').projectDir = gamesDir
+            }
+}

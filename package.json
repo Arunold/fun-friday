@@ -1,29 +1,44 @@
 {
-  "name": "fun-friday-game",
-  "version": "1.0.0",
-  "description": "Fun Friday Game - Multiplayer party game platform",
+  "name": "fun-friday",
+  "version": "2.0.0",
   "private": true,
+  "description": "Fun Friday — real-time multiplayer party games (Spring Boot + Angular)",
+  "workspaces": [
+    "frontend",
+    "e2e"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "prepare": "husky",
-    "lint:frontend": "cd frontend && npm run lint",
-    "lint:backend": "cd backend && .\\gradlew checkstyleMain --no-daemon",
-    "format:frontend": "cd frontend && npm run format",
-    "format:backend": "cd backend && .\\gradlew spotlessApply --no-daemon",
-    "format:backend:check": "cd backend && .\\gradlew spotlessCheck --no-daemon",
+    "dev:backend": "node scripts/gradle.mjs :app:bootRun --args=--spring.profiles.active=dev",
+    "dev:frontend": "npm run start -w frontend",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "npm run build -w frontend",
+    "build:backend": "node scripts/gradle.mjs build -x test",
+    "test": "npm run test:backend && npm run e2e",
+    "test:backend": "node scripts/gradle.mjs test",
+    "e2e": "npm run test -w e2e",
     "lint": "npm run lint:frontend && npm run lint:backend",
-    "format": "npm run format:frontend && npm run format:backend",
-    "format:check": "cd frontend && npm run format:check"
+    "lint:frontend": "eslint .",
+    "lint:backend": "node scripts/gradle.mjs spotlessCheck checkstyleMain checkstyleTest",
+    "format": "prettier --write . && node scripts/gradle.mjs spotlessApply",
+    "format:check": "prettier --check .",
+    "generate:games": "node scripts/generate-game-registry.mjs",
+    "generate:api": "node scripts/gradle.mjs :app:test --tests com.example.funfridaygame.ApiContractTest --rerun && openapi-typescript docs/openapi.json -o frontend/src/app/core/api/schema.generated.ts",
+    "new-game": "node scripts/new-game.mjs"
   },
   "devDependencies": {
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.2"
-  },
-  "lint-staged": {
-    "frontend/src/**/*.{ts,html,css,scss}": [
-      "npx prettier --write --config frontend/.prettierrc"
-    ],
-    "frontend/src/**/*.ts": [
-      "npx eslint --config frontend/eslint.config.js --fix"
-    ]
+    "@angular/cli": "21.2.22",
+    "@eslint/js": "10.0.1",
+    "angular-eslint": "21.4.0",
+    "eslint": "10.10.0",
+    "husky": "9.1.7",
+    "lint-staged": "16.4.0",
+    "openapi-typescript": "7.13.0",
+    "prettier": "3.9.8",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.0"
   }
 }

@@ -1,0 +1,387 @@
+// Card flip length; keep in sync with FLIP_MS in the component.
+$flip: 460ms;
+
+:host {
+  // Fill the stage: the board's card size is derived from the space it gets.
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+}
+
+.game {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 22px 20px;
+}
+
+// ------------------------------------------------------------------ order of play
+.top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.order {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.seat {
+  --seat-color: var(--mat-sys-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 220px;
+  padding: 4px 6px 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-high);
+  transition:
+    background 240ms,
+    border-color 240ms,
+    box-shadow 240ms;
+
+  &.active {
+    border-color: var(--seat-color);
+    background: color-mix(in srgb, var(--seat-color) 18%, var(--mat-sys-surface-container-high));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--seat-color) 22%, transparent);
+  }
+
+  &.winner {
+    border-color: color-mix(in srgb, var(--ff-warning) 70%, transparent);
+  }
+
+  ff-player-chip {
+    min-width: 0;
+  }
+}
+
+.pairs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 26px;
+  height: 22px;
+  justify-content: center;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+
+  .active & {
+    background: var(--seat-color);
+    color: var(--mat-sys-surface);
+  }
+}
+
+.crown {
+  font-size: 12px;
+}
+
+.left {
+  flex: none;
+  color: var(--ff-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+// ------------------------------------------------------------------ banner
+.banner {
+  --turn-color: var(--mat-sys-primary);
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+}
+
+.banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+// The move timer, or 👀 while a miss is shown — same size, so the text doesn't jump.
+.slot {
+  flex: none;
+  width: 40px;
+  height: 40px;
+}
+
+.eyes {
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  animation: ff-pulse 1.2s ease-in-out infinite;
+}
+
+.banner-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  line-height: 1.2;
+}
+
+.title {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: color-mix(in srgb, var(--turn-color) 55%, var(--mat-sys-on-surface));
+
+  .mine & {
+    font-size: 24px;
+    background: linear-gradient(90deg, var(--mat-sys-primary), var(--mat-sys-tertiary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .miss & {
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+.sub {
+  min-height: 1.2em;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ff-text-muted);
+
+  &.alert {
+    color: var(--ff-warning);
+  }
+}
+
+.streak {
+  background: color-mix(in srgb, var(--ff-warning) 22%, var(--mat-sys-surface-container-highest));
+  color: var(--ff-warning);
+  font-weight: 800;
+}
+
+// ------------------------------------------------------------------ board
+.board {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+
+.grid {
+  position: relative;
+  --gap: clamp(6px, 1.4cqmin, 14px);
+  // The largest 3:4 card that lets the whole grid fit the board, capped for very large screens.
+  --card-w: min(
+    (100cqw - (var(--cols) - 1) * var(--gap)) / var(--cols),
+    (100cqh - (var(--rows) - 1) * var(--gap)) / var(--rows) * 0.75,
+    168px
+  );
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--card-w));
+  grid-auto-rows: calc(var(--card-w) * 4 / 3);
+  gap: var(--gap);
+}
+
+.card {
+  position: relative;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--card-w) * 0.13);
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+  perspective: 900px;
+  transition:
+    translate 180ms var(--ff-ease-out),
+    scale 180ms var(--ff-ease-out);
+
+  &.flippable {
+    cursor: pointer;
+
+    &:hover {
+      translate: 0 -4px;
+
+      .back {
+        box-shadow:
+          inset 0 0 0 2px color-mix(in srgb, var(--mat-sys-primary) 70%, transparent),
+          0 10px 22px rgb(0 0 0 / 38%);
+      }
+    }
+  }
+
+  &.pending {
+    scale: 0.96;
+  }
+
+  &:focus-visible {
+    outline-offset: 4px;
+  }
+
+  &.missed {
+    animation: ff-shake 460ms ease-in-out #{$flip - 60ms} both;
+  }
+
+  &.just-matched {
+    animation: mm-pop 560ms var(--ff-ease-spring) #{$flip - 120ms} both;
+
+    .front {
+      animation: mm-glow 1400ms ease-out #{$flip - 120ms} both;
+    }
+  }
+}
+
+.inner {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transform-style: preserve-3d;
+  transition: transform $flip var(--ff-ease-out);
+
+  .up & {
+    transform: rotateY(180deg);
+  }
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.back {
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--mat-sys-on-primary-container) 5%, transparent) 0 1.5px,
+      transparent 1.5px 8px
+    ),
+    radial-gradient(140% 100% at 15% 0%, color-mix(in srgb, var(--mat-sys-primary) 22%, transparent), transparent 58%),
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--mat-sys-primary-container) 55%, var(--mat-sys-surface-container-high)),
+      color-mix(in srgb, var(--mat-sys-primary-container) 26%, var(--mat-sys-surface-container-low))
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--mat-sys-on-primary-container) 18%, transparent),
+    0 6px 16px rgb(0 0 0 / 32%);
+  transition: box-shadow 180ms;
+
+  // A quiet frame and diamond, like the back of a playing card.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 8%;
+    border: 1.5px solid color-mix(in srgb, var(--mat-sys-on-primary-container) 20%, transparent);
+    border-radius: calc(var(--card-w) * 0.07);
+  }
+
+  &::after {
+    content: '';
+    width: 24%;
+    aspect-ratio: 1;
+    rotate: 45deg;
+    border-radius: 16%;
+    border: 1.5px solid color-mix(in srgb, var(--mat-sys-on-primary-container) 38%, transparent);
+    background: color-mix(in srgb, var(--mat-sys-on-primary-container) 12%, transparent);
+  }
+}
+
+.front {
+  transform: rotateY(180deg);
+  background: var(--mat-sys-surface-container-highest);
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--mat-sys-primary) 75%, transparent),
+    0 6px 16px rgb(0 0 0 / 30%);
+
+  .matched & {
+    background: color-mix(in srgb, var(--match-color) 24%, var(--mat-sys-surface-container-high));
+    box-shadow:
+      inset 0 0 0 2px var(--match-color),
+      0 6px 16px rgb(0 0 0 / 30%);
+  }
+
+  .leftover & {
+    background: var(--mat-sys-surface-container);
+    box-shadow: inset 0 0 0 1px var(--ff-border);
+
+    .emoji {
+      opacity: 0.55;
+      filter: grayscale(0.4);
+    }
+  }
+}
+
+.emoji {
+  font-size: calc(var(--card-w) * 0.54);
+  line-height: 1;
+  // Emoji glyphs sit slightly high in most fonts.
+  translate: 0 4%;
+  user-select: none;
+}
+
+.finder {
+  position: absolute;
+  top: 6%;
+  right: 6%;
+  display: grid;
+  place-items: center;
+  width: max(16px, calc(var(--card-w) * 0.24));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--match-color) 40%, var(--mat-sys-surface-container));
+  box-shadow: 0 0 0 1.5px var(--match-color);
+  font-size: max(10px, calc(var(--card-w) * 0.14));
+  line-height: 1;
+}
+
+// While it's my move, a soft glow sits behind the cards.
+.board::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--mat-sys-primary) 14%, transparent), transparent);
+  opacity: 0;
+  transition: opacity 400ms;
+  pointer-events: none;
+}
+
+.board.mine::before {
+  opacity: 1;
+}
+
+@keyframes mm-pop {
+  0%,
+  100% {
+    scale: 1;
+  }
+  45% {
+    scale: 1.08;
+  }
+}
+
+@keyframes mm-glow {
+  0% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}

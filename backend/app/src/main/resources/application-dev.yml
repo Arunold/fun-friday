@@ -1,0 +1,13 @@
+# Local development: `npm run dev:backend` (the Angular dev server proxies /api and /ws to :8080).
+app:
+  data-dir: ./build/dev-data
+
+logging:
+  level:
+    com.example.funfridaygame: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

@@ -1,0 +1,8 @@
+description = 'Test kit: runs a game module without Spring or WebSockets (scenario tests)'
+
+dependencies {
+    api project(':runtime')
+    // Converts and validates action payloads exactly like the real engine does.
+    api 'tools.jackson.core:jackson-databind'
+    api 'org.hibernate.validator:hibernate-validator'
+}

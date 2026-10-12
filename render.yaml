@@ -1,20 +1,19 @@
-# Render Blueprint - One-click deployment config
-# Only needed if you connect your Git repo to Render
-# Usage: Connect repo → Render auto-detects this file → Click Deploy
-
+# Render Blueprint — connect the repository on render.com and it deploys the Dockerfile.
+# The app reads $PORT (set by Render) and serves UI, REST and WebSocket from one origin.
 services:
   - type: web
-    name: fun-friday-game
+    name: fun-friday
     runtime: docker
     plan: free
-    region: oregon  # or singapore, frankfurt, ohio
-    healthCheckPath: /api/game-types
+    region: frankfurt # or oregon, ohio, singapore
+    healthCheckPath: /actuator/health
     envVars:
-      - key: PORT
-        value: 8080
+      - key: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError
+      # Only needed when the UI is served from another origin (comma-separated).
       - key: CORS_ALLOWED_ORIGINS
-        sync: false  # Set manually in Render dashboard after deploy
+        sync: false
       - key: WS_ALLOWED_ORIGINS
-        sync: false  # Set manually in Render dashboard after deploy
-      - key: JAVA_OPTS
-        value: -Xmx256m -Xms128m
+        sync: false
+    # The free plan has no persistent disk: game history starts empty after each deploy.
+    # On a paid plan, add a disk mounted at /app/data to keep it.

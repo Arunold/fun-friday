@@ -1,0 +1,249 @@
+@if (view(); as v) {
+  @if (local()) {
+    <!-- ================================================================ player -->
+    <div class="game" [style.--n]="v.size">
+      <div class="layout">
+        <section class="play">
+          <div
+            class="board"
+            role="group"
+            [class.solved]="solved()"
+            [attr.aria-label]="'Your board: ' + myInPlace() + ' of ' + tileCount() + ' tiles in place'"
+            data-testid="board"
+          >
+            <div class="slots" aria-hidden="true">
+              @for (slot of slots(); track slot) {
+                <span class="slot"></span>
+              }
+            </div>
+            @for (t of tiles(); track t.value) {
+              <button
+                type="button"
+                class="tile"
+                tabindex="-1"
+                [class.home]="t.home"
+                [class.movable]="t.movable && canMove()"
+                [class.lift]="lifted().has(t.value)"
+                [style.--x]="t.x"
+                [style.--y]="t.y"
+                [style.--hue]="t.hue"
+                [style.--wave]="t.wave"
+                [attr.aria-label]="'Tile ' + t.value + (t.home ? ', in place' : '')"
+                [attr.data-testid]="'tile-' + t.value"
+                [attr.data-cell]="t.y * v.size + t.x"
+                (pointerdown)="press($event, t.value)"
+                (pointerenter)="hovered.set(t.value)"
+                (pointerleave)="hovered.set(null)"
+              >
+                <span class="face"
+                  ><span class="num">{{ t.value }}</span></span
+                >
+              </button>
+            }
+
+            @if (solved()) {
+              <div class="banner win" role="status" animate.enter="ff-enter-pop" data-testid="solved">
+                <span class="banner-icon" aria-hidden="true">🎉</span>
+                <span class="banner-text">
+                  <b>Solved!{{ v.rank ? ' · ' + ordinal(v.rank) + ' place' : '' }}</b>
+                  <span class="banner-sub">
+                    {{ v.timeMs !== undefined ? formatTime(v.timeMs) + ' · ' : '' }}{{ myMoves() }} moves
+                  </span>
+                  @if (!v.revealed && othersSolving()) {
+                    <span class="banner-wait">Waiting for the others…</span>
+                  }
+                </span>
+              </div>
+            } @else if (v.revealed) {
+              <div class="banner" role="status" animate.enter="ff-enter-pop" data-testid="time-up">
+                <span class="banner-icon" aria-hidden="true">⏱️</span>
+                <span class="banner-text">
+                  <b>Time's up</b>
+                  <span class="banner-sub"
+                    >{{ myInPlace() }} of {{ tileCount() }} tiles in place · {{ myMoves() }} moves</span
+                  >
+                </span>
+              </div>
+            }
+          </div>
+
+          <p class="hint" [class.hidden]="!canMove()" data-testid="hint">
+            <span>Click a tile in the gap's row or column to slide it.</span>
+            <span>
+              <kbd class="ff-kbd">←</kbd><kbd class="ff-kbd">↑</kbd><kbd class="ff-kbd">→</kbd
+              ><kbd class="ff-kbd">↓</kbd> or <kbd class="ff-kbd">W</kbd><kbd class="ff-kbd">A</kbd
+              ><kbd class="ff-kbd">S</kbd><kbd class="ff-kbd">D</kbd>
+              slide a tile into the gap: ← moves its right neighbour left.
+            </span>
+          </p>
+        </section>
+
+        <aside class="side">
+          <div class="my-stats">
+            <div class="ring" [class.full]="solved()">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="track" cx="50" cy="50" [attr.r]="ringRadius" />
+                <circle
+                  class="bar"
+                  cx="50"
+                  cy="50"
+                  [attr.r]="ringRadius"
+                  [attr.stroke-dasharray]="ringLength"
+                  [style.stroke-dashoffset]="ringOffset(myProgress())"
+                />
+              </svg>
+              <span class="ring-label">
+                <b data-testid="my-progress">{{ myProgress() }}%</b>
+                <small>in place</small>
+              </span>
+            </div>
+            <dl class="stats">
+              <div>
+                <dt>Moves</dt>
+                <dd data-testid="moves">{{ myMoves() }}</dd>
+              </div>
+              <div>
+                <dt>Tiles home</dt>
+                <dd>
+                  {{ myInPlace() }}<small>/{{ tileCount() }}</small>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          @if (v.revealed) {
+            <h3 class="ff-eyebrow">Results</h3>
+            <ol class="list results" data-testid="results">
+              @for (e of ranking(); track e.status.playerId) {
+                <li
+                  class="row"
+                  [class.me]="e.me"
+                  [class.done]="e.status.finished"
+                  [style.--ff-player-color]="e.player.color"
+                  [attr.data-player]="e.player.name"
+                >
+                  <div class="row-top">
+                    <span class="place">{{ e.status.rank ? ordinal(e.status.rank) : '–' }}</span>
+                    <ff-player-chip [player]="e.player" size="sm" />
+                    <span class="ff-spacer"></span>
+                    @if (e.points !== null) {
+                      <b class="points" [class.zero]="!e.points">+{{ e.points }}</b>
+                    }
+                  </div>
+                  <div class="row-meta">
+                    @if (e.status.finished && e.status.timeMs !== undefined) {
+                      Solved in {{ formatTime(e.status.timeMs) }} · {{ e.status.moves }} moves
+                    } @else {
+                      {{ e.status.progress }}% in place · {{ e.status.moves }} moves
+                    }
+                  </div>
+                </li>
+              }
+            </ol>
+          } @else {
+            <h3 class="ff-eyebrow">Opponents</h3>
+            <ul class="list opponents" data-testid="opponents">
+              @for (e of opponents(); track e.status.playerId) {
+                <li
+                  class="row"
+                  [class.done]="e.status.finished"
+                  [style.--ff-player-color]="e.player.color"
+                  [attr.data-player]="e.player.name"
+                >
+                  <div class="row-top">
+                    <ff-player-chip [player]="e.player" size="sm" />
+                    <span class="ff-spacer"></span>
+                    @if (e.status.finished && e.status.rank) {
+                      <span class="badge">🏁 {{ ordinal(e.status.rank) }}</span>
+                    } @else {
+                      <b class="pct">{{ e.status.progress }}%</b>
+                    }
+                  </div>
+                  <div class="meter" aria-hidden="true"><span [style.width.%]="e.status.progress"></span></div>
+                  <div class="row-meta">
+                    {{ e.status.moves }} moves
+                    @if (e.status.finished && e.status.timeMs !== undefined) {
+                      · solved in {{ formatTime(e.status.timeMs) }}
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </aside>
+      </div>
+    </div>
+  } @else {
+    <!-- ================================================================ spectator -->
+    <div class="watch" [style.--n]="v.size">
+      <section class="scramble">
+        <h3 class="ff-eyebrow">Starting scramble</h3>
+        <div class="board-area">
+          <div class="board static" data-testid="start-board" aria-label="The starting scramble">
+            <div class="slots" aria-hidden="true">
+              @for (slot of slots(); track slot) {
+                <span class="slot"></span>
+              }
+            </div>
+            @for (t of startTiles(); track t.value) {
+              <span class="tile" [class.home]="t.home" [style.--x]="t.x" [style.--y]="t.y" [style.--hue]="t.hue">
+                <span class="face"
+                  ><span class="num">{{ t.value }}</span></span
+                >
+              </span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="leaders">
+        <h3 class="ff-eyebrow">{{ v.revealed ? 'Results' : 'Leader board' }}</h3>
+        <ol class="leader-grid" data-testid="leaderboard">
+          @for (e of ranking(); track e.status.playerId) {
+            <li
+              class="leader"
+              [class.done]="e.status.finished"
+              [style.--ff-player-color]="e.player.color"
+              [attr.data-player]="e.player.name"
+            >
+              <div class="ring small">
+                <svg viewBox="0 0 100 100" aria-hidden="true">
+                  <circle class="track" cx="50" cy="50" [attr.r]="ringRadius" />
+                  <circle
+                    class="bar"
+                    cx="50"
+                    cy="50"
+                    [attr.r]="ringRadius"
+                    [attr.stroke-dasharray]="ringLength"
+                    [style.stroke-dashoffset]="ringOffset(e.status.progress)"
+                  />
+                </svg>
+                <span class="ring-label">
+                  @if (e.status.finished && e.status.rank) {
+                    <b>{{ ordinal(e.status.rank) }}</b>
+                  } @else {
+                    <b>{{ e.status.progress }}%</b>
+                  }
+                </span>
+              </div>
+              <div class="leader-info">
+                <ff-player-chip [player]="e.player" size="sm" />
+                <span class="row-meta">
+                  {{ e.status.moves }} moves
+                  @if (e.status.finished && e.status.timeMs !== undefined) {
+                    · {{ formatTime(e.status.timeMs) }}
+                  }
+                </span>
+              </div>
+              @if (e.points !== null) {
+                <b class="points" [class.zero]="!e.points">+{{ e.points }}</b>
+              } @else if (e.status.finished) {
+                <span class="flag" aria-label="Solved">🏁</span>
+              }
+            </li>
+          }
+        </ol>
+      </section>
+    </div>
+  }
+}

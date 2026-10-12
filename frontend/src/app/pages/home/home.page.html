@@ -1,0 +1,69 @@
+<main class="home">
+  <header class="hero">
+    <span class="ff-eyebrow">Party games for your team</span>
+    <h1 class="ff-display">Fun <span class="ff-gradient-text">Friday</span> 🎉</h1>
+    <p class="tagline">
+      Quick real-time games for the end of the week. No sign-up — create a room, share the code, play together.
+    </p>
+  </header>
+
+  <aside class="side">
+    @if (store.session(); as session) {
+      <a class="rejoin ff-card" [routerLink]="['/room', session.code]" data-testid="rejoin">
+        <span
+          >You're in room <b class="ff-mono">{{ session.code }}</b></span
+        >
+        <span class="ff-row">Rejoin <mat-icon svgIcon="arrow-forward" /></span>
+      </a>
+    }
+
+    <section class="join ff-card" aria-labelledby="join-title">
+      <h2 id="join-title">Join a room</h2>
+      <p class="ff-muted">Got a code from a colleague? Enter it here.</p>
+      <form class="join-form" (ngSubmit)="join()">
+        <mat-form-field class="code-field">
+          <mat-label>Room code</mat-label>
+          <input
+            matInput
+            name="code"
+            class="ff-mono"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="ABCDE"
+            maxlength="5"
+            [ngModel]="code()"
+            (ngModelChange)="onCodeInput($event)"
+            data-testid="join-code"
+          />
+        </mat-form-field>
+        <button mat-flat-button class="ff-big" [disabled]="!codeValid()" data-testid="join-submit">
+          Join <mat-icon svgIcon="login" />
+        </button>
+      </form>
+    </section>
+  </aside>
+
+  <section class="games" aria-labelledby="games-title">
+    <div class="section-head">
+      <h2 id="games-title">Host a game</h2>
+      <a mat-button routerLink="/history"><mat-icon svgIcon="trophy" /> Hall of fame</a>
+    </div>
+
+    @if (catalog.games(); as games) {
+      <div class="grid ff-stagger">
+        @for (game of games; track game.id; let i = $index) {
+          <a class="game-link" [routerLink]="['/host', game.id]" [style.--i]="i" [attr.data-game]="game.id">
+            <ff-game-card [game]="game" />
+          </a>
+        }
+      </div>
+    } @else if (catalog.error(); as error) {
+      <div class="error ff-card" role="alert">
+        <span>{{ error }}</span>
+        <button mat-button (click)="catalog.load()"><mat-icon svgIcon="refresh" /> Retry</button>
+      </div>
+    } @else {
+      <mat-spinner diameter="36" class="spinner" />
+    }
+  </section>
+</main>

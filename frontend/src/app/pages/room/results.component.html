@@ -1,0 +1,122 @@
+<ff-confetti />
+
+<div class="results">
+  <section class="podium-area">
+    <span class="ff-eyebrow">{{ store.game()?.icon }} {{ store.game()?.name }} · Final results</span>
+    <h1 class="headline" data-testid="results-headline">{{ headline() }}</h1>
+    <div class="podium">
+      @for (place of podium(); track place.rank) {
+        <div class="place" [attr.data-rank]="place.rank">
+          <div class="who">
+            @for (standing of place.players; track standing.playerId) {
+              <div class="winner" [style.--ff-player-color]="standing.color">
+                <span class="avatar" aria-hidden="true">{{ standing.avatar }}</span>
+                <span class="name">{{ standing.name }}</span>
+                <b class="score" [ffCountUp]="standing.score" [countUpDuration]="1200"></b>
+              </div>
+            }
+          </div>
+          <div class="block">
+            <span class="medal" aria-hidden="true">{{ medal(place.rank) }}</span>
+            <span class="ff-visually-hidden">Place {{ place.rank }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="details">
+    <div class="ff-card panel">
+      <h3>Ranking</h3>
+      <ol class="standings" data-testid="standings">
+        @for (standing of standings(); track standing.playerId) {
+          <li [class.me]="standing.playerId === store.you()?.memberId">
+            <span class="rank">{{ medal(standing.rank) }}</span>
+            <span class="avatar" [style.--ff-player-color]="standing.color" aria-hidden="true">{{
+              standing.avatar
+            }}</span>
+            <span class="name">{{ standing.name }}</span>
+            <b class="ff-tabular">{{ standing.score }}</b>
+          </li>
+        }
+      </ol>
+    </div>
+
+    @if (awards().length) {
+      <div class="ff-card panel">
+        <h3>Awards</h3>
+        <ul class="awards">
+          @for (award of awards(); track award.title) {
+            <li>
+              <span class="award-emoji" aria-hidden="true">{{ award.emoji }}</span>
+              <span class="award-text">
+                <b>{{ award.title }}</b>
+                <span class="ff-muted"
+                  >{{ award.playerName }}
+                  @if (award.detail) {
+                    · {{ award.detail }}
+                  }
+                </span>
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (rounds().rounds.length > 1) {
+      <div class="ff-card panel">
+        <h3>Round by round</h3>
+        <div class="table-wrap">
+          <table class="breakdown">
+            <thead>
+              <tr>
+                <th scope="col">Player</th>
+                @for (round of rounds().rounds; track round) {
+                  <th scope="col" class="num">R{{ round }}</th>
+                }
+                <th scope="col" class="num">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (standing of standings(); track standing.playerId) {
+                <tr>
+                  <td>{{ standing.avatar }} {{ standing.name }}</td>
+                  @for (round of rounds().rounds; track round) {
+                    <td class="num">{{ rounds().points(standing.playerId, round) }}</td>
+                  }
+                  <td class="num total">{{ standing.score }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    @if (store.snapshot()?.cup?.length) {
+      <div class="ff-card panel">
+        <h3>🏆 Friday Cup</h3>
+        <ff-cup-table [entries]="store.snapshot()!.cup" />
+      </div>
+    }
+  </section>
+
+  <footer class="actions ff-card">
+    @if (store.isHost()) {
+      <span class="hint">What's next?</span>
+      <button mat-button (click)="actions.end()"><mat-icon svgIcon="close" /> End room</button>
+      <button mat-stroked-button (click)="actions.changeGame()" data-testid="results-change-game">
+        <mat-icon svgIcon="swap" /> Change game
+      </button>
+      <button mat-flat-button class="ff-big" (click)="playAgain()" data-testid="play-again">
+        <mat-icon svgIcon="replay" /> Play again
+      </button>
+    } @else {
+      <span class="hint">Waiting for {{ store.host()?.name }} to pick the next game…</span>
+      <button mat-stroked-button (click)="actions.leave()" data-testid="results-leave">
+        <mat-icon svgIcon="logout" /> Leave room
+      </button>
+    }
+  </footer>
+</div>

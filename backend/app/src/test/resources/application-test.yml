@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:funfriday-test-${random.uuid};DB_CLOSE_DELAY=-1
+
+springdoc:
+  api-docs:
+    enabled: true
+
+app:
+  e2e:
+    enabled: true
+  timing:
+    start-countdown: 200ms
+    reveal: 300ms
+    presence-grace: 500ms
+    broadcast-coalesce: 20ms

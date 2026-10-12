@@ -1,0 +1,98 @@
+@if (view(); as v) {
+  <div class="game" [class.revealed]="v.revealed">
+    <header class="top">
+      <ol class="order" aria-label="Order of play">
+        @for (seat of seats(); track seat.progress.playerId) {
+          <li
+            class="seat"
+            [class.active]="seat.active"
+            [class.me]="seat.player.id === api.meId()"
+            [class.winner]="seat.progress.mostPairs"
+            [style.--seat-color]="seat.player.color"
+            [attr.aria-current]="seat.active ? 'step' : null"
+            [attr.data-testid]="'seat-' + seat.player.name"
+          >
+            <ff-player-chip [player]="seat.player" size="sm" />
+            <span class="pairs" [attr.aria-label]="seat.progress.pairs + ' pairs'">
+              @if (seat.progress.mostPairs) {
+                <span class="crown" aria-hidden="true">👑</span>
+              }
+              {{ seat.progress.pairs }}
+            </span>
+          </li>
+        }
+      </ol>
+      <span class="left ff-pill" data-testid="pairs-left">
+        <span aria-hidden="true">🃏</span> {{ v.pairsLeft }} / {{ v.pairsTotal }} pairs left
+      </span>
+    </header>
+
+    @if (!v.revealed) {
+      <section
+        class="banner"
+        [class.mine]="banner().mine"
+        [class.miss]="banner().miss"
+        [style.--turn-color]="banner().color"
+      >
+        @for (b of [banner()]; track b.key) {
+          <div class="banner-inner" animate.enter="ff-enter-fade-up">
+            @if (moveLeftMs() !== null) {
+              <ff-timer-ring class="slot" [remainingMs]="moveLeftMs()" [totalMs]="v.moveTimeMs" [size]="40" />
+            } @else if (v.resolving) {
+              <span class="slot eyes" aria-hidden="true">👀</span>
+            }
+            <div class="banner-text">
+              <span class="title" [attr.data-testid]="b.mine ? 'your-turn' : 'turn-banner'">{{ b.title }}</span>
+              @if (hint(); as h) {
+                <span class="sub alert" role="alert" data-testid="turn-hint" animate.enter="ff-shake">{{ h }}</span>
+              } @else {
+                <span class="sub" data-testid="turn-hint">{{ b.hint }}</span>
+              }
+            </div>
+            @if (v.streak > 1) {
+              <span class="streak ff-pill" animate.enter="ff-enter-pop">🔥 ×{{ v.streak }}</span>
+            }
+          </div>
+        }
+        <p class="ff-visually-hidden" aria-live="polite">{{ banner().title }} {{ banner().hint }}</p>
+      </section>
+    }
+
+    <section class="board" [class.mine]="canFlip()" [style.--cols]="v.cols" [style.--rows]="v.rows">
+      <div class="grid" role="group" aria-label="Cards">
+        @for (card of v.cards; track card.index) {
+          <button
+            type="button"
+            class="card"
+            [class.up]="card.state !== 'HIDDEN'"
+            [class.matched]="card.state === 'MATCHED'"
+            [class.leftover]="v.revealed && card.state === 'UP'"
+            [class.flippable]="flippable(card)"
+            [class.pending]="pending() === card.index"
+            [class.just-matched]="justMatched(card)"
+            [class.missed]="missed(card)"
+            [style.--match-color]="matcher(card)?.color"
+            [attr.aria-disabled]="flippable(card) ? null : 'true'"
+            [attr.aria-label]="cardLabel(card)"
+            [attr.tabindex]="api.isPlaying() ? null : -1"
+            [attr.data-index]="card.index"
+            [attr.data-state]="card.state"
+            [attr.data-testid]="'card-' + card.index"
+            (click)="flip(card)"
+            (keydown)="onKeydown($event, card.index)"
+          >
+            <span class="inner">
+              <span class="face back" aria-hidden="true"></span>
+              <span class="face front" aria-hidden="true">
+                <span class="emoji">{{ face(card) }}</span>
+                @if (matcher(card); as finder) {
+                  <span class="finder" [title]="finder.name">{{ finder.avatar }}</span>
+                }
+              </span>
+            </span>
+          </button>
+        }
+      </div>
+    </section>
+  </div>
+}

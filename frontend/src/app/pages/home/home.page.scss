@@ -1,0 +1,109 @@
+.home {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 56px 32px 48px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  grid-template-areas:
+    'hero side'
+    'games games';
+  gap: 40px 32px;
+}
+
+.hero {
+  grid-area: hero;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  animation: ff-fade-up 500ms var(--ff-ease-out) both;
+}
+
+.tagline {
+  max-width: 34em;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--ff-text-muted);
+}
+
+.side {
+  grid-area: side;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: ff-fade-up 500ms 80ms var(--ff-ease-out) both;
+}
+
+.rejoin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.join {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.join-form {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.code-field {
+  flex: 1;
+
+  input {
+    font-size: 22px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+}
+
+.games {
+  grid-area: games;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.game-link {
+  display: block;
+  text-decoration: none;
+  border-radius: var(--ff-radius);
+
+  ff-game-card {
+    height: 100%;
+  }
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--mat-sys-error);
+}
+
+.spinner {
+  margin: 32px auto;
+}

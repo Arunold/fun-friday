@@ -1,0 +1,15 @@
+# End-to-end tests (Playwright): in-memory DB, fast timings, test endpoint for secret state.
+spring:
+  datasource:
+    url: jdbc:h2:mem:funfriday-e2e;DB_CLOSE_DELAY=-1
+
+app:
+  e2e:
+    enabled: true
+  timing:
+    start-countdown: 1s
+    reveal: 1500ms
+    presence-grace: 3s
+  rate-limit:
+    capacity: 200
+    refill-per-second: 100

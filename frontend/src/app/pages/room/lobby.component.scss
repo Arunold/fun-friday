@@ -1,0 +1,257 @@
+:host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.lobby {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'game side'
+    'actions actions';
+  gap: 16px;
+  padding: 16px 20px 20px;
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.game {
+  grid-area: game;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: auto;
+  animation: ff-fade-up 400ms var(--ff-ease-out) both;
+}
+
+.game-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+
+  .icon {
+    font-size: 52px;
+    line-height: 1;
+  }
+
+  .title {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+}
+
+.rules {
+  margin: 0;
+  padding: 14px 14px 14px 34px;
+  border-radius: var(--ff-radius);
+  background: var(--mat-sys-surface-container-high);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.4;
+  color: var(--ff-text-muted);
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h3 {
+    font-size: 16px;
+  }
+}
+
+.side {
+  grid-area: side;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: auto;
+  animation: ff-fade-up 400ms 60ms var(--ff-ease-out) both;
+}
+
+.invite {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px;
+}
+
+.big-code {
+  border: 0;
+  background: none;
+  color: var(--mat-sys-on-surface);
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  cursor: pointer;
+  padding: 0 0 0 0.25em;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--ff-text-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+
+  .url {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  mat-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.people {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+}
+
+.people-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.players,
+.spectators {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.player,
+.spectators li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 4px 6px 4px 8px;
+  border-radius: 12px;
+  transition: background 150ms;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &.me {
+    background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+  }
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.host {
+    background: color-mix(in srgb, var(--ff-warning) 18%, transparent);
+    color: var(--ff-warning);
+  }
+
+  &.you {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+
+  &.ready {
+    color: var(--ff-success);
+  }
+
+  &.offline {
+    color: var(--ff-text-muted);
+  }
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// The kick button appears on hover and on keyboard focus (IMP-35).
+.kick {
+  opacity: 0;
+  transition: opacity 150ms;
+  color: var(--ff-text-muted);
+}
+
+.player:hover .kick,
+.player:focus-within .kick,
+.spectators li:hover .kick,
+.spectators li:focus-within .kick {
+  opacity: 1;
+}
+
+.watch-title {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ff-text-muted);
+}
+
+.cup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+}
+
+.actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 14px 18px;
+}
+
+.hint {
+  color: var(--ff-text-muted);
+  font-weight: 600;
+}
+
+.ready-toggle.is-ready {
+  --mat-button-outlined-label-text-color: var(--ff-success);
+  --mat-button-outlined-outline-color: var(--ff-success);
+}

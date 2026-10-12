@@ -1,0 +1,41 @@
+# Speed Typing - SHORT texts: one sentence, 40 to 70 characters.
+# One text per line, plain ASCII only (straight quotes, no dashes), family-friendly.
+# Lines starting with '#' and blank lines are ignored. TextLibraryTest checks every rule.
+The quick brown fox jumps over the lazy dog near the park.
+How vexingly quick daft zebras jump over the wooden fence!
+A wizard's job is to vex chumps quickly in fog and rain.
+Sphinx of black quartz, judge my vow to code better today.
+The five boxing wizards jump quickly through the hazy fog.
+Jackdaws love my big sphinx of quartz in the garden path.
+Crazy Frederick bought many very exquisite opal jewels today.
+Friday afternoons are made for snacks, laughs and quick games.
+Please remember to water the office plants before the weekend.
+Our team meeting starts at ten, so bring your best ideas.
+Every great project begins with a single small step forward.
+The coffee machine on the third floor makes the best espresso.
+Keep calm, take a deep breath and type every letter carefully.
+A good joke and a warm cup of tea can brighten any Monday.
+Six curious penguins waddled across the frozen blue lake.
+The sun was shining as we walked along the quiet sandy beach.
+Never underestimate the power of a well-timed coffee break.
+My cat likes to sit on the keyboard during video calls.
+Bright yellow balloons floated slowly over the busy town square.
+Practice makes progress, and progress makes typing fun.
+Grandma baked twelve blueberry muffins for the bake sale.
+The library was so quiet that you could hear a pin drop.
+Two hikers reached the top of the hill just before sunset.
+Please save your work often, especially before lunch time.
+The orange kite danced in the wind high above the meadow.
+Fresh bread and strawberry jam make a perfect breakfast.
+Our robot vacuum got stuck under the sofa again this morning.
+Learning something new every day keeps the mind sharp.
+The whiteboard was covered in colorful sticky notes and arrows.
+Quick thinking and steady hands win most typing races.
+A tiny turtle crossed the garden path at its own slow pace.
+We celebrated the product launch with pizza and cupcakes.
+The train to the city leaves every twenty minutes on weekdays.
+Someone left a box of chocolate cookies in the kitchen.
+Typing fast is great, but typing right is even better.
+The lighthouse blinked steadily through the thick evening fog.
+Debugging is like being the detective in a mystery novel.
+Ship small changes often and celebrate every little win.

@@ -1,0 +1,529 @@
+// Fill the stage (its `.game > *` rule doesn't reach a dynamically created host element).
+:host {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+// ------------------------------------------------------------------ layout
+// The game area is a size container; board and side panel form one centred group whose board is
+// as big as fits (≈ 575 px at 1366×768, capped at 860 px).
+.game {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  container-type: size;
+  padding: 18px 24px 12px;
+}
+
+.layout {
+  --side: 272px;
+  --hint: 46px;
+  --board: min(100cqh - var(--hint) - 10px, 100cqw - var(--side) - 28px, 860px);
+
+  height: 100%;
+  display: grid;
+  grid-template-columns: var(--board) var(--side);
+  column-gap: 28px;
+  place-content: center;
+  align-items: start;
+}
+
+.play {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.hint {
+  height: var(--hint);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: nowrap;
+  color: var(--ff-text-muted);
+
+  &.hidden {
+    visibility: hidden; // keeps its space: no layout shift when the board locks
+  }
+
+  kbd {
+    margin: 0 1px;
+  }
+}
+
+// ------------------------------------------------------------------ board
+// The board is a size container too: everything inside scales with it (cqw = 1% of the board).
+.board {
+  --pad: 2.2cqw;
+  --gutter: calc(0.6cqw + 1px);
+  --cell: calc((100cqw - 2 * var(--pad)) / var(--n));
+  --radius: calc(var(--cell) * 0.13);
+
+  position: relative;
+  width: var(--board);
+  height: var(--board);
+  container-type: size;
+  border-radius: calc(var(--ff-radius) + 2px);
+  border: 1px solid var(--ff-border);
+  background: color-mix(in srgb, var(--mat-sys-surface-container-lowest) 82%, transparent);
+  box-shadow:
+    inset 0 2px 14px rgb(0 0 0 / 45%),
+    0 18px 44px rgb(0 0 0 / 28%);
+  touch-action: none;
+  user-select: none;
+  transition: box-shadow 400ms var(--ff-ease-out);
+
+  &.solved {
+    box-shadow:
+      inset 0 2px 14px rgb(0 0 0 / 45%),
+      0 0 0 2px color-mix(in srgb, var(--ff-success) 55%, transparent),
+      0 0 48px color-mix(in srgb, var(--ff-success) 22%, transparent);
+  }
+}
+
+.slots {
+  position: absolute;
+  inset: var(--pad);
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  grid-template-rows: repeat(var(--n), 1fr);
+}
+
+.slot {
+  margin: var(--gutter);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--mat-sys-surface-container) 70%, transparent);
+  box-shadow: inset 0 2px 8px rgb(0 0 0 / 45%);
+}
+
+// Positioned by transform only (one cell = 100% of its own size), so slides are GPU-smooth.
+.tile {
+  position: absolute;
+  left: var(--pad);
+  top: var(--pad);
+  width: var(--cell);
+  height: var(--cell);
+  margin: 0;
+  padding: var(--gutter);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate(calc(var(--x) * 100%), calc(var(--y) * 100%));
+  transition: transform 120ms cubic-bezier(0.25, 0.8, 0.35, 1);
+
+  &.movable {
+    cursor: pointer;
+  }
+}
+
+// The visible tile. Its hue follows the tile's home cell, so the solved board is one smooth
+// gradient from the primary to the tertiary colour (tokens; only lightness and chroma are set).
+.face {
+  --tile: color-mix(in oklch, var(--mat-sys-tertiary) calc(var(--hue) * 100%), var(--mat-sys-primary));
+
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  background:
+    linear-gradient(155deg, rgb(255 255 255 / 22%), rgb(255 255 255 / 0%) 46%, rgb(0 0 0 / 18%)),
+    oklch(from var(--tile) 0.52 calc(c * 1.3) h);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 18%),
+    0 2px 6px rgb(0 0 0 / 35%);
+  transition:
+    box-shadow 250ms ease-out,
+    filter 150ms ease-out;
+}
+
+.num {
+  font-size: calc(var(--cell) * 0.38);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: oklch(from var(--tile) 0.97 calc(c * 0.25) h);
+  text-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+}
+
+// A tile at home glows softly.
+.tile.home .face {
+  box-shadow:
+    inset 0 0 0 calc(var(--gutter) * 0.45) color-mix(in srgb, var(--ff-success) 70%, transparent),
+    0 0 calc(var(--cell) * 0.16) color-mix(in srgb, var(--ff-success) 32%, transparent),
+    0 2px 6px rgb(0 0 0 / 35%);
+}
+
+.tile.lift .face {
+  filter: brightness(1.16) saturate(1.1);
+}
+
+// Solved: the glow gives way to the full picture and a wave runs across it.
+.board.solved .tile .face {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 16%),
+    0 2px 6px rgb(0 0 0 / 35%);
+  animation: sp-wave 720ms var(--ff-ease-out) calc(var(--wave, 0) * 60ms) both;
+}
+
+@keyframes sp-wave {
+  0%,
+  100% {
+    scale: 1;
+    filter: none;
+  }
+  40% {
+    scale: 1.07;
+    filter: brightness(1.3);
+  }
+}
+
+// ------------------------------------------------------------------ banners
+.banner {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: fit-content;
+  height: fit-content;
+  max-width: 88%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px;
+  border-radius: var(--ff-radius);
+  border: 1px solid var(--ff-border);
+  background: color-mix(in srgb, var(--mat-sys-surface-container-highest) 86%, transparent);
+  box-shadow: var(--ff-shadow);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+
+  &.win {
+    border-color: color-mix(in srgb, var(--ff-success) 55%, transparent);
+  }
+}
+
+.banner-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+
+  b {
+    font-size: 20px;
+    font-weight: 800;
+  }
+}
+
+.banner-sub {
+  color: var(--ff-text-muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.banner-wait {
+  font-size: 13px;
+  color: var(--ff-text-muted);
+}
+
+// ------------------------------------------------------------------ side panel
+.side {
+  height: var(--board);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.my-stats {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  border-radius: var(--ff-radius);
+  border: 1px solid var(--ff-border);
+  background: var(--mat-sys-surface-container-high);
+}
+
+.ring {
+  position: relative;
+  flex: none;
+  width: 104px;
+  height: 104px;
+
+  svg {
+    position: absolute;
+    inset: 0;
+    rotate: -90deg;
+  }
+
+  circle {
+    fill: none;
+    stroke-width: 8;
+  }
+
+  .track {
+    stroke: var(--mat-sys-surface-container-highest);
+  }
+
+  .bar {
+    stroke: var(--mat-sys-primary);
+    stroke-linecap: round;
+    transition:
+      stroke-dashoffset 300ms var(--ff-ease-out),
+      stroke 300ms;
+  }
+
+  &.full .bar {
+    stroke: var(--ff-success);
+  }
+
+  &.small {
+    width: 60px;
+    height: 60px;
+
+    circle {
+      stroke-width: 9;
+    }
+
+    .bar {
+      stroke: var(--ff-player-color);
+    }
+
+    .ring-label b {
+      font-size: 15px;
+    }
+  }
+}
+
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  line-height: 1.1;
+
+  b {
+    font-size: 24px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ff-text-muted);
+  }
+}
+
+.stats {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+
+  dt {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ff-text-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+
+    small {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ff-text-muted);
+    }
+  }
+}
+
+.list {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: auto;
+}
+
+.row {
+  flex: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: var(--mat-sys-surface-container);
+  transition:
+    border-color 300ms,
+    background 300ms;
+
+  &.done {
+    border-color: color-mix(in srgb, var(--ff-success) 35%, transparent);
+  }
+
+  &.me {
+    background: color-mix(in srgb, var(--mat-sys-primary) 12%, var(--mat-sys-surface-container));
+  }
+}
+
+.row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.row-meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ff-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.meter {
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ff-player-color);
+    transition: width 300ms var(--ff-ease-out);
+  }
+}
+
+.pct {
+  font-variant-numeric: tabular-nums;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ff-success) 18%, transparent);
+  color: var(--ff-success);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.place {
+  width: 30px;
+  flex: none;
+  font-weight: 800;
+  color: var(--ff-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.points {
+  color: var(--ff-success);
+  font-variant-numeric: tabular-nums;
+
+  &.zero {
+    color: var(--ff-text-muted);
+  }
+}
+
+// ------------------------------------------------------------------ spectators
+.watch {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 28px;
+  padding: 24px 28px;
+}
+
+.scramble,
+.leaders {
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.board-area {
+  flex: 1;
+  min-height: 0;
+  container-type: size;
+  display: grid;
+  place-items: start center;
+}
+
+.board.static {
+  width: min(100cqw, 100cqh, 480px);
+  height: min(100cqw, 100cqh, 480px);
+}
+
+.leader-grid {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  align-content: start;
+  gap: 12px;
+  overflow: auto;
+}
+
+.leader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--ff-radius);
+  border: 1px solid var(--ff-border);
+  background: var(--mat-sys-surface-container-high);
+  transition: border-color 300ms;
+
+  &.done {
+    border-color: color-mix(in srgb, var(--ff-success) 40%, transparent);
+  }
+}
+
+.leader-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.flag {
+  font-size: 20px;
+}

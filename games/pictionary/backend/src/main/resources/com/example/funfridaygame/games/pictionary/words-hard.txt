@@ -1,0 +1,117 @@
+# Pictionary — hard words: scenes, activities and tricky objects that need a clever idea.
+# One word or phrase per line (letters, spaces and hyphens). Lines starting with # are ignored.
+acrobat
+aquarium
+archaeologist
+avalanche
+bamboo
+barcode
+blizzard
+boomerang
+bulldozer
+bungee jumping
+carousel
+catapult
+cathedral
+chameleon
+chandelier
+chopsticks
+cobweb
+constellation
+conveyor belt
+coral reef
+crossroads
+dandelion
+daydream
+detective
+dreamcatcher
+earthquake
+eclipse
+electricity
+escalator
+ferris wheel
+fingerprint
+gondola
+graduation
+gravity
+greenhouse
+hammock
+handshake
+haunted house
+hiccup
+high five
+hopscotch
+hourglass
+hurricane
+ice skating
+jack-in-the-box
+jigsaw puzzle
+karaoke
+knight
+labyrinth
+lasso
+lemonade stand
+lumberjack
+magician
+marathon
+meditation
+mirage
+moustache
+nightmare
+orchestra
+origami
+parade
+pendulum
+periscope
+photographer
+pillow fight
+porcupine
+pyramid
+quicksand
+recycling
+referee
+reflection
+rock climbing
+roller coaster
+safari
+sandstorm
+satellite
+scuba diving
+sculpture
+seesaw
+shadow
+skyscraper
+sleepwalking
+sneeze
+snorkel
+snowball fight
+solar system
+stethoscope
+sunburn
+sunrise
+superhero
+thunderstorm
+tightrope
+time machine
+tiptoe
+toothpaste
+totem pole
+traffic jam
+trampoline
+treadmill
+treasure map
+tug of war
+typewriter
+upside down
+vending machine
+ventriloquist
+water slide
+wedding
+wheelbarrow
+whisper
+windsurfing
+x-ray
+yawn
+yoga
+zipper
+zookeeper

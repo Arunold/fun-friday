@@ -1,0 +1,166 @@
+@if (view(); as v) {
+  <div
+    class="game"
+    data-testid="stage"
+    [attr.data-state]="v.revealed ? 'REVEAL' : v.state"
+    [attr.data-signal]="v.signalId"
+  >
+    <header class="bar">
+      <ol class="pips" [attr.aria-label]="'Signal ' + v.signal + ' of ' + v.signals">
+        @for (pip of pips(); track $index) {
+          <li class="pip" [class]="pip"></li>
+        }
+      </ol>
+      @if (v.revealed) {
+        <span class="signal-label"><b>Round results</b></span>
+      } @else {
+        <span class="signal-label"
+          >Signal <b>{{ v.signal }}</b> / {{ v.signals }}</span
+        >
+      }
+      <span class="ff-spacer"></span>
+      @if (v.fakeouts) {
+        <span class="ff-pill fakeouts" title="A decoy colour may flash before green">😈 Fake-outs on</span>
+      }
+      @if (v.me; as me) {
+        <span class="ff-pill round-points" [class.neg]="me.roundPoints < 0" title="Your points this round">
+          {{ signed(me.roundPoints) }} <span class="ff-muted">this round</span>
+        </span>
+      }
+    </header>
+
+    @if (v.revealed) {
+      <section
+        class="board"
+        data-testid="round-table"
+        [class.dense]="tableRows().length > 8"
+        [style.--signals]="v.signals"
+        animate.enter="ff-enter-fade-up"
+      >
+        <div class="board-row head" role="row">
+          <span>#</span>
+          <span>Player</span>
+          @for (n of signalNumbers(); track n) {
+            <span class="num">Signal {{ n }}</span>
+          }
+          <span class="num">Best</span>
+          <span class="num">Avg</span>
+          <span class="num">Points</span>
+        </div>
+        @for (row of tableRows(); track row.playerId; let i = $index) {
+          <div class="board-row" role="row" [class.me]="row.me" [style.--i]="i" [attr.data-player]="row.player.name">
+            <span class="rank">{{ medal(row.rank) }}</span>
+            <ff-player-chip [player]="row.player" size="sm" />
+            @for (cell of row.cells; track $index) {
+              <span class="num cell" [class]="cell.kind" [class.best]="cell.best">{{ cell.text }}</span>
+            }
+            <span class="num strong">{{ row.bestMs ?? '–' }}</span>
+            <span class="num">{{ row.avgMs ?? '–' }}</span>
+            <span class="num points" [class.neg]="row.points < 0" [class.zero]="row.points === 0">{{
+              signed(row.points)
+            }}</span>
+          </div>
+        }
+        <p class="legend">Times in ms · ✋ false start (−25) · – no tap</p>
+      </section>
+    } @else {
+      <button
+        type="button"
+        class="target"
+        [class]="fieldClass()"
+        [disabled]="!canTap()"
+        (pointerdown)="onPointerDown($event)"
+        [attr.aria-label]="api.isPlaying() ? 'Tap target — tap or press Space when it turns green' : 'Signal'"
+        data-testid="tap-target"
+      >
+        <span class="orb" aria-hidden="true"></span>
+        <span class="content">
+          @switch (outcome().kind === 'none' || v.state === 'RESULT' ? v.state : outcome().kind) {
+            @case ('early') {
+              <span class="label bad" data-testid="false-start" animate.enter="ff-shake">Too soon!</span>
+              <span class="sub">
+                {{ jumpedOnFake() ? 'That was a fake-out 😈' : 'Wait for green next time' }} ·
+                <b class="penalty">−25</b>
+              </span>
+            }
+            @case ('tapped') {
+              <span class="big-time" data-testid="my-time">{{ tappedMs() }}<small>ms</small></span>
+              <span class="sub">Nice! Waiting for the others…</span>
+            }
+            @case ('rejected') {
+              <span class="label">Too late!</span>
+              <span class="sub">{{ rejection() }}</span>
+            }
+            @case ('WAITING') {
+              <span class="label">Wait for it…</span>
+              @if (api.isPlaying()) {
+                <span class="sub">Tap the moment it turns <b>green</b> · or press <kbd class="ff-kbd">Space</kbd></span>
+              } @else {
+                <span class="sub">The players tap the moment it turns <b>green</b></span>
+              }
+            }
+            @case ('FAKE') {
+              <span class="label">{{ fakeLabel() }}</span>
+            }
+            @case ('GO') {
+              <span class="label go-label">⚡ {{ api.isPlaying() ? 'TAP!' : 'GO!' }}</span>
+            }
+            @case ('RESULT') {
+              <span class="summary" data-testid="signal-result" animate.enter="ff-enter-pop">
+                @if (myEntry(); as mine) {
+                  @if (mine.ms !== undefined) {
+                    <span class="big-time" data-testid="my-time">{{ mine.ms }}<small>ms</small></span>
+                    <span class="rank-line">
+                      @if (mine.rank === 1) {
+                        ⚡ Fastest! · <b>+{{ mine.points }}</b>
+                      } @else {
+                        {{ ordinal(mine.rank ?? 0) }} · <b>+{{ mine.points }}</b>
+                      }
+                    </span>
+                  } @else if (mine.falseStart) {
+                    <span class="label bad">{{ mine.fake ? 'Fake-out!' : 'Too soon!' }}</span>
+                    <span class="rank-line"><b>−25</b></span>
+                  } @else {
+                    <span class="label quiet">Missed</span>
+                    <span class="rank-line">No tap this time</span>
+                  }
+                } @else if (fastest(); as best) {
+                  <span class="big-time">{{ best.ms }}<small>ms</small></span>
+                }
+                @if (fastest(); as best) {
+                  @if (!best.mine) {
+                    <span class="fastest-pill">
+                      ⚡ <ff-player-chip [player]="best.player" size="sm" /> was fastest
+                      @if (myEntry()) {
+                        · <b>{{ best.ms }} ms</b>
+                      }
+                    </span>
+                  }
+                } @else {
+                  <span class="label quiet">{{
+                    everyoneJumped() ? 'Everyone jumped the gun! 🐇' : 'Nobody made it'
+                  }}</span>
+                }
+              </span>
+            }
+          }
+        </span>
+      </button>
+    }
+
+    @if (!v.revealed) {
+      <ul class="players" aria-label="Players">
+        @for (chip of chips(); track chip.player.id) {
+          <li class="player" [class]="chip.mark" [class.me]="chip.me" [attr.data-player]="chip.player.name">
+            <ff-player-chip [player]="chip.player" size="sm" />
+            @if (chip.text) {
+              <span class="mark">{{ chip.text }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    <p class="ff-visually-hidden" aria-live="assertive">{{ announcement() }}</p>
+  </div>
+}

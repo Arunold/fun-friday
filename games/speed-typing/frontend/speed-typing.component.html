@@ -1,0 +1,150 @@
+@if (view(); as v) {
+  <div class="game" [class.revealed]="revealed()">
+    @if (revealed()) {
+      <!-- Reveal: the text once more, then the final table (points are on the scoreboard). -->
+      <figure class="quote" animate.enter="ff-enter-fade">
+        <figcaption>{{ difficultyLabel() }} text · {{ v.text.length }} characters</figcaption>
+        <blockquote data-testid="reveal-text">{{ v.text }}</blockquote>
+      </figure>
+      <ff-race-results [lines]="results()" [minAccuracy]="v.minAccuracy" />
+    } @else {
+      <header class="bar">
+        <span class="ff-pill" data-testid="difficulty"
+          >⌨️ {{ difficultyLabel() }} · {{ v.text.length }} characters</span
+        >
+        <span class="ff-pill">🎯 Min. accuracy {{ v.minAccuracy }}%</span>
+        <span class="ff-spacer"></span>
+        @if (racing()) {
+          <div class="stats">
+            <div class="stat" data-testid="my-wpm">
+              <b>{{ wpm() ?? '–' }}</b>
+              <small>WPM</small>
+            </div>
+            <div class="stat" [class.warn]="lowAccuracy()" data-testid="my-accuracy">
+              <b>{{ accuracy() ?? '–' }}{{ accuracy() == null ? '' : '%' }}</b>
+              <small>accuracy</small>
+            </div>
+            <div class="stat" data-testid="my-progress">
+              <b>{{ progress() }}%</b>
+              <small>progress</small>
+            </div>
+          </div>
+        } @else {
+          <span class="ff-pill watching">👀 Watching the race</span>
+        }
+      </header>
+
+      <section
+        class="board"
+        #board
+        [class.focused]="focused() && canType()"
+        [class.watch]="!racing()"
+        [class.done]="finished()"
+      >
+        <p
+          class="text"
+          #textBlock
+          [style.font-size.px]="fontSize()"
+          [style.line-height]="lineHeight"
+          [attr.aria-label]="v.text"
+          data-testid="typing-text"
+        >
+          @for (cell of cells(); track $index) {
+            <span [class]="cell.state">{{ cell.ch }}</span>
+          }
+          <span class="end">&#8203;</span>
+          @if (racing()) {
+            <span class="caret" #caret [class.blink]="!typing()" [class.hidden]="!canType()" aria-hidden="true"></span>
+          }
+        </p>
+
+        @if (racing()) {
+          <input
+            #input
+            class="sink"
+            type="text"
+            aria-label="Type the text shown above"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            enterkeyhint="done"
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
+            data-lpignore="true"
+            data-1p-ignore
+            data-form-type="other"
+            [attr.maxlength]="v.text.length + overflow"
+            [readonly]="!canType()"
+            [ffAutofocus]="canType()"
+            (input)="onInput($event)"
+            (compositionend)="onCompositionEnd($event)"
+            (beforeinput)="onBeforeInput($event)"
+            (paste)="blockPaste($event)"
+            (drop)="blockPaste($event)"
+            (dragover)="$event.preventDefault()"
+            (cut)="$event.preventDefault()"
+            (keydown)="onKeydown($event)"
+            (select)="keepCaretAtEnd($event)"
+            (click)="keepCaretAtEnd($event)"
+            (focus)="focused.set(true); keepCaretAtEnd($event)"
+            (blur)="focused.set(false)"
+            data-testid="typing-input"
+          />
+          @if (canType() && !focused()) {
+            <div class="paused" animate.enter="ff-enter-fade" animate.leave="ff-leave-fade">
+              <span>Click here or just start typing</span>
+            </div>
+          }
+        }
+
+        @if (v.me; as me) {
+          @if (me.finished) {
+            <div class="finish" animate.enter="ff-enter-fade">
+              <div class="finish-card" animate.enter="ff-enter-pop" data-testid="finish-card">
+                <span class="medal" aria-hidden="true">{{ medal(me.rank) || '🏁' }}</span>
+                <div class="finish-text">
+                  <strong>{{ me.rank ? ordinal(me.rank) + ' place!' : 'Finished!' }}</strong>
+                  <span class="line">
+                    {{ me.wpm }} WPM · {{ me.accuracy }}% accuracy · {{ seconds(me.timeMs ?? 0) }}
+                  </span>
+                  @if (me.penalized) {
+                    <span class="warn" data-testid="penalized">
+                      Below the {{ v.minAccuracy }}% minimum accuracy: this finish is worth half.
+                    </span>
+                  }
+                  <span class="muted">Waiting for the others…</span>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </section>
+
+      <p class="hint" role="status" [class.warn]="notice() || errorsLeft() > 0 || (racing() && lowAccuracy())">
+        @if (notice(); as message) {
+          <span data-testid="notice">{{ message }}</span>
+        } @else if (!racing()) {
+          The racers are typing this text right now.
+        } @else if (finished()) {
+          <!-- the finish card says it all -->
+        } @else if (errorsLeft() > 0) {
+          <span data-testid="fix-errors">
+            Fix {{ errorsLeft() }} {{ errorsLeft() === 1 ? 'error' : 'errors' }} to finish
+          </span>
+        } @else if (complete()) {
+          Finishing…
+        } @else if (lowAccuracy()) {
+          Accuracy below {{ v.minAccuracy }}%: finishing now would be worth half the points.
+        } @else if (keystrokes() === 0) {
+          Type the text exactly. Your speed counts from the first key.
+        } @else {
+          Typos turn red: fix them, the text has to match.
+        }
+      </p>
+
+      <ff-race-track [lanes]="lanes()" />
+    }
+  </div>
+}

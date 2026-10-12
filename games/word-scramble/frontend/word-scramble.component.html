@@ -1,0 +1,214 @@
+@if (view(); as v) {
+  <div class="game" [class.revealed]="v.revealed" [style.--n]="v.length">
+    <div class="stack">
+      <header class="head">
+        <span class="eyebrow">{{ v.revealed ? 'The word was' : 'Unscramble the word' }}</span>
+        @if (!v.revealed) {
+          <span class="ff-pill length" data-testid="word-length">{{ v.length }} letters</span>
+        }
+      </header>
+
+      <!-- The tiles: same letters for everyone, local order; they flip into the answer. -->
+      <section class="board">
+        <span class="board-side" aria-hidden="true"></span>
+        <div
+          class="tiles"
+          role="group"
+          [attr.aria-label]="lettersLabel()"
+          [class.flipped]="!!answer()"
+          [class.won]="!!me()?.solved"
+          data-testid="tiles"
+        >
+          @for (tile of tiles(); track round() + ':' + tile.id; let i = $index) {
+            <button
+              #tile
+              type="button"
+              class="tile"
+              tabindex="-1"
+              animate.enter="tile-enter"
+              [attr.data-id]="tile.id"
+              [style.--i]="i"
+              [class.used]="usedTiles().has(tile.id)"
+              [class.clickable]="canGuess()"
+              [attr.aria-label]="'Letter ' + tile.letter"
+              (mousedown)="$event.preventDefault()"
+              (click)="pick(tile)"
+            >
+              <span class="tile-inner">
+                <span class="face front">{{ tile.letter }}</span>
+                <span class="face back">{{ answer()?.[i] }}</span>
+              </span>
+            </button>
+          }
+        </div>
+        <span class="board-side">
+          @if (!answer()) {
+            <button
+              mat-icon-button
+              class="shuffle"
+              type="button"
+              matTooltip="Shuffle the tiles (Space)"
+              aria-label="Shuffle the tiles"
+              data-testid="shuffle"
+              (click)="shuffle()"
+            >
+              <mat-icon svgIcon="shuffle" />
+            </button>
+          }
+        </span>
+      </section>
+
+      <section class="below">
+        @if (v.revealed) {
+          <!-- Reveal: solve order with times. -->
+          <ol class="results" [class.many]="entries().length > 6" data-testid="results">
+            @for (entry of solvers(); track entry.status.playerId) {
+              <li class="result" animate.enter="ff-enter-fade-up" [style.animation-delay.ms]="400 + $index * 80">
+                <span class="medal">{{ medal(entry.status.rank) }}</span>
+                <ff-player-chip [player]="entry.player" size="sm" />
+                @if (entry.status.hintsUsed) {
+                  <span class="tag" matTooltip="Hints used">💡 {{ entry.status.hintsUsed }}</span>
+                }
+                <span class="time ff-tabular">{{ seconds(entry.status.timeMillis) }}</span>
+              </li>
+            }
+            @for (entry of pending(); track entry.status.playerId) {
+              <li class="result unsolved" animate.enter="ff-enter-fade-up">
+                <span class="medal">–</span>
+                <ff-player-chip [player]="entry.player" size="sm" />
+                <span class="time">didn't solve</span>
+              </li>
+            }
+          </ol>
+        } @else if (!me()) {
+          <p class="spectating">
+            👀 The players are unscrambling — <b>{{ solvers().length }}</b> of {{ entries().length }} solved so far.
+          </p>
+        } @else if (me()!.solved) {
+          @let mine = me()!;
+          <div class="solved-card" animate.enter="ff-enter-pop" data-testid="solved">
+            <span class="big">{{ medal(mine.rank) }}</span>
+            <span class="solved-title">Solved! #{{ mine.rank }}</span>
+            <span class="solved-time">{{ solvedLine() }}</span>
+            <span class="waiting">
+              @if (pending().length) {
+                Waiting for {{ pending().length }} more…
+              } @else {
+                Everyone got it!
+              }
+            </span>
+          </div>
+        } @else {
+          @let mine = me()!;
+          @if (v.maxHints > 0) {
+            <div class="hint-row">
+              <div class="slots" [attr.aria-label]="slotsLabel()" data-testid="hint-slots">
+                @for (slot of slots(); track $index) {
+                  <span class="slot" [class.filled]="!!slot">{{ slot ?? '' }}</span>
+                }
+              </div>
+              <button
+                mat-button
+                type="button"
+                class="hint-button"
+                data-testid="hint"
+                [disabled]="!canGuess() || hintsLeft() <= 0"
+                matTooltip="Reveals one letter in its place — costs 25 % of this round's points"
+                (click)="takeHint()"
+              >
+                💡 Hint <span class="hint-meta">−25 % · {{ hintsLeft() }} left</span>
+              </button>
+            </div>
+          }
+
+          <form class="guess-row" #guessRow (submit)="$event.preventDefault(); submit()">
+            <input
+              #guessInput
+              class="guess-input"
+              type="text"
+              name="guess"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              maxlength="24"
+              placeholder="Type the word"
+              aria-label="Your guess"
+              data-testid="guess-input"
+              [value]="guess()"
+              [disabled]="!canGuess()"
+              [ffAutofocus]="canGuess()"
+              (input)="onInput($event)"
+              (keydown)="onInputKey($event)"
+            />
+            <button
+              mat-flat-button
+              class="ff-big"
+              data-testid="guess-submit"
+              [disabled]="!canGuess() || !guess().trim() || sending()"
+            >
+              Guess <mat-icon iconPositionEnd svgIcon="send" />
+            </button>
+          </form>
+
+          <p
+            class="feedback"
+            role="status"
+            data-testid="feedback"
+            [class.is-miss]="feedback()?.kind === 'miss'"
+            [class.is-error]="feedback()?.kind === 'error'"
+          >
+            @if (outOfGuesses()) {
+              No guesses left this round — the others can still solve it.
+            } @else if (feedback(); as f) {
+              @if (f.kind === 'miss') {
+                <span class="feedback-icon" aria-hidden="true">✗</span>
+              }
+              {{ f.text }}
+            } @else {
+              <span class="keys">
+                <span class="ff-kbd">Enter</span> guess · <span class="ff-kbd">Space</span> shuffle · click the tiles to
+                type
+              </span>
+            }
+          </p>
+
+          @if (mine.recentMisses.length) {
+            <ul class="misses" aria-label="Your wrong guesses" data-testid="misses">
+              @for (miss of mine.recentMisses; track miss) {
+                <li class="miss-chip" animate.enter="ff-enter-pop">{{ miss }}</li>
+              }
+            </ul>
+          }
+        }
+      </section>
+    </div>
+
+    @if (!v.revealed) {
+      <footer class="progress" aria-label="Progress">
+        <div class="group">
+          <span class="ff-eyebrow">Solved</span>
+          @for (entry of solvers(); track entry.status.playerId) {
+            <span class="chip solved" animate.enter="ff-enter-pop" data-testid="solved-chip">
+              <span class="chip-medal">{{ medal(entry.status.rank) }}</span>
+              <ff-player-chip [player]="entry.player" size="sm" />
+              <span class="chip-time ff-tabular">{{ seconds(entry.status.timeMillis) }}</span>
+            </span>
+          } @empty {
+            <span class="nobody">nobody yet</span>
+          }
+        </div>
+        @if (pending().length) {
+          <div class="group">
+            <span class="ff-eyebrow">Unscrambling</span>
+            @for (entry of pending(); track entry.status.playerId) {
+              <span class="chip pending">
+                <ff-player-chip [player]="entry.player" size="sm" />
+                <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </span>
+            }
+          </div>
+        }
+      </footer>
+    }
+  </div>
+}

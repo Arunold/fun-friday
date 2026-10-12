@@ -1,0 +1,352 @@
+:host {
+  display: flex;
+  min-height: 0;
+}
+
+.game {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 40px 24px;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.question {
+  font-size: 28px;
+  font-weight: 700;
+
+  b {
+    color: var(--mat-sys-primary);
+  }
+}
+
+.attempts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary);
+  transition:
+    background 300ms,
+    transform 300ms var(--ff-ease-spring);
+
+  &.used {
+    background: var(--mat-sys-surface-container-highest);
+    transform: scale(0.8);
+  }
+}
+
+.attempts-text {
+  margin-left: 6px;
+  color: var(--ff-text-muted);
+  font-weight: 600;
+}
+
+.eyebrow {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ff-text-muted);
+}
+
+.target {
+  font-size: 96px;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-tertiary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: ff-pop-in 600ms var(--ff-ease-spring) both;
+}
+
+// ------------------------------------------------------------------ range bar
+.range {
+  width: min(720px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.edge {
+  font-variant-numeric: tabular-nums;
+  color: var(--ff-text-muted);
+  font-weight: 700;
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+}
+
+.possible {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--mat-sys-primary), var(--mat-sys-tertiary));
+  transition:
+    left 500ms var(--ff-ease-out),
+    width 500ms var(--ff-ease-out);
+}
+
+.tick {
+  position: absolute;
+  top: -6px;
+  width: 2px;
+  height: 26px;
+  translate: -1px 0;
+  background: var(--mat-sys-on-surface-variant);
+
+  &.correct {
+    background: var(--ff-success);
+  }
+}
+
+.tick-label {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  translate: -50% 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ff-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.marker {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--mat-sys-surface-container);
+  box-shadow: 0 0 0 2px var(--ff-player-color);
+  font-size: 17px;
+  animation: ff-pop-in 500ms var(--ff-ease-spring) both;
+}
+
+.target-pin {
+  position: absolute;
+  top: -14px;
+  bottom: -14px;
+  width: 4px;
+  translate: -2px 0;
+  border-radius: 2px;
+  background: var(--ff-success);
+  box-shadow: 0 0 12px var(--ff-success);
+}
+
+// ------------------------------------------------------------------ center
+.center {
+  flex: 1;
+  min-height: 0;
+  width: min(720px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.number-input {
+  width: 220px;
+  height: 72px;
+  padding: 0 16px;
+  border: 2px solid var(--ff-border);
+  border-radius: 18px;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-size: 40px;
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition: border-color 150ms;
+  appearance: textfield;
+
+  &:focus {
+    border-color: var(--mat-sys-primary);
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+
+.error {
+  min-height: 20px;
+  color: var(--mat-sys-error);
+  font-weight: 600;
+}
+
+.history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.guess-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+
+  &.correct {
+    background: color-mix(in srgb, var(--ff-success) 25%, transparent);
+    color: var(--ff-success);
+  }
+
+  .arrow {
+    color: var(--mat-sys-primary);
+  }
+}
+
+.muted {
+  color: var(--ff-text-muted);
+  font-weight: 500;
+}
+
+.celebrate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+
+  .big {
+    font-size: 72px;
+    animation: ff-float 2.4s ease-in-out infinite;
+  }
+
+  &.out {
+    color: var(--ff-text-muted);
+  }
+}
+
+.spectating {
+  color: var(--ff-text-muted);
+  font-size: 18px;
+}
+
+.reveal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: auto;
+
+  li {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: var(--mat-sys-surface-container-high);
+
+    &.exact {
+      background: color-mix(in srgb, var(--ff-success) 12%, var(--mat-sys-surface-container-high));
+    }
+  }
+
+  .guesses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .result {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+// ------------------------------------------------------------------ others
+.others {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.other {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-high);
+  transition: background 300ms;
+
+  &.done {
+    background: color-mix(in srgb, var(--ff-success) 14%, var(--mat-sys-surface-container-high));
+  }
+}
+
+.mini-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.mini {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mat-sys-outline-variant);
+
+  &.used {
+    background: var(--mat-sys-primary);
+  }
+}
+
+.done-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--ff-success);
+}

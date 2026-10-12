@@ -1,0 +1,154 @@
+@if (view(); as v) {
+  <div class="game" [class.revealed]="v.revealed">
+    <header class="head">
+      @if (v.revealed) {
+        <span class="eyebrow">The number was</span>
+        <span class="target" data-testid="target">{{ v.target }}</span>
+      } @else {
+        <h2 class="question">
+          Guess the number between <b>{{ v.min }}</b> and <b>{{ v.max }}</b>
+        </h2>
+        @if (api.isPlaying()) {
+          <div class="attempts" [attr.aria-label]="attemptsLeft() + ' guesses left'">
+            @for (used of attemptDots(); track $index) {
+              <span class="dot" [class.used]="used"></span>
+            }
+            <span class="attempts-text"
+              >{{ attemptsLeft() }} {{ attemptsLeft() === 1 ? 'guess' : 'guesses' }} left</span
+            >
+          </div>
+        }
+      }
+    </header>
+
+    <!-- Range bar: the still-possible interval while guessing, everyone's best guess on reveal. -->
+    <div class="range" aria-hidden="true">
+      <span class="edge">{{ v.min }}</span>
+      <div class="track">
+        @if (!v.revealed && api.isPlaying()) {
+          <div
+            class="possible"
+            [style.left.%]="position(bounds().low)"
+            [style.width.%]="position(bounds().high) - position(bounds().low)"
+          ></div>
+          @for (g of myGuesses(); track $index) {
+            <span class="tick" [class.correct]="g.hint === 'CORRECT'" [style.left.%]="position(g.value)">
+              <span class="tick-label">{{ g.value }}</span>
+            </span>
+          }
+        }
+        @if (v.revealed && v.target !== undefined) {
+          @for (marker of revealMarkers(); track marker.status.playerId) {
+            <span
+              class="marker"
+              [style.left.%]="marker.position"
+              [style.--ff-player-color]="marker.player!.color"
+              [title]="marker.player!.name + ': ' + marker.status.best"
+              >{{ marker.player!.avatar }}</span
+            >
+          }
+          <span class="target-pin" [style.left.%]="position(v.target)"></span>
+        }
+      </div>
+      <span class="edge">{{ v.max }}</span>
+    </div>
+
+    <section class="center">
+      @if (v.revealed) {
+        <ul class="reveal-list">
+          @for (entry of statuses(); track entry.status.playerId) {
+            <li [class.exact]="entry.status.exact">
+              <ff-player-chip [player]="entry.player!" size="sm" />
+              <span class="guesses">
+                @for (g of entry.status.guesses ?? []; track $index) {
+                  <span class="guess-chip" [class.correct]="g.hint === 'CORRECT'"
+                    >{{ g.value }} {{ hintArrow(g) }}</span
+                  >
+                } @empty {
+                  <span class="muted">no guess</span>
+                }
+              </span>
+              @if (entry.status.exact) {
+                <span class="result">🎯 in {{ entry.status.guessesUsed }}</span>
+              } @else if (entry.status.best !== undefined) {
+                <span class="result muted"
+                  >off by
+                  {{
+                    v.target! - entry.status.best > 0 ? v.target! - entry.status.best : entry.status.best - v.target!
+                  }}</span
+                >
+              }
+            </li>
+          }
+        </ul>
+      } @else if (!api.isPlaying()) {
+        <p class="spectating">The players are guessing… you'll see everyone's guesses at the reveal.</p>
+      } @else if (v.myStatus === 'EXACT') {
+        <div class="celebrate" animate.enter="ff-enter-pop">
+          <span class="big">🎯</span>
+          <span>Got it in {{ myGuesses().length }}! Waiting for the others…</span>
+        </div>
+      } @else if (v.myStatus === 'OUT_OF_GUESSES') {
+        <div class="celebrate out" animate.enter="ff-enter-pop">
+          <span class="big">🙈</span>
+          <span>Out of guesses — your closest guess still earns points.</span>
+        </div>
+      } @else {
+        <form class="input-row" #inputRow (submit)="$event.preventDefault(); submit()">
+          <input
+            class="number-input"
+            type="number"
+            inputmode="numeric"
+            [min]="v.min"
+            [max]="v.max"
+            [placeholder]="'' + bounds().low + '–' + bounds().high"
+            aria-label="Your guess"
+            [ngModel]="guess()"
+            (ngModelChange)="guess.set($event)"
+            name="guess"
+            [disabled]="!canGuess()"
+            [ffAutofocus]="canGuess()"
+            data-testid="guess-input"
+          />
+          <button
+            mat-flat-button
+            class="ff-big"
+            [disabled]="!canGuess() || guess() === null || sending()"
+            data-testid="guess-submit"
+          >
+            Guess <mat-icon svgIcon="send" />
+          </button>
+        </form>
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+
+      @if (!v.revealed && myGuesses().length) {
+        <ol class="history" aria-label="Your guesses">
+          @for (g of myGuesses(); track $index) {
+            <li class="guess-chip" [class.correct]="g.hint === 'CORRECT'" animate.enter="ff-enter-pop">
+              {{ g.value }} <span class="arrow">{{ hintArrow(g) }}</span> <span class="muted">{{ hintText(g) }}</span>
+            </li>
+          }
+        </ol>
+      }
+    </section>
+
+    @if (!v.revealed) {
+      <footer class="others" aria-label="Players">
+        @for (entry of statuses(); track entry.status.playerId) {
+          <div class="other" [class.done]="entry.status.done">
+            <ff-player-chip [player]="entry.player!" size="sm" />
+            <span class="mini-dots">
+              @for (used of progressDots(entry.status); track $index) {
+                <span class="mini" [class.used]="used"></span>
+              }
+            </span>
+            @if (entry.status.done) {
+              <mat-icon svgIcon="check" class="done-icon" />
+            }
+          </div>
+        }
+      </footer>
+    }
+  </div>
+}

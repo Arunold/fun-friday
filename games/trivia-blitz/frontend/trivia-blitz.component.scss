@@ -1,0 +1,480 @@
+// The host fills the stage; sizes scale with the stage (container query units) so the game fits
+// without scrolling from 1366×768 up to large monitors. The host sizes itself (flex: 1) because
+// size containment ignores its content.
+:host {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  container-type: size;
+}
+
+.trivia {
+  flex: 1;
+  min-height: 0;
+  width: min(1280px, 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(12px, 2.2cqh, 22px);
+  padding: clamp(14px, 2.6cqh, 28px) clamp(18px, 3cqw, 36px);
+}
+
+// ------------------------------------------------------------------ question card
+.card {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.4cqh, 14px);
+  padding: clamp(14px, 2.4cqh, 24px) clamp(18px, 2.4cqw, 28px);
+  border-radius: var(--ff-radius-lg);
+  border: 1px solid var(--ff-border);
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--mat-sys-primary) 16%, transparent), transparent 60%),
+    var(--mat-sys-surface-container-high);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: clamp(13px, 0.7cqw + 0.4cqh, 15px);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.category {
+  background: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+  color: var(--mat-sys-primary);
+}
+
+.difficulty {
+  --level: var(--ff-text-muted);
+  background: color-mix(in srgb, var(--level) 16%, transparent);
+  color: var(--level);
+
+  &[data-level='easy'] {
+    --level: var(--ff-success);
+  }
+
+  &[data-level='medium'] {
+    --level: var(--ff-warning);
+  }
+
+  &[data-level='hard'] {
+    --level: var(--ff-danger);
+  }
+}
+
+.streak {
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--ff-text-muted);
+  transition:
+    background 300ms,
+    color 300ms;
+
+  .flame {
+    display: inline-block;
+  }
+
+  &.hot {
+    background: color-mix(in srgb, var(--mat-sys-tertiary) 22%, transparent);
+    color: var(--mat-sys-tertiary);
+
+    .flame {
+      animation: ff-pulse 1.4s ease-in-out infinite;
+    }
+  }
+}
+
+.question {
+  font-size: clamp(22px, 2cqw + 1.2cqh, 40px);
+  font-weight: 750;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+
+  &.long {
+    font-size: clamp(20px, 1.7cqw + 1cqh, 34px);
+  }
+}
+
+// ------------------------------------------------------------------ answers (2 × 2)
+.answers {
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: clamp(150px, 40cqh, 400px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 1.6cqh, 16px);
+}
+
+.answer {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.4cqw, 18px);
+  padding: 10px clamp(14px, 1.8cqw, 22px);
+  overflow: hidden;
+  border: 2px solid var(--ff-border);
+  border-radius: var(--ff-radius);
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  text-align: left;
+  cursor: default;
+  // Entrance: staggered rise. "backwards" fill so later opacity changes (dim) still apply.
+  animation: ff-fade-up 420ms var(--ff-ease-out) backwards;
+  animation-delay: calc(90ms + var(--i, 0) * 60ms);
+  transition:
+    border-color 200ms,
+    background 250ms,
+    opacity 250ms,
+    transform 200ms var(--ff-ease-out),
+    box-shadow 300ms;
+
+  &.open {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: var(--mat-sys-primary);
+      background: color-mix(in srgb, var(--mat-sys-primary) 8%, var(--mat-sys-surface-container-high));
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.99);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+
+  &.mine {
+    border-color: var(--mat-sys-primary);
+    background: color-mix(in srgb, var(--mat-sys-primary) 22%, var(--mat-sys-surface-container-high));
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
+  }
+
+  &.dim {
+    opacity: 0.42;
+  }
+
+  &.correct {
+    border-color: var(--ff-success);
+    background: color-mix(in srgb, var(--ff-success) 18%, var(--mat-sys-surface-container-high));
+    animation: tb-glow 1.6s ease-in-out infinite alternate;
+  }
+
+  &.wrong {
+    border-color: var(--ff-danger);
+    background: color-mix(in srgb, var(--ff-danger) 9%, var(--mat-sys-surface-container-high));
+    box-shadow: none;
+  }
+
+  &.wrong.mine {
+    animation: ff-shake 420ms ease-in-out;
+  }
+}
+
+@keyframes tb-glow {
+  from {
+    box-shadow: 0 0 10px color-mix(in srgb, var(--ff-success) 22%, transparent);
+  }
+  to {
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--ff-success) 28%, transparent),
+      0 0 34px color-mix(in srgb, var(--ff-success) 42%, transparent);
+  }
+}
+
+.badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(36px, 3.8cqw, 50px);
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-primary);
+  font-size: clamp(16px, 1.6cqw, 21px);
+  font-weight: 800;
+  transition:
+    background 250ms,
+    color 250ms;
+
+  mat-icon {
+    width: 22px;
+    height: 22px;
+    animation: ff-pop-in 360ms var(--ff-ease-spring) both;
+  }
+
+  .mine & {
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+
+  .correct & {
+    background: var(--ff-success);
+    color: var(--ff-bg);
+  }
+
+  .wrong & {
+    background: var(--ff-danger);
+    color: var(--mat-sys-on-error);
+  }
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-size: clamp(16px, 1.3cqw + 1.1cqh, 26px);
+  font-weight: 650;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.locked,
+.yours {
+  flex: none;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.locked {
+  padding: 6px 12px 6px 8px;
+  border-radius: 999px;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  font-size: 13px;
+  font-weight: 700;
+  animation: ff-pop-in 300ms var(--ff-ease-spring) both;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.yours {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ff-text-muted);
+}
+
+// Who picked what (reveal only), fastest first.
+.pickers {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.picker {
+  position: relative;
+  display: inline-flex;
+  animation: ff-pop-in 320ms var(--ff-ease-spring) backwards;
+  animation-delay: calc(220ms + var(--j, 0) * 70ms);
+}
+
+.picker-flame,
+.seat-flame {
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.more {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ff-text-muted);
+}
+
+// ------------------------------------------------------------------ status footer
+.status {
+  flex: none;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  font-size: clamp(14px, 0.7cqw + 0.5cqh, 17px);
+}
+
+.hint {
+  min-width: 0;
+  color: var(--ff-text-muted);
+  font-weight: 600;
+
+  .ff-kbd {
+    margin: 0 2px;
+  }
+}
+
+.error {
+  color: var(--mat-sys-error);
+}
+
+.answered {
+  flex: none;
+  color: var(--ff-text-muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.seats {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 55%;
+
+  &.crowded {
+    gap: 4px;
+  }
+}
+
+.seat {
+  position: relative;
+  display: inline-flex;
+  opacity: 0.38;
+  transition: opacity 250ms;
+
+  &.done {
+    opacity: 1;
+    animation: ff-pop-in 320ms var(--ff-ease-spring);
+  }
+}
+
+.tick {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--ff-success);
+  color: var(--ff-bg);
+  box-shadow: 0 0 0 2px var(--mat-sys-surface-container);
+
+  mat-icon {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+.result {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  white-space: nowrap;
+  animation: ff-pop-in 320ms var(--ff-ease-spring) both;
+
+  mat-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  &[data-result='correct'] {
+    color: var(--ff-success);
+  }
+
+  &[data-result='wrong'] {
+    color: var(--ff-danger);
+  }
+
+  &[data-result='missed'] {
+    color: var(--ff-text-muted);
+  }
+}
+
+.note {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--ff-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.hot {
+    background: color-mix(in srgb, var(--mat-sys-tertiary) 22%, transparent);
+    color: var(--mat-sys-tertiary);
+  }
+}
+
+.fastest {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--ff-warning);
+  }
+
+  &.none {
+    color: var(--ff-text-muted);
+    font-weight: 600;
+  }
+}
+
+.fact {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  color: var(--ff-text-muted);
+  font-size: clamp(14px, 0.6cqw + 0.5cqh, 16px);
+  line-height: 1.4;
+  animation: ff-fade-up 400ms var(--ff-ease-out) 250ms backwards;
+}

@@ -1,0 +1,196 @@
+@if (view(); as v) {
+  <div class="pictionary" [class.revealed]="v.revealed">
+    <section class="main">
+      <header class="banner" [class.known]="!!v.word" data-testid="word-banner">
+        <div class="who">
+          <ff-player-chip [player]="drawerChip()" size="sm" [showName]="false" />
+          <span class="who-text"
+            ><b>{{ drawerLine().name }}</b> {{ drawerLine().verb }}</span
+          >
+        </div>
+
+        <div class="word">
+          @if (bannerLabel(); as label) {
+            <span class="label">{{ label }}</span>
+          }
+          @if (tiles().length) {
+            <span class="tiles" aria-hidden="true">
+              @for (tile of tiles(); track $index) {
+                <span class="tile" [class]="'tile ' + tile.kind" [style.--i]="$index">{{
+                  tile.kind === 'hidden' ? '' : tile.char
+                }}</span>
+              }
+            </span>
+            @if (v.word) {
+              <span class="ff-visually-hidden" data-testid="word">{{ v.word }}</span>
+            } @else {
+              <span class="ff-visually-hidden" data-testid="word-mask" [attr.data-mask]="v.mask">{{
+                letterCount()
+              }}</span>
+            }
+          } @else if (!v.revealed) {
+            <span class="thinking" aria-hidden="true"><i></i><i></i><i></i></span>
+          }
+        </div>
+
+        <div class="meta">{{ letterCount() }}</div>
+      </header>
+
+      <ff-sketch-board class="board" [drawing]="v.drawing" [drawer]="isDrawer()" [canDraw]="canDraw()">
+        @if (choosing() && isDrawer() && v.choices) {
+          <div class="overlay pick" animate.enter="ff-enter-fade" animate.leave="ff-leave-fade">
+            <h2 class="overlay-title">Pick a word to draw</h2>
+            <div class="choices">
+              @for (choice of v.choices; track choice.word; let i = $index) {
+                <button
+                  type="button"
+                  class="choice"
+                  [style.--i]="i"
+                  [disabled]="choosingWord()"
+                  (click)="choose(i)"
+                  data-testid="word-choice"
+                >
+                  <span class="choice-key ff-kbd">{{ i + 1 }}</span>
+                  <span class="choice-word">{{ choice.word }}</span>
+                  <span class="level" [class]="'level ' + choice.level.toLowerCase()">{{ levelLabel(choice) }}</span>
+                </button>
+              }
+            </div>
+            <p class="overlay-note">A word is picked for you in {{ secondsLeft() }} s</p>
+          </div>
+        } @else if (choosing()) {
+          <div class="overlay wait" animate.enter="ff-enter-fade" animate.leave="ff-leave-fade">
+            <ff-player-chip class="wait-chip" [player]="drawerChip()" size="lg" [showName]="false" />
+            <p class="overlay-title">
+              <b>{{ v.drawerName }}</b> is choosing a word…
+            </p>
+            <p class="overlay-note">Get ready to guess!</p>
+          </div>
+        }
+
+        @if (paperHint(); as hint) {
+          <p class="paper-hint" aria-hidden="true">{{ hint }}</p>
+        }
+
+        @if (v.revealed) {
+          <div class="result" animate.enter="ff-enter-fade-up" data-testid="turn-result">
+            @switch (v.endReason) {
+              @case ('DRAWER_LEFT') {
+                <span class="result-void">{{ v.drawerName }} left — no points this turn</span>
+              }
+              @case ('DRAWER_OFFLINE') {
+                <span class="result-void">{{ v.drawerName }} lost the connection — no points this turn</span>
+              }
+              @default {
+                @if (v.correct.length) {
+                  @for (guess of v.correct; track guess.playerId; let first = $first) {
+                    <span class="result-item">
+                      <ff-player-chip [player]="chipFor(guess)" size="sm" />
+                      <span class="result-time">{{ seconds(guess.ms) }}</span>
+                      <b class="result-points">+{{ guess.points }}</b>
+                      @if (first) {
+                        <span class="result-first" title="First to guess">⚡</span>
+                      }
+                    </span>
+                  }
+                  <span class="result-item drawer">
+                    <ff-player-chip [player]="drawerChip()" size="sm" />
+                    <span class="result-time">🎨</span>
+                    <b class="result-points">+{{ v.drawerPoints }}</b>
+                  </span>
+                } @else {
+                  <span class="result-void">Nobody guessed it this time 😶</span>
+                }
+              }
+            }
+          </div>
+        }
+      </ff-sketch-board>
+    </section>
+
+    <aside class="side" aria-label="Guesses">
+      <header class="side-head">
+        <h3 class="side-title">Guesses</h3>
+        <span class="ff-pill side-count" data-testid="guessed-count"
+          >{{ v.correct.length }} / {{ v.guessers }} guessed</span
+        >
+      </header>
+
+      <ol class="feed" #feed aria-live="polite" data-testid="guess-feed">
+        @for (entry of v.feed; track entry.id) {
+          <li
+            class="entry"
+            [class.correct]="entry.kind === 'CORRECT'"
+            [class.close]="entry.kind === 'CLOSE'"
+            [class.mine]="entry.playerId === api.meId()"
+            animate.enter="ff-enter-fade-up"
+            data-testid="feed-entry"
+          >
+            @switch (entry.kind) {
+              @case ('CORRECT') {
+                <span class="entry-icon" aria-hidden="true">🎉</span>
+                <b class="entry-name">{{ entry.name }}</b> guessed it!
+              }
+              @case ('CLOSE') {
+                <b class="entry-name" [style.color]="colorOf(entry)">{{ entry.name }}</b>
+                <span class="entry-text">{{ entry.text }}</span>
+                <span class="entry-tag">so close!</span>
+              }
+              @default {
+                <b class="entry-name" [style.color]="colorOf(entry)">{{ entry.name }}</b>
+                <span class="entry-text">{{ entry.text }}</span>
+              }
+            }
+          </li>
+        } @empty {
+          <li class="feed-empty">{{ emptyFeedText() }}</li>
+        }
+      </ol>
+
+      <footer class="side-foot">
+        @if (showGuessInput()) {
+          <form class="guess" #guessRow (submit)="$event.preventDefault(); submit()">
+            <input
+              class="guess-input"
+              type="text"
+              name="guess"
+              maxlength="40"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Your guess"
+              [placeholder]="canGuess() ? 'Type your guess…' : 'Wait for ' + v.drawerName + '…'"
+              [disabled]="!canGuess()"
+              [ngModel]="guess()"
+              (ngModelChange)="guess.set($event)"
+              [ffAutofocus]="canGuess()"
+              data-testid="guess-input"
+            />
+            <button
+              mat-flat-button
+              type="submit"
+              class="guess-send"
+              [disabled]="!canGuess() || !guess().trim()"
+              aria-label="Send guess"
+              data-testid="guess-submit"
+            >
+              <mat-icon svgIcon="send" />
+            </button>
+          </form>
+          <p class="note" [class.error]="!!error()" [class.close]="!error() && !!closeGuess()" role="status">
+            @if (error(); as message) {
+              {{ message }}
+            } @else if (closeGuess(); as close) {
+              <span class="close-flash" animate.enter="ff-enter-pop">🔥 So close! “{{ close }}” is nearly it</span>
+            } @else if (v.guessesLeft != null && v.guessesLeft <= 10) {
+              {{ v.guessesLeft }} guesses left
+            } @else if (canGuess()) {
+              Press <span class="ff-kbd">Enter</span> to guess
+            }
+          </p>
+        } @else {
+          <p class="status" data-testid="guess-status">{{ statusText() }}</p>
+        }
+      </footer>
+    </aside>
+  </div>
+}

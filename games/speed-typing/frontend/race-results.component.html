@@ -1,0 +1,50 @@
+<div class="table" role="table" aria-label="Round results" data-testid="results">
+  <div class="row head" role="row">
+    <span role="columnheader">Place</span>
+    <span role="columnheader">Player</span>
+    <span role="columnheader">Time</span>
+    <span role="columnheader" class="num">WPM</span>
+    <span role="columnheader" class="num">Accuracy</span>
+  </div>
+  <div class="body ff-stagger">
+    @for (line of lines(); track line.row.playerId; let i = $index) {
+      <div
+        class="row"
+        role="row"
+        [class.me]="line.me"
+        [class.dnf]="!line.row.finished"
+        [style.--i]="i"
+        [style.--ff-player-color]="line.player.color"
+        data-testid="result-row"
+        [attr.data-player]="line.player.name"
+      >
+        <span class="place" role="cell">{{ place(line.row) }}</span>
+        <span role="cell"><ff-player-chip [player]="line.player" size="sm" /></span>
+        <span class="time" role="cell">
+          @if (line.row.finished) {
+            {{ seconds(line.row.timeMs ?? 0) }}
+          } @else {
+            <span class="bar" aria-hidden="true"><span [style.width.%]="line.row.progress"></span></span>
+            <span class="muted">{{ line.row.progress }}%</span>
+          }
+        </span>
+        <span class="num" role="cell">{{ line.row.wpm ?? '–' }}</span>
+        <span
+          class="num"
+          role="cell"
+          [class.penalized]="line.row.penalized"
+          [attr.title]="line.row.penalized ? 'Below the ' + minAccuracy() + '% minimum: points halved' : null"
+        >
+          @if (line.row.accuracy != null) {
+            {{ line.row.accuracy }}%
+          } @else {
+            –
+          }
+          @if (line.row.penalized) {
+            <span class="half" data-testid="penalized">½</span>
+          }
+        </span>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,855 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "Fun Friday API",
+    "description" : "REST endpoints plus the schemas of the STOMP protocol (see docs/asyncapi.yaml).",
+    "version" : "2"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:33265",
+    "description" : "Generated server url"
+  } ],
+  "tags" : [ {
+    "name" : "Games",
+    "description" : "Installed games and their settings"
+  } ],
+  "paths" : {
+    "/api/rooms/{code}" : {
+      "get" : {
+        "tags" : [ "Rooms & history" ],
+        "summary" : "Public facts about a live room (404 if it doesn't exist)",
+        "operationId" : "room",
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RoomSummary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rooms/{code}/history" : {
+      "get" : {
+        "tags" : [ "Rooms & history" ],
+        "summary" : "Games played in a live room, newest first",
+        "operationId" : "roomHistory",
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GameHistoryEntry"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/leaderboard" : {
+      "get" : {
+        "tags" : [ "Rooms & history" ],
+        "summary" : "Best players by Friday Cup points",
+        "operationId" : "leaderboard",
+        "parameters" : [ {
+          "name" : "days",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 30
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/LeaderboardEntry"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history" : {
+      "get" : {
+        "tags" : [ "Rooms & history" ],
+        "summary" : "The latest finished games on this server",
+        "operationId" : "recent",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GameHistoryEntry"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/games" : {
+      "get" : {
+        "tags" : [ "Games" ],
+        "summary" : "List all games with their settings schema",
+        "operationId" : "games",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GameSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "RoomSummary" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "phase" : {
+            "type" : "string",
+            "enum" : [ "LOBBY", "STARTING", "PLAYING", "REVEAL", "FINISHED" ]
+          },
+          "gameId" : {
+            "type" : "string"
+          },
+          "gameName" : {
+            "type" : "string"
+          },
+          "gameIcon" : {
+            "type" : "string"
+          },
+          "hostName" : {
+            "type" : "string"
+          },
+          "players" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "maxPlayers" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "joinable" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "code", "gameIcon", "gameId", "gameName", "hostName", "joinable", "maxPlayers", "phase", "players" ]
+      },
+      "GameHistoryEntry" : {
+        "type" : "object",
+        "properties" : {
+          "gameId" : {
+            "type" : "string"
+          },
+          "gameName" : {
+            "type" : "string"
+          },
+          "finishedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "players" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/GameRecordPlayer"
+            }
+          }
+        },
+        "required" : [ "finishedAt", "gameId", "gameName", "players" ]
+      },
+      "GameRecordPlayer" : {
+        "type" : "object",
+        "properties" : {
+          "playerName" : {
+            "type" : "string"
+          },
+          "avatar" : {
+            "type" : "string"
+          },
+          "score" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "placement" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "cupPoints" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "avatar", "cupPoints", "placement", "playerName", "score" ]
+      },
+      "LeaderboardEntry" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "avatar" : {
+            "type" : "string"
+          },
+          "points" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "games" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "wins" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "avatar", "games", "name", "points", "wins" ]
+      },
+      "GameSummary" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "minPlayers" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "maxPlayers" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "difficulty" : {
+            "type" : "string",
+            "enum" : [ "EASY", "MEDIUM", "HARD" ]
+          },
+          "rules" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "settings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SettingDef"
+            }
+          },
+          "defaults" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          }
+        },
+        "required" : [ "defaults", "description", "difficulty", "icon", "id", "maxPlayers", "minPlayers", "name", "rules", "settings" ]
+      },
+      "Option" : {
+        "type" : "object",
+        "properties" : {
+          "value" : { },
+          "label" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "label", "value" ]
+      },
+      "SettingDef" : {
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "SELECT", "NUMBER", "TOGGLE" ]
+          },
+          "defaultValue" : { },
+          "options" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Option"
+            }
+          },
+          "min" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "max" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "step" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "help" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "defaultValue", "key", "label", "options", "type" ]
+      },
+      "AwardView" : {
+        "properties" : {
+          "emoji" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "playerId" : {
+            "type" : "string"
+          },
+          "playerName" : {
+            "type" : "string"
+          },
+          "detail" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "emoji", "playerId", "playerName", "title" ]
+      },
+      "CupEntryView" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "avatar" : {
+            "type" : "string"
+          },
+          "points" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "games" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "wins" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "avatar", "games", "name", "points", "wins" ]
+      },
+      "GameRef" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "minPlayers" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "maxPlayers" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "icon", "id", "maxPlayers", "minPlayers", "name" ]
+      },
+      "MemberView" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "avatar" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string",
+            "enum" : [ "PLAYER", "SPECTATOR" ]
+          },
+          "online" : {
+            "type" : "boolean"
+          },
+          "ready" : {
+            "type" : "boolean"
+          },
+          "host" : {
+            "type" : "boolean"
+          },
+          "score" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "avatar", "color", "host", "id", "name", "online", "ready", "role", "score" ]
+      },
+      "Progress" : {
+        "properties" : {
+          "round" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalRounds" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "turn" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "turnsInRound" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "round", "totalRounds", "turn", "turnsInRound" ]
+      },
+      "Results" : {
+        "properties" : {
+          "standings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/StandingView"
+            }
+          },
+          "awards" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AwardView"
+            }
+          }
+        },
+        "required" : [ "awards", "standings" ]
+      },
+      "RoomSnapshot" : {
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "phase" : {
+            "type" : "string",
+            "enum" : [ "LOBBY", "STARTING", "PLAYING", "REVEAL", "FINISHED" ]
+          },
+          "serverTime" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "phaseStartedAt" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "phaseEndsAt" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "hostId" : {
+            "type" : "string"
+          },
+          "you" : {
+            "$ref" : "#/components/schemas/You"
+          },
+          "players" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MemberView"
+            }
+          },
+          "spectators" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MemberView"
+            }
+          },
+          "game" : {
+            "$ref" : "#/components/schemas/GameRef"
+          },
+          "settings" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          },
+          "progress" : {
+            "$ref" : "#/components/schemas/Progress"
+          },
+          "view" : { },
+          "lastTurn" : {
+            "$ref" : "#/components/schemas/TurnView"
+          },
+          "history" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TurnView"
+            }
+          },
+          "results" : {
+            "$ref" : "#/components/schemas/Results"
+          },
+          "cup" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CupEntryView"
+            }
+          }
+        },
+        "required" : [ "code", "cup", "game", "history", "hostId", "phase", "players", "serverTime", "settings", "spectators", "you" ]
+      },
+      "StandingView" : {
+        "properties" : {
+          "playerId" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "avatar" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
+          },
+          "score" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "rank" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "avatar", "color", "name", "playerId", "rank", "score" ]
+      },
+      "TurnView" : {
+        "properties" : {
+          "round" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "turn" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "headline" : {
+            "type" : "string"
+          },
+          "points" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          }
+        },
+        "required" : [ "headline", "points", "round", "turn" ]
+      },
+      "You" : {
+        "properties" : {
+          "memberId" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string",
+            "enum" : [ "PLAYER", "SPECTATOR" ]
+          },
+          "host" : {
+            "type" : "boolean"
+          },
+          "playing" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "host", "memberId", "playing", "role" ]
+      },
+      "Reply" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "ok" : {
+            "type" : "boolean"
+          },
+          "error" : {
+            "type" : "string",
+            "enum" : [ "ROOM_NOT_FOUND", "SESSION_EXPIRED", "NOT_IN_ROOM", "INVALID_NAME", "NAME_TAKEN", "ROOM_FULL", "TOO_MANY_ROOMS", "NOT_HOST", "UNKNOWN_GAME", "INVALID_SETTINGS", "NOT_ENOUGH_PLAYERS", "TOO_MANY_PLAYERS", "WRONG_PHASE", "INVALID_ACTION", "RATE_LIMITED", "BAD_REQUEST", "INTERNAL" ]
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "data" : { }
+        },
+        "required" : [ "ok" ]
+      },
+      "Joined" : {
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "memberId" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string",
+            "enum" : [ "PLAYER", "SPECTATOR" ]
+          }
+        },
+        "required" : [ "code", "memberId", "role", "token" ]
+      },
+      "Pong" : {
+        "properties" : {
+          "clientTime" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "serverTime" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "clientTime", "serverTime" ]
+      },
+      "ServerEvent" : {
+        "properties" : {
+          "scope" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "payload" : { }
+        },
+        "required" : [ "scope", "type" ]
+      },
+      "StreamMessage" : {
+        "properties" : {
+          "seq" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "payload" : { }
+        },
+        "required" : [ "seq", "type" ]
+      },
+      "CreateRoom" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 40,
+            "minLength" : 0
+          },
+          "avatar" : {
+            "type" : "string",
+            "maxLength" : 32,
+            "minLength" : 0
+          },
+          "gameId" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "settings" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          }
+        },
+        "required" : [ "gameId", "name" ]
+      },
+      "JoinRoom" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "code" : {
+            "type" : "string",
+            "maxLength" : 10,
+            "minLength" : 0
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 40,
+            "minLength" : 0
+          },
+          "avatar" : {
+            "type" : "string",
+            "maxLength" : 32,
+            "minLength" : 0
+          },
+          "spectator" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "code", "name" ]
+      },
+      "Resume" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "code" : {
+            "type" : "string",
+            "maxLength" : 10,
+            "minLength" : 0
+          },
+          "token" : {
+            "type" : "string",
+            "minLength" : 1
+          }
+        },
+        "required" : [ "code", "token" ]
+      },
+      "Simple" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Kick" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "memberId" : {
+            "type" : "string",
+            "minLength" : 1
+          }
+        },
+        "required" : [ "memberId" ]
+      },
+      "UpdateSettings" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "gameId" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "settings" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          }
+        },
+        "required" : [ "gameId" ]
+      },
+      "SetReady" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "ready" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "GameAction" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string",
+            "maxLength" : 40,
+            "minLength" : 0
+          },
+          "payload" : { }
+        },
+        "required" : [ "type" ]
+      },
+      "Ping" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          },
+          "clientTime" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      }
+    }
+  }
+}

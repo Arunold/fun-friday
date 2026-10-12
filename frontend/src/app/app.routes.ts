@@ -1,28 +1,41 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './components/home/home.component';
-import { GameSetupComponent } from './components/game-setup/game-setup.component';
-import { ErrorPageComponent } from './components/error-page/error-page.component';
-import { ResultsComponent } from './components/results/results.component';
-import {
-  NumberGuessGameComponent,
-  WordScrambleGameComponent,
-  PictionaryGameComponent,
-  SpeedTypingGameComponent,
-  ReactionShowdownGameComponent,
-  SlidingPuzzleGameComponent,
-} from './components/games';
 
+/** Every page is lazy-loaded; game UIs are separate chunks loaded by the room page. */
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'setup/host/:gameTypeId', component: GameSetupComponent },
-  { path: 'setup/join/:gameCode', component: GameSetupComponent },
-  { path: 'error/:type', component: ErrorPageComponent },
-  { path: 'game/number-guess/:id', component: NumberGuessGameComponent },
-  { path: 'game/word-scramble/:id', component: WordScrambleGameComponent },
-  { path: 'game/pictionary/:id', component: PictionaryGameComponent },
-  { path: 'game/speed-typing/:id', component: SpeedTypingGameComponent },
-  { path: 'game/reaction-showdown/:id', component: ReactionShowdownGameComponent },
-  { path: 'game/sliding-puzzle/:id', component: SlidingPuzzleGameComponent },
-  { path: 'results/:id', component: ResultsComponent },
+  {
+    path: '',
+    title: 'Fun Friday',
+    loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
+  },
+  {
+    path: 'host/:gameId',
+    title: 'Host a game · Fun Friday',
+    loadComponent: () => import('./pages/host/host.page').then((m) => m.HostPage),
+  },
+  {
+    path: 'join',
+    title: 'Join a room · Fun Friday',
+    loadComponent: () => import('./pages/join/join.page').then((m) => m.JoinPage),
+  },
+  {
+    path: 'join/:code',
+    title: 'Join a room · Fun Friday',
+    loadComponent: () => import('./pages/join/join.page').then((m) => m.JoinPage),
+  },
+  {
+    path: 'room/:code',
+    title: 'Fun Friday',
+    loadChildren: () => import('./pages/room/room.routes'),
+  },
+  {
+    path: 'history',
+    title: 'Hall of fame · Fun Friday',
+    loadComponent: () => import('./pages/history/history.page').then((m) => m.HistoryPage),
+  },
+  {
+    path: 'oops/:reason',
+    title: 'Oops · Fun Friday',
+    loadComponent: () => import('./pages/oops/oops.page').then((m) => m.OopsPage),
+  },
   { path: '**', redirectTo: '' },
 ];

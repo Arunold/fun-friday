@@ -1,89 +1,92 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.5'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id 'checkstyle'
-	id 'com.diffplug.spotless' version '6.25.0'
+    id 'org.springframework.boot' version '4.1.1' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
+    id 'com.diffplug.spotless' version '8.10.4' apply false
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+// -PffBuildRoot=/tmp/x moves all build output (lets several builds of one checkout run side by side).
+def ffBuildRoot = providers.gradleProperty('ffBuildRoot').orNull
+
+allprojects {
+    group = 'com.example.funfridaygame'
+    version = '2.0.0'
+
+    repositories {
+        mavenCentral()
+    }
+
+    if (ffBuildRoot) {
+        def name = path == ':' ? 'root' : path.substring(1).replace(':', '-')
+        layout.buildDirectory = file("${ffBuildRoot}/${name}")
     }
 }
 
-sourceCompatibility = '21'
-targetCompatibility = '21'
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+def javaProjects = subprojects.findAll { it.path != ':games' }
+def gameProjects = subprojects.findAll { it.path.startsWith(':games:') }
 
-repositories {
-	mavenCentral()
+configure(javaProjects) {
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'checkstyle'
+    apply plugin: 'com.diffplug.spotless'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation 'org.assertj:assertj-core'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.compilerArgs += ['-parameters', '-Xlint:all,-serial,-processing']
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        testLogging {
+            events 'failed'
+            exceptionFormat = 'full'
+        }
+    }
+
+    checkstyle {
+        toolVersion = '14.3.0'
+        configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+        maxWarnings = 0
+    }
+
+    // google-java-format (AOSP: 4-space indent, 100 columns) owns layout and import order; the
+    // version is Spotless's default so the formatter and Spotless's glue code always match.
+    spotless {
+        java {
+            target 'src/**/*.java'
+            removeUnusedImports()
+            googleJavaFormat().aosp()
+            formatAnnotations()
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
+    }
 }
 
-// Checkstyle configuration
-checkstyle {
-	toolVersion = '10.12.5'
-	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-	ignoreFailures = false
-	maxWarnings = 0
-}
+// Conventions for every game module: no per-game build file is needed.
+configure(gameProjects) {
+    description = "Fun Friday game module ${project.name}"
 
-tasks.withType(Checkstyle) {
-	reports {
-		xml.required = false
-		html.required = true
-	}
-}
-
-// Spotless code formatter configuration (aligned with Checkstyle)
-spotless {
-	java {
-		target 'src/**/*.java'
-		
-		// Remove unused imports
-		removeUnusedImports()
-		
-		// Import ordering (matches Checkstyle config)
-		importOrder('java', 'javax', 'jakarta', 'org', 'com', '')
-		
-		// Google Java Format for consistent style
-		googleJavaFormat('1.19.2').aosp()
-		
-		// Trim trailing whitespace (matches Checkstyle RegexpSingleline)
-		trimTrailingWhitespace()
-		
-		// Ensure file ends with newline
-		endWithNewline()
-		
-		// Format annotations on their own line
-		formatAnnotations()
-	}
-}
-
-// Run spotlessCheck before checkstyle
-tasks.named('checkstyleMain') {
-	dependsOn 'spotlessCheck'
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	
-	// Apache Commons Text for string similarity (Levenshtein distance)
-	implementation 'org.apache.commons:commons-text:1.11.0'
-	
-	// Lombok for reducing boilerplate
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
+    dependencies {
+        api project(':sdk')
+        testImplementation project(':testkit')
+    }
 }

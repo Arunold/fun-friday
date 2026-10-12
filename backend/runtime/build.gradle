@@ -1,0 +1,5 @@
+description = 'Game runtime: drives one game run (rounds, turns, timers, scoring) - no Spring, no I/O'
+
+dependencies {
+    api project(':sdk')
+}

@@ -1,0 +1,233 @@
+# Trivia Blitz — curated question bank (validated when the game loads; see QuestionBank.java).
+#
+# One question per line, fields separated by "|":
+#   category | difficulty | question | correct answer | wrong answer | wrong answer | wrong answer | fun fact (optional)
+#
+# - The correct answer always comes first here; the game shuffles the options for every question.
+# - category:   general, science, geography, history, technology, food, sports, entertainment, nature, language
+# - difficulty: easy, medium, hard
+# - Facts must be accurate and timeless (no "current" records), family-friendly and office-appropriate.
+# - Keep questions under 160 characters and answers under 48, so they fit the answer buttons.
+# - Every category should keep at least 20 questions (7 easy, 7 medium, 6 hard), so any single category
+#   supports 20 rounds and any category + difficulty pair supports 5 rounds.
+# Blank lines and lines starting with "#" are ignored.
+
+# ------------------------------------------------------------------ general knowledge
+general | easy | How many days are there in a leap year? | 366 | 365 | 364 | 367 | Leap years add 29 February to keep the calendar in step with Earth's orbit.
+general | easy | How many sides does a hexagon have? | 6 | 5 | 7 | 8 | Honeybees build the cells of their honeycomb as hexagons.
+general | easy | Which colour do you get by mixing blue and yellow paint? | Green | Purple | Orange | Brown
+general | easy | How many minutes are there in a day? | 1,440 | 1,240 | 1,400 | 1,640 | 24 hours × 60 minutes = 1,440 minutes.
+general | easy | Which is the largest ocean on Earth? | Pacific Ocean | Atlantic Ocean | Indian Ocean | Arctic Ocean | The Pacific covers roughly a third of Earth's surface.
+general | easy | How many colours are there in a traditional rainbow? | 7 | 5 | 6 | 8 | Isaac Newton chose seven colours, partly to match the seven notes of a musical scale.
+general | easy | Which month has the fewest days? | February | April | June | November | It has 28 days, or 29 in a leap year.
+general | medium | How many hours are there in a week? | 168 | 144 | 172 | 186 | 7 days × 24 hours = 168 hours.
+general | medium | Which number does the Roman numeral L stand for? | 50 | 5 | 100 | 500 | Roman numerals have no symbol for zero.
+general | medium | How many squares are there on a chessboard? | 64 | 48 | 81 | 100 | An 8 × 8 board: 32 light squares and 32 dark ones.
+general | medium | How many cards are in a standard deck, without jokers? | 52 | 48 | 54 | 56 | Four suits of 13 cards each.
+general | medium | What is the smallest prime number? | 2 | 1 | 3 | 0 | It is also the only even prime number.
+general | medium | How many edges does a cube have? | 12 | 8 | 6 | 10 | A cube has 6 faces, 12 edges and 8 corners.
+general | medium | What is the national animal of Scotland? | Unicorn | Lion | Red deer | Golden eagle | The unicorn also represents Scotland on the royal coat of arms of the United Kingdom.
+general | hard | Which year does the Roman numeral MCM stand for? | 1900 | 1100 | 2100 | 1500 | M = 1,000 and CM = 1,000 − 100 = 900.
+general | hard | How many sides does a dodecagon have? | 12 | 10 | 11 | 20 | The name comes from the Greek "dodeka", meaning twelve.
+general | hard | How many seconds are there in a day? | 86,400 | 64,800 | 72,000 | 96,400 | 24 × 60 × 60 = 86,400 seconds.
+general | hard | How many dots are there on a standard six-sided die in total? | 21 | 18 | 20 | 24 | Opposite faces of a standard die always add up to 7.
+general | hard | How many zeros does a googol have? | 100 | 10 | 12 | 1,000 | The name was coined in 1920 by nine-year-old Milton Sirotta.
+general | hard | Which of these numbers is a prime number? | 97 | 91 | 87 | 93 | 91 looks prime, but it is 7 × 13.
+
+# ------------------------------------------------------------------ science
+science | easy | What is the chemical symbol for gold? | Au | Ag | Fe | Gd | It comes from aurum, the Latin word for gold.
+science | easy | Which planet is known as the Red Planet? | Mars | Venus | Jupiter | Mercury | Iron oxide (rust) in its dust and rocks gives Mars its colour.
+science | easy | What is H₂O better known as? | Water | Salt | Oxygen | Hydrogen peroxide | Each molecule has two hydrogen atoms and one oxygen atom.
+science | easy | At what temperature does water boil at sea level? | 100 °C | 90 °C | 80 °C | 120 °C | That's 212 °F. High up in the mountains, water boils at a lower temperature.
+science | easy | Which planet is closest to the Sun? | Mercury | Venus | Mars | Earth | A year on Mercury lasts just 88 Earth days.
+science | easy | What is the closest star to Earth? | The Sun | Proxima Centauri | Sirius | Polaris | The next closest, Proxima Centauri, is more than 4 light-years away.
+science | easy | Which gas do humans need to breathe in to survive? | Oxygen | Nitrogen | Carbon dioxide | Helium | Oxygen makes up about 21% of the air.
+science | medium | How many bones are there in the adult human body? | 206 | 186 | 212 | 230 | Babies are born with around 300 bones; many of them fuse together as they grow.
+science | medium | What is the hardest natural substance on Earth? | Diamond | Quartz | Granite | Topaz | Diamond is pure carbon, just like the graphite in pencils.
+science | medium | Which is the largest planet in our solar system? | Jupiter | Saturn | Neptune | Uranus | More than 1,300 Earths could fit inside it.
+science | medium | Which gas do plants take in from the air for photosynthesis? | Carbon dioxide | Oxygen | Nitrogen | Hydrogen | Plants release oxygen as a by-product.
+science | medium | Which metal is liquid at room temperature? | Mercury | Lead | Tin | Aluminium | Mercury only freezes at about −39 °C.
+science | medium | What is the chemical symbol for sodium? | Na | S | Sn | So | It comes from natrium, the element's Latin name.
+science | medium | Which part of a plant or animal cell holds most of its DNA? | The nucleus | The ribosome | The cell membrane | The vacuole | Mitochondria carry a small amount of their own DNA, too.
+science | hard | Which gas makes up most of Earth's atmosphere? | Nitrogen | Oxygen | Argon | Carbon dioxide | Nitrogen makes up about 78% of the air we breathe.
+science | hard | Roughly how fast does light travel in a vacuum? | 300,000 km per second | 30,000 km per second | 3,000 km per second | 3,000,000 km per second | In one second, light could circle Earth about 7.5 times.
+science | hard | What is the chemical symbol for potassium? | K | P | Po | Pt | It comes from kalium, the element's New Latin name.
+science | hard | Which element is the most common in Earth's crust? | Oxygen | Silicon | Iron | Aluminium | Oxygen makes up nearly half of the crust by mass, mostly locked up in rocks.
+science | hard | What is absolute zero on the Celsius scale, approximately? | −273 °C | −100 °C | −173 °C | −459 °C | Precisely −273.15 °C, or 0 kelvin: nothing can get colder.
+science | hard | Which planet in our solar system spins the fastest, giving it the shortest day? | Jupiter | Mercury | Earth | Saturn | A day on Jupiter lasts just under 10 hours.
+
+# ------------------------------------------------------------------ geography
+geography | easy | What is the capital of France? | Paris | Lyon | Marseille | Nice | The Eiffel Tower was built for the 1889 World's Fair.
+geography | easy | On which continent is Brazil? | South America | Africa | North America | Europe | Brazil is the largest country in South America.
+geography | easy | What is the capital of Japan? | Tokyo | Kyoto | Osaka | Hiroshima | Kyoto was Japan's imperial capital for more than 1,000 years.
+geography | easy | Which country is shaped like a boot? | Italy | Spain | Greece | Portugal | The "toe" of the boot points towards Sicily.
+geography | easy | Which is the largest country in the world by area? | Russia | Canada | China | United States | It spans 11 time zones.
+geography | easy | Which ocean lies between Europe and North America? | Atlantic Ocean | Pacific Ocean | Indian Ocean | Arctic Ocean
+geography | easy | What is the capital of Spain? | Madrid | Barcelona | Seville | Valencia | Madrid lies close to the geographic centre of Spain.
+geography | medium | What is the capital of Australia? | Canberra | Sydney | Melbourne | Perth | Canberra was purpose-built as a compromise between rivals Sydney and Melbourne.
+geography | medium | What is the smallest country in the world? | Vatican City | Monaco | San Marino | Liechtenstein | It covers less than half a square kilometre.
+geography | medium | What is the capital of Canada? | Ottawa | Toronto | Vancouver | Montreal | Queen Victoria chose Ottawa as the capital in 1857.
+geography | medium | Mount Everest lies on the border between Nepal and which other country? | China | India | Bhutan | Pakistan | The border between the two countries runs across its summit.
+geography | medium | Which is the largest hot desert in the world? | Sahara | Gobi | Kalahari | Arabian Desert | Antarctica is the largest desert overall: deserts are defined by low rainfall, not heat.
+geography | medium | In which country is the city of Marrakesh? | Morocco | Egypt | Tunisia | Algeria
+geography | medium | What is the capital of Türkiye (Turkey)? | Ankara | Istanbul | Izmir | Antalya | Istanbul is the largest city, but Ankara has been the capital since 1923.
+geography | hard | What is the capital of New Zealand? | Wellington | Auckland | Christchurch | Queenstown | It is the southernmost capital city of a sovereign state.
+geography | hard | What is the capital of Brazil? | Brasília | Rio de Janeiro | São Paulo | Salvador | Brasília was built from scratch and inaugurated in 1960.
+geography | hard | Which African country was formerly known as Abyssinia? | Ethiopia | Eritrea | Somalia | Sudan
+geography | hard | Which strait separates Spain from Morocco? | Strait of Gibraltar | Strait of Hormuz | Bosporus | Strait of Dover | At its narrowest point it is less than 15 km wide.
+geography | hard | Lake Titicaca lies on the border between Peru and which country? | Bolivia | Chile | Ecuador | Colombia | It is often called the highest navigable lake in the world.
+geography | hard | Which of these capital cities lies on the Danube? | Budapest | Prague | Warsaw | Bucharest | The Danube also flows through Vienna, Bratislava and Belgrade.
+
+# ------------------------------------------------------------------ history
+history | easy | In which country were the Pyramids of Giza built? | Egypt | Mexico | Peru | Greece | The Great Pyramid was the tallest human-made structure for over 3,800 years.
+history | easy | Who was the first person to walk on the Moon? | Neil Armstrong | Buzz Aldrin | Yuri Gagarin | John Glenn | Buzz Aldrin joined him on the surface about 20 minutes later.
+history | easy | In which city was the Colosseum built? | Rome | Athens | Carthage | Alexandria | It could hold an estimated 50,000 spectators or more.
+history | easy | Who painted the Mona Lisa? | Leonardo da Vinci | Michelangelo | Raphael | Vincent van Gogh | It hangs in the Louvre in Paris.
+history | easy | Which explorer reached the Americas on a voyage in 1492? | Christopher Columbus | Vasco da Gama | Ferdinand Magellan | James Cook
+history | easy | Which famous wall stretches across northern China? | The Great Wall | Hadrian's Wall | The Antonine Wall | Offa's Dyke | Despite the myth, it can't be seen from the Moon with the naked eye.
+history | easy | In which country did the ancient Olympic Games begin? | Greece | Italy | Egypt | France | They were held at Olympia, traditionally from 776 BC.
+history | medium | In which year did people first land on the Moon? | 1969 | 1959 | 1965 | 1972 | Apollo 11's lunar module was called Eagle.
+history | medium | Which civilisation built Machu Picchu? | The Inca | The Aztecs | The Maya | The Olmecs | It was built in the 15th century, high in the Andes of Peru.
+history | medium | Who was the first emperor of Rome? | Augustus | Julius Caesar | Nero | Caligula | Julius Caesar was never emperor; his adopted heir Augustus became the first in 27 BC.
+history | medium | Who introduced the movable-type printing press to Europe around 1440? | Johannes Gutenberg | Leonardo da Vinci | Isaac Newton | Galileo Galilei | The Gutenberg Bible was one of the first major books he printed.
+history | medium | Which English queen reigned from 1558 to 1603? | Elizabeth I | Victoria | Mary I | Anne | William Shakespeare wrote many of his plays during her reign.
+history | medium | The Rosetta Stone helped scholars to read which writing system? | Egyptian hieroglyphs | Cuneiform | Maya glyphs | Linear B | It carries the same decree in hieroglyphs, Demotic script and ancient Greek.
+history | medium | Which famous wall came down in 1989? | The Berlin Wall | Hadrian's Wall | The Great Wall of China | The Antonine Wall | Germany was reunified less than a year later, in October 1990.
+history | hard | In which year did the Western Roman Empire traditionally fall? | 476 AD | 312 AD | 410 AD | 1453 AD | 1453 marks the fall of Constantinople, capital of the Eastern Roman Empire.
+history | hard | Whose nearly intact tomb did Howard Carter discover in 1922? | Tutankhamun | Ramesses II | Cleopatra | Khufu | The tomb held more than 5,000 objects, including his famous golden mask.
+history | hard | Who was the first woman to win a Nobel Prize? | Marie Curie | Rosalind Franklin | Ada Lovelace | Florence Nightingale | She won two: Physics in 1903 and Chemistry in 1911.
+history | hard | In which year was the Magna Carta sealed? | 1215 | 1066 | 1314 | 1415 | King John agreed to it at Runnymede, near Windsor.
+history | hard | Which Wonder of the Ancient World was a giant bronze statue of the sun god Helios? | The Colossus of Rhodes | The Statue of Zeus at Olympia | The Lighthouse of Alexandria | The Mausoleum at Halicarnassus | It stood about 33 metres tall until an earthquake toppled it.
+history | hard | Which civilisation built Tenochtitlan, on the site of today's Mexico City? | The Aztecs | The Inca | The Maya | The Olmecs | The city was built on an island in Lake Texcoco.
+
+# ------------------------------------------------------------------ technology
+technology | easy | What does "WWW" stand for? | World Wide Web | World Wide Wire | Web Wide World | Wide World Web | Tim Berners-Lee proposed it in 1989 while working at CERN.
+technology | easy | Which company makes the iPhone? | Apple | Samsung | Google | Nokia | Apple was founded in 1976 by Steve Jobs, Steve Wozniak and Ronald Wayne.
+technology | easy | Which keyboard shortcut copies on Windows? | Ctrl + C | Ctrl + V | Ctrl + X | Ctrl + P | Ctrl + X cuts and Ctrl + V pastes.
+technology | easy | What does "PC" stand for? | Personal computer | Private computer | Portable computer | Public computer
+technology | easy | Which part of a computer is often called its "brain"? | CPU | RAM | Hard drive | Monitor | CPU stands for central processing unit.
+technology | easy | What is the name of the "@" symbol? | At sign | Hashtag | Ampersand | Asterisk | Ray Tomlinson chose it for email addresses in 1971.
+technology | easy | Which company created the Windows operating system? | Microsoft | Apple | IBM | Google | Windows 1.0 was released in 1985.
+technology | medium | What does "HTML" stand for? | HyperText Markup Language | High-Tech Modern Language | HyperTransfer Markup Language | Home Tool Markup Language | Tim Berners-Lee created HTML as well.
+technology | medium | What does "USB" stand for? | Universal Serial Bus | Unified System Bus | Universal Signal Board | United Serial Backbone | The first USB standard arrived in 1996.
+technology | medium | In which year was the first iPhone released? | 2007 | 2005 | 2009 | 2010 | Steve Jobs unveiled it in January; it went on sale that June.
+technology | medium | Who co-founded Microsoft with Paul Allen? | Bill Gates | Steve Jobs | Larry Page | Steve Wozniak | They founded it in 1975 in Albuquerque, New Mexico.
+technology | medium | How many bits are there in a byte? | 8 | 4 | 10 | 16 | One byte can store 256 different values, from 0 to 255.
+technology | medium | What does "URL" stand for? | Uniform Resource Locator | Universal Reference Link | Unified Routing Locator | User Resource Link
+technology | medium | Which programming language is named after a British comedy group? | Python | Ruby | Java | Perl | Guido van Rossum named it after Monty Python's Flying Circus.
+technology | hard | What does "GIF" stand for? | Graphics Interchange Format | Graphic Image File | General Image Format | Graphical Internet File | Its creator, Steve Wilhite, pronounced it with a soft g, like "jif".
+technology | hard | Who is often called the first computer programmer? | Ada Lovelace | Alan Turing | Charles Babbage | Grace Hopper | In 1843 she published an algorithm for Charles Babbage's Analytical Engine.
+technology | hard | How is the number 5 written in binary? | 101 | 110 | 111 | 100 | 101 means 4 + 0 + 1.
+technology | hard | What does "RAM" stand for? | Random Access Memory | Read Access Memory | Rapid Action Memory | Runtime Allocation Module
+technology | hard | Who proposed a famous test of machine intelligence in 1950? | Alan Turing | John von Neumann | Claude Shannon | Charles Babbage | He called it "the imitation game".
+technology | hard | What was the first web browser called? | WorldWideWeb | Mosaic | Netscape Navigator | Internet Explorer | It was later renamed Nexus to avoid confusion with the Web itself.
+
+# ------------------------------------------------------------------ food & drink
+food | easy | What is the main ingredient of guacamole? | Avocado | Peas | Cucumber | Spinach | Guacamole dates back to the Aztecs, in what is now Mexico.
+food | easy | Which country does pizza come from? | Italy | Greece | France | United States | The Margherita is said to be named after Queen Margherita of Savoy.
+food | easy | Which fruit is dried to make raisins? | Grapes | Plums | Figs | Apricots | Dried plums are called prunes.
+food | easy | Which vegetable is famous for making people cry when they chop it? | Onion | Garlic | Celery | Leek | Chopping it releases a gas that irritates the eyes.
+food | easy | What are sushi rolls usually wrapped in? | Seaweed | Rice paper | Lettuce | Cabbage | The dried seaweed sheets are called nori.
+food | easy | What is popcorn made from? | Corn kernels | Rice grains | Wheat grains | Barley grains | A kernel pops when the water inside it turns to steam.
+food | easy | Which country does paella come from? | Spain | Italy | Portugal | Mexico | It originated in the Valencia region.
+food | medium | What is tofu made from? | Soybeans | Rice | Chickpeas | Wheat | It is made by curdling soy milk, a bit like making cheese.
+food | medium | What is the main ingredient of hummus? | Chickpeas | Lentils | Peas | Black beans | "Hummus" is the Arabic word for chickpeas.
+food | medium | Which nut is used to make marzipan? | Almonds | Walnuts | Peanuts | Hazelnuts
+food | medium | Which spice gives many curries their yellow colour? | Turmeric | Paprika | Cumin | Cinnamon | Turmeric is a root in the ginger family.
+food | medium | Which pastry is used to make profiteroles? | Choux pastry | Puff pastry | Shortcrust pastry | Filo pastry | Éclairs are made from the same pastry.
+food | medium | Which herb is the main ingredient of pesto alla genovese? | Basil | Parsley | Mint | Coriander | It also contains pine nuts, garlic, olive oil and hard cheese.
+food | medium | What is risotto made from? | Rice | Pasta | Couscous | Quinoa | Starchy short-grain rice such as Arborio makes it creamy.
+food | hard | Which is the most expensive spice by weight? | Saffron | Vanilla | Cardamom | Cinnamon | Each crocus flower yields just three threads of saffron.
+food | hard | Which country does Manchego cheese come from? | Spain | Italy | France | Portugal | It is made from the milk of Manchega sheep in La Mancha.
+food | hard | Which country is the home of goulash? | Hungary | Poland | Austria | Czech Republic | It began as a stew cooked by Hungarian cattle herders.
+food | hard | Which vegetable is the main ingredient of baba ganoush? | Aubergine (eggplant) | Courgette (zucchini) | Red pepper | Pumpkin | The aubergine is charred until smoky, then mashed with tahini.
+food | hard | What is the Japanese soup made from fermented soybean paste called? | Miso soup | Ramen | Pho | Laksa
+food | hard | Besides yoghurt, which vegetable is the main ingredient of tzatziki? | Cucumber | Tomato | Spinach | Aubergine | It is usually flavoured with garlic and dill or mint.
+
+# ------------------------------------------------------------------ sports
+sports | easy | How many players does a football (soccer) team have on the pitch? | 11 | 9 | 10 | 12
+sports | easy | In which sport would you perform a slam dunk? | Basketball | Volleyball | Tennis | Handball
+sports | easy | How many holes are played in a standard round of golf? | 18 | 9 | 12 | 20 | The 18-hole round goes back to St Andrews, which settled on 18 holes in 1764.
+sports | easy | How many rings are there on the Olympic flag? | 5 | 4 | 6 | 7 | Pierre de Coubertin designed the flag in 1913.
+sports | easy | In tennis, what is a score of zero called? | Love | Nil | Duck | Zero | In cricket, a score of zero is called a duck.
+sports | easy | Which sport is played with a shuttlecock? | Badminton | Squash | Table tennis | Tennis
+sports | easy | Roughly how long is a marathon? | 42 km | 26 km | 36 km | 50 km | Officially 42.195 km, or about 26.2 miles.
+sports | medium | How many players does a basketball team have on the court? | 5 | 4 | 6 | 7
+sports | medium | In which sport can you score a "try"? | Rugby | Cricket | Hockey | Baseball | In rugby union, a try is worth five points.
+sports | medium | How many points is a bullseye worth in darts? | 50 | 25 | 60 | 100 | The ring around it, the outer bull, scores 25.
+sports | medium | Which country hosted the first modern Olympic Games in 1896? | Greece | France | United Kingdom | United States | They were held in Athens.
+sports | medium | In which sport do players hit a puck? | Ice hockey | Curling | Polo | Lacrosse | Pucks are made of vulcanised rubber.
+sports | medium | How many players does a volleyball team have on the court? | 6 | 4 | 5 | 7
+sports | medium | In golf, what is a score of one under par on a hole called? | Birdie | Eagle | Bogey | Albatross | Two under par is an eagle; three under is an albatross.
+sports | hard | What is the standard maximum break in snooker? | 147 | 100 | 150 | 180 | It means potting all 15 reds, each followed by the black, then all six colours.
+sports | hard | Where were the first Winter Olympics held, in 1924? | Chamonix | St. Moritz | Oslo | Innsbruck
+sports | hard | How many balls are bowled in a standard over in cricket? | 6 | 5 | 8 | 10 | Some countries, including Australia, once played eight-ball overs.
+sports | hard | What is the highest possible score in a game of ten-pin bowling? | 300 | 200 | 250 | 350 | A perfect game takes 12 strikes in a row.
+sports | hard | How many players does a baseball team have on the field when defending? | 9 | 8 | 10 | 11
+sports | hard | Which martial art's name means "the gentle way"? | Judo | Karate | Taekwondo | Aikido | Jigoro Kano founded judo in Japan in 1882.
+
+# ------------------------------------------------------------------ movies & music
+entertainment | easy | Which band sang "Hey Jude" and "Let It Be"? | The Beatles | The Rolling Stones | Queen | The Beach Boys | The band formed in Liverpool in 1960.
+entertainment | easy | In "The Lion King", what is the name of Simba's father? | Mufasa | Scar | Rafiki | Zazu
+entertainment | easy | How many strings does a standard guitar have? | 6 | 4 | 5 | 8 | A standard bass guitar has four.
+entertainment | easy | Which instrument usually has 88 keys? | Piano | Accordion | Harpsichord | Organ | A modern piano has 52 white keys and 36 black keys.
+entertainment | easy | What is the name of the school of witchcraft and wizardry in Harry Potter? | Hogwarts | Durmstrang | Beauxbatons | Ilvermorny
+entertainment | easy | Which film features a toy cowboy called Woody? | Toy Story | Cars | Shrek | Up | Released in 1995, it was the first entirely computer-animated feature film.
+entertainment | easy | How many musicians play in a quartet? | 4 | 3 | 5 | 8
+entertainment | medium | Who directed the 1993 film "Jurassic Park"? | Steven Spielberg | James Cameron | George Lucas | Ridley Scott | It is based on Michael Crichton's 1990 novel.
+entertainment | medium | In which year was the first "Star Wars" film released? | 1977 | 1974 | 1980 | 1983 | It was later given the subtitle "Episode IV – A New Hope".
+entertainment | medium | Who composed the "Moonlight Sonata"? | Ludwig van Beethoven | Wolfgang Amadeus Mozart | Frédéric Chopin | Johann Sebastian Bach | The nickname came from a music critic after Beethoven's death.
+entertainment | medium | Which singer is known as the "King of Pop"? | Michael Jackson | Elvis Presley | Prince | Freddie Mercury | Elvis Presley is known as the "King of Rock and Roll".
+entertainment | medium | Which animated film features the song "Let It Go"? | Frozen | Moana | Tangled | Encanto
+entertainment | medium | What is the highest female singing voice called? | Soprano | Alto | Mezzo-soprano | Contralto | The lowest female voice type is the contralto.
+entertainment | medium | What colour are Dorothy's slippers in the 1939 film "The Wizard of Oz"? | Ruby red | Silver | Gold | Emerald green | In L. Frank Baum's original book, they were silver.
+entertainment | hard | Which film won the first Academy Award for Best Picture? | Wings | Sunrise | The Jazz Singer | Metropolis | It was a silent film from 1927.
+entertainment | hard | How many symphonies did Beethoven complete? | 9 | 5 | 7 | 12 | His Ninth Symphony ends with the famous "Ode to Joy".
+entertainment | hard | Which band released the album "The Dark Side of the Moon" in 1973? | Pink Floyd | Led Zeppelin | The Who | Genesis | Its prism cover was designed by the studio Hipgnosis.
+entertainment | hard | Which 1941 film, directed by Orson Welles, is often ranked among the greatest ever made? | Citizen Kane | Casablanca | The Maltese Falcon | Gone with the Wind | Its mystery revolves around Kane's last word: "Rosebud".
+entertainment | hard | Who composed the opera "La traviata"? | Giuseppe Verdi | Giacomo Puccini | Gioachino Rossini | Vincenzo Bellini
+entertainment | hard | Which instrument did jazz great Louis Armstrong famously play? | Trumpet | Saxophone | Clarinet | Trombone | His nickname was "Satchmo".
+
+# ------------------------------------------------------------------ nature & animals
+nature | easy | How many legs does a spider have? | 8 | 6 | 10 | 12 | Spiders are arachnids, not insects: insects have six legs.
+nature | easy | What is the largest animal on Earth? | Blue whale | African elephant | Whale shark | Giraffe | It is the largest animal known to have ever lived.
+nature | easy | What do caterpillars turn into? | Butterflies or moths | Beetles | Bees | Dragonflies
+nature | easy | Which animal is known as the "king of the jungle"? | Lion | Tiger | Gorilla | Elephant | Lions actually live mostly in grasslands and savannas, not jungles.
+nature | easy | What is the fastest land animal? | Cheetah | Lion | Pronghorn | Greyhound | It can reach about 100 km/h in short bursts.
+nature | easy | What do bees collect from flowers to make honey? | Nectar | Pollen | Sap | Dew | Bees collect pollen too, mostly as food for their young.
+nature | easy | Which reptile is famous for changing colour? | Chameleon | Iguana | Gecko | Tortoise | Chameleons change colour to signal their mood and to control their temperature.
+nature | medium | How many hearts does an octopus have? | 3 | 1 | 2 | 8 | An octopus also has blue blood.
+nature | medium | What is a group of lions called? | A pride | A pack | A herd | A flock | A group of owls is called a parliament.
+nature | medium | What is a baby kangaroo called? | A joey | A kit | A cub | A calf | A newborn joey is only about the size of a jelly bean.
+nature | medium | Which mammal can truly fly? | Bat | Flying squirrel | Sugar glider | Flying lemur | Flying squirrels and sugar gliders can only glide.
+nature | medium | Which is the tallest animal in the world? | Giraffe | African elephant | Ostrich | Moose | Giraffes have seven neck bones, the same number as humans.
+nature | medium | Which is the largest species of penguin? | Emperor penguin | King penguin | Gentoo penguin | Adélie penguin | Emperor penguins can stand more than a metre tall.
+nature | medium | What do giant pandas mainly eat? | Bamboo | Eucalyptus leaves | Fish | Berries | Koalas are the ones that eat eucalyptus.
+nature | hard | Which mammal has the longest pregnancy? | Elephant | Blue whale | Giraffe | Rhinoceros | An elephant pregnancy lasts about 22 months.
+nature | hard | Besides the echidna, which is the only mammal that lays eggs? | Platypus | Pangolin | Armadillo | Opossum | Egg-laying mammals are called monotremes.
+nature | hard | Which bird can fly backwards? | Hummingbird | Kingfisher | Swift | Sparrow | Its wings can beat dozens of times per second.
+nature | hard | How many eyes does a honeybee have? | 5 | 2 | 4 | 8 | Two large compound eyes plus three simple eyes on top of its head.
+nature | hard | What is a group of crows called? | A murder | A pod | A gaggle | A troop | A group of geese on the ground is called a gaggle.
+nature | hard | Which is the largest living species of lizard? | Komodo dragon | Green iguana | Gila monster | Frilled lizard | It can grow to about 3 metres long.
+
+# ------------------------------------------------------------------ language
+language | easy | What is the opposite of "ancient"? | Modern | Old | Antique | Historic
+language | easy | Which word means the same as "happy"? | Joyful | Gloomy | Tired | Angry
+language | easy | How many letters are there in the English alphabet? | 26 | 24 | 25 | 28
+language | easy | What is the plural of "goose"? | Geese | Gooses | Geeses | Goosen
+language | easy | What is the past tense of "go"? | Went | Goed | Gone | Going
+language | easy | In which language does "bonjour" mean "hello"? | French | Spanish | Italian | Portuguese
+language | easy | What does the Italian word "ciao" mean? | Hello or goodbye | Thank you | Please | Good night
+language | medium | What is a word with the same meaning as another word called? | Synonym | Antonym | Homonym | Acronym | A word with the opposite meaning is an antonym.
+language | medium | What is a word that reads the same backwards, like "level", called? | Palindrome | Anagram | Acronym | Homophone | "Racecar" and "noon" are palindromes too.
+language | medium | What does the abbreviation "e.g." mean? | For example | That is | And so on | Note well | It is short for the Latin "exempli gratia".
+language | medium | How many items are in a "baker's dozen"? | 13 | 12 | 14 | 24 | Traditionally, bakers added an extra item to avoid being accused of selling short.
+language | medium | Which of these words is spelled correctly? | Necessary | Neccessary | Necesary | Neccesary
+language | medium | In which language does "danke" mean "thank you"? | German | Dutch | Swedish | Danish
+language | medium | What does the prefix "micro-" mean? | Very small | Very large | Half | Many | It comes from the Greek "mikros", meaning small.
+language | hard | Which number's English name has as many letters as its value? | Four | Three | Five | Six | F-O-U-R: it is the only one.
+language | hard | What does a philatelist collect? | Stamps | Coins | Butterflies | Postcards | A coin collector is called a numismatist.
+language | hard | What does the Latin phrase "carpe diem" mean? | Seize the day | Love conquers all | Know thyself | I came, I saw, I conquered | It comes from a poem by the Roman poet Horace.
+language | hard | Which letter is used most often in written English? | E | A | T | S | Some writers have written whole novels without it, called lipograms.
+language | hard | What does "ubiquitous" mean? | Found everywhere | Very rare | Extremely loud | Easily broken
+language | hard | From which language does the word "kindergarten" come? | German | Dutch | Danish | Swedish | It literally means "children's garden".

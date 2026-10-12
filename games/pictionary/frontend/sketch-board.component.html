@@ -1,0 +1,151 @@
+<div class="stage" #stage>
+  <div class="paper" [style.width.px]="box().width" [style.height.px]="box().height" [class.active]="active()">
+    <canvas
+      #canvas
+      class="canvas"
+      width="1000"
+      height="750"
+      role="img"
+      [attr.aria-label]="stats().ops ? 'The drawing' : 'An empty canvas'"
+      [style.cursor]="cursor()"
+      [attr.data-ops]="stats().ops"
+      [attr.data-version]="stats().version"
+      data-testid="canvas"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerUp($event)"
+      (pointercancel)="onPointerUp($event)"
+      (lostpointercapture)="onPointerUp($event)"
+    ></canvas>
+    <ng-content />
+  </div>
+</div>
+
+@if (drawer()) {
+  <div class="toolbar" role="toolbar" aria-label="Drawing tools" [class.off]="!canDraw()" data-testid="toolbar">
+    <div class="group">
+      <button
+        type="button"
+        class="tool"
+        [class.on]="tool() === 'pen'"
+        [attr.aria-pressed]="tool() === 'pen'"
+        (click)="pickTool('pen')"
+        matTooltip="Brush (B)"
+        aria-label="Brush"
+        data-testid="tool-pen"
+      >
+        <mat-icon svgIcon="brush" />
+      </button>
+      <button
+        type="button"
+        class="tool"
+        [class.on]="tool() === 'eraser'"
+        [attr.aria-pressed]="tool() === 'eraser'"
+        (click)="pickTool('eraser')"
+        matTooltip="Eraser (E)"
+        aria-label="Eraser"
+        data-testid="tool-eraser"
+      >
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4 4 0 0 1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84L13.41 3.56c.79-.78 2.05-.78 2.83 0zM4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-4.95-4.95-4.95 4.95z"
+          />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="tool"
+        [class.on]="tool() === 'fill'"
+        [attr.aria-pressed]="tool() === 'fill'"
+        (click)="pickTool('fill')"
+        matTooltip="Fill (F)"
+        aria-label="Fill"
+        data-testid="tool-fill"
+      >
+        <mat-icon svgIcon="fill" />
+      </button>
+    </div>
+
+    <span class="divider" aria-hidden="true"></span>
+
+    <div class="group" role="radiogroup" aria-label="Brush size">
+      @for (option of sizes; track option.value; let i = $index) {
+        <button
+          type="button"
+          class="tool size"
+          role="radio"
+          [class.on]="size() === option.value"
+          [attr.aria-checked]="size() === option.value"
+          (click)="pickSize(option)"
+          [matTooltip]="option.name + ' (' + (i + 1) + ')'"
+          [attr.aria-label]="option.name + ' brush'"
+          [attr.data-testid]="'size-' + option.value"
+        >
+          <span
+            class="dot"
+            [style.width.px]="dot(option)"
+            [style.height.px]="dot(option)"
+            [style.--dot]="tool() === 'eraser' ? null : color()"
+          ></span>
+        </button>
+      }
+    </div>
+
+    <span class="divider" aria-hidden="true"></span>
+
+    <div class="palette" role="radiogroup" aria-label="Colour">
+      @for (swatch of palette; track swatch.value) {
+        <button
+          type="button"
+          class="swatch"
+          role="radio"
+          [style.--swatch]="swatch.value"
+          [class.on]="color() === swatch.value"
+          [attr.aria-checked]="color() === swatch.value"
+          (click)="pickColor(swatch.value)"
+          [matTooltip]="swatch.name"
+          [attr.aria-label]="swatch.name"
+          [attr.data-testid]="'color-' + swatch.name.toLowerCase()"
+        ></button>
+      }
+    </div>
+
+    <span class="divider" aria-hidden="true"></span>
+
+    <div class="group">
+      <button
+        type="button"
+        class="tool"
+        (click)="undo()"
+        [disabled]="!canDraw() || !stats().undo"
+        matTooltip="Undo (Ctrl+Z)"
+        aria-label="Undo"
+        data-testid="undo"
+      >
+        <mat-icon svgIcon="undo" />
+      </button>
+      <button
+        type="button"
+        class="tool"
+        (click)="redo()"
+        [disabled]="!canDraw() || !stats().redo"
+        matTooltip="Redo (Ctrl+Y)"
+        aria-label="Redo"
+        data-testid="redo"
+      >
+        <mat-icon svgIcon="redo" />
+      </button>
+      <button
+        type="button"
+        class="tool"
+        (click)="clear()"
+        [disabled]="!canDraw() || !stats().ops"
+        matTooltip="Clear (undo brings it back)"
+        aria-label="Clear the canvas"
+        data-testid="clear"
+      >
+        <mat-icon svgIcon="delete" />
+      </button>
+    </div>
+  </div>
+}

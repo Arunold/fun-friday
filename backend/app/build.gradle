@@ -1,0 +1,49 @@
+apply plugin: 'org.springframework.boot'
+
+description = 'Fun Friday platform: rooms, real-time engine, REST/STOMP API, persistence'
+
+dependencies {
+    implementation project(':runtime')
+    // Every discovered game module is bundled into the application.
+    rootProject.subprojects.findAll { it.path.startsWith(':games:') }.each { game ->
+        implementation project(game.path)
+    }
+
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
+    runtimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-websocket-test'
+}
+
+springBoot {
+    mainClass = 'com.example.funfridaygame.FunFridayGameApplication'
+}
+
+tasks.named('bootJar') {
+    archiveFileName = 'fun-friday.jar'
+}
+
+tasks.named('jar') {
+    enabled = false
+}
+
+// Bundle the Angular build (npm run build:frontend) when it exists, so one jar serves everything.
+def frontendDist = rootProject.file('../frontend/dist/fun-friday/browser')
+tasks.named('processResources') {
+    from(frontendDist) {
+        into 'static'
+    }
+}
+
+tasks.named('test') {
+    // The OpenAPI export test writes docs/openapi.json for the TypeScript type generator.
+    systemProperty 'ff.docsDir', rootProject.file('../docs').absolutePath
+}

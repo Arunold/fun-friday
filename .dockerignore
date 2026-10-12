@@ -1,34 +1,22 @@
-# Git
+# Keep the Docker build context small: sources only, no dependencies or build output.
 .git
-.gitignore
-
-# IDE
-.idea
+.github
+.husky
 .vscode
+.idea
 *.iml
 
-# Node
-frontend/node_modules
-frontend/.angular
+**/node_modules
+**/.angular
+**/dist
+**/build
+**/.gradle
+**/data
+**/*.log
 
-# Gradle
-backend/.gradle
-backend/build
+e2e/test-results
+e2e/playwright-report
 
-# Logs
-*.log
-
-# Temp files
-tmp/
-*.tmp
-*.swp
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Husky
-.husky
-
-# Local config
-*.local
+docker-compose.yml
+Dockerfile
+.dockerignore

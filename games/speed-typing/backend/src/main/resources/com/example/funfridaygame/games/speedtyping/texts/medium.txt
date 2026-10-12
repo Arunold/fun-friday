@@ -1,0 +1,39 @@
+# Speed Typing - MEDIUM texts: one or two sentences, 80 to 140 characters.
+# One text per line, plain ASCII only (straight quotes, no dashes), family-friendly.
+# Lines starting with '#' and blank lines are ignored. TextLibraryTest checks every rule.
+Programming is not about typing, it's about thinking. But fast typing helps during Fun Friday games!
+The best error message is the one that never shows up. The second best has a helpful stack trace.
+In software development, premature optimization is the root of all evil, but so is premature abstraction.
+Any fool can write code that a computer can understand. Good programmers write code humans can understand.
+First solve the problem, then write the code. Debugging is twice as hard as writing the code in the first place.
+The early bird might get the worm, but the second mouse gets the cheese. Timing is everything, after all.
+Our office plant has survived three moves, two heat waves and one very enthusiastic intern with a watering can.
+A good meeting has a clear goal, a short agenda and ends five minutes early so everyone can grab a coffee.
+The hot air balloon rose gently above the valley as the morning mist slowly melted away in the warm sunshine.
+When the fire alarm test started, everyone calmly walked outside and enjoyed an unexpected break in the sun.
+She opened the old wooden box and found a stack of letters, a silver key and a faded map of the island.
+Clear names for variables save hours of confusion later. Your future self will thank you for the effort.
+The museum tour ended in the dinosaur hall, where a giant skeleton seemed to smile at the curious visitors.
+Teamwork makes the dream work, but a shared calendar and a good snack drawer certainly help a lot too.
+Every Friday the team gathers for a short demo, a round of applause and a friendly game or two.
+The recipe called for two cups of flour, three eggs, a pinch of salt and a generous spoonful of honey.
+Rainy afternoons are perfect for a warm blanket, a good book and a big mug of hot chocolate.
+Our new coffee machine can make twelve different drinks, yet everyone still orders plain black coffee.
+The marathon runners crossed the finish line one by one, tired but smiling as the crowd cheered them on.
+Remember to back up your files regularly. Hard drives fail at the worst possible moment, usually on a Friday.
+The little robot rolled across the floor, beeped twice and politely asked whether anyone needed more paper.
+A walk in the park at lunch time clears the head and makes the afternoon feel much shorter.
+The bakery on the corner opens at six, and by seven the line of hungry customers stretches around the block.
+Good documentation is like a friendly guide who already knows where all the tricky corners are hidden.
+The orchestra tuned their instruments while the audience settled into their seats and the lights dimmed.
+Keyboards with clicky keys sound like rain on a tin roof, which some people love and others really do not.
+During the winter holidays, the whole town hangs bright lights in the windows and the streets glow at night.
+Simple solutions are usually the hardest to find, but they are also the easiest to maintain over time.
+The astronaut floated past the window, waved at the camera and took a slow bite of a floating sandwich.
+Our quiz team won the trophy by answering the very last question about the tallest mountain in Africa.
+Never trust a spreadsheet that six people edited at once. Check the totals twice before you send it.
+The puppy chased its own tail for five minutes, then fell asleep in a sunny spot on the kitchen floor.
+Great ideas often appear in the shower, on a walk or right after you finally close your laptop for the day.
+The tiny village had one bakery, one bookshop and one very proud cat who visited every shop each morning.
+If at first you don't succeed, call it version one. Then gather feedback, fix the bugs and try again.
+The ferry left the harbor at noon, and seagulls followed it all the way to the small island.

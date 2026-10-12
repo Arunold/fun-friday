@@ -1,0 +1,133 @@
+asyncapi: 3.0.0
+info:
+  title: Fun Friday real-time API
+  version: '2.0.0'
+  description: |
+    STOMP over WebSocket (SockJS endpoint `/ws`). Every request is sent to `/app/rooms/{endpoint}`
+    and answered with a `Reply` on `/user/queue/reply` carrying the same `requestId`. After every
+    change the server pushes each member's personal `RoomSnapshot` on `/user/queue/room`.
+
+    Payload schemas are the components of the OpenAPI document (`docs/openapi.json`), generated from
+    the Java records; this file describes the channels and operations. Identity comes from the
+    connection (bound on create/join/resume), never from payload fields.
+  license:
+    name: Proprietary
+
+defaultContentType: application/json
+
+servers:
+  local:
+    host: localhost:8080
+    pathname: /ws
+    protocol: stomp
+    description: Development server (SockJS + STOMP 1.2, 10 s heart-beats)
+
+channels:
+  createRoom:
+    address: /app/rooms/create
+    messages:
+      createRoom: { payload: { $ref: './openapi.json#/components/schemas/CreateRoom' } }
+  joinRoom:
+    address: /app/rooms/join
+    messages:
+      joinRoom: { payload: { $ref: './openapi.json#/components/schemas/JoinRoom' } }
+  resume:
+    address: /app/rooms/resume
+    description: Reclaims a seat after a refresh or reconnect with the secret token from `Joined`.
+    messages:
+      resume: { payload: { $ref: './openapi.json#/components/schemas/Resume' } }
+  leave:
+    address: /app/rooms/leave
+    messages:
+      leave: { payload: { $ref: './openapi.json#/components/schemas/Simple' } }
+  kick:
+    address: /app/rooms/kick
+    description: Host only.
+    messages:
+      kick: { payload: { $ref: './openapi.json#/components/schemas/Kick' } }
+  settings:
+    address: /app/rooms/settings
+    description: Host only, in the lobby or on the podium. Settings are validated against the game's schema.
+    messages:
+      updateSettings: { payload: { $ref: './openapi.json#/components/schemas/UpdateSettings' } }
+  ready:
+    address: /app/rooms/ready
+    messages:
+      setReady: { payload: { $ref: './openapi.json#/components/schemas/SetReady' } }
+  becomePlayer:
+    address: /app/rooms/become-player
+    description: A spectator takes a free seat (lobby/podium) or is queued for the next game.
+    messages:
+      becomePlayer: { payload: { $ref: './openapi.json#/components/schemas/Simple' } }
+  start:
+    address: /app/rooms/start
+    description: Host only; needs the game's minimum number of online players.
+    messages:
+      start: { payload: { $ref: './openapi.json#/components/schemas/Simple' } }
+  playAgain:
+    address: /app/rooms/play-again
+    description: Host only, from the podium back to the lobby.
+    messages:
+      playAgain: { payload: { $ref: './openapi.json#/components/schemas/Simple' } }
+  end:
+    address: /app/rooms/end
+    description: Host only; closes the room for everyone (`ROOM_CLOSED`).
+    messages:
+      end: { payload: { $ref: './openapi.json#/components/schemas/Simple' } }
+  action:
+    address: /app/rooms/action
+    description: |
+      A game move, handled by the running game's `GameLogic.onAction`. Rate-limited per member.
+      Without `requestId` no success reply is sent (fire-and-forget for high-frequency input).
+    messages:
+      gameAction: { payload: { $ref: './openapi.json#/components/schemas/GameAction' } }
+  ping:
+    address: /app/rooms/ping
+    description: Clock synchronisation; the reply's data is a `Pong`.
+    messages:
+      ping: { payload: { $ref: './openapi.json#/components/schemas/Ping' } }
+
+  reply:
+    address: /user/queue/reply
+    description: The answer to every request (success replies are skipped when `requestId` is absent).
+    messages:
+      reply: { payload: { $ref: './openapi.json#/components/schemas/Reply' } }
+  room:
+    address: /user/queue/room
+    description: The member's complete, personal room state after every change (replace, don't merge).
+    messages:
+      snapshot: { payload: { $ref: './openapi.json#/components/schemas/RoomSnapshot' } }
+  events:
+    address: /user/queue/events
+    description: |
+      Scope `room`: `KICKED`, `ROOM_CLOSED`, `REPLACED` (the seat was resumed in another tab),
+      `HOST_CHANGED`. Scope `game`: private events from `GameContext.sendTo`.
+    messages:
+      event: { payload: { $ref: './openapi.json#/components/schemas/ServerEvent' } }
+  stream:
+    address: /topic/rooms/{code}/stream
+    description: Public high-frequency game events (`GameContext.stream`). Only members of the room may subscribe.
+    parameters:
+      code:
+        description: Room code
+    messages:
+      streamMessage: { payload: { $ref: './openapi.json#/components/schemas/StreamMessage' } }
+
+operations:
+  sendCreateRoom: { action: send, channel: { $ref: '#/channels/createRoom' } }
+  sendJoinRoom: { action: send, channel: { $ref: '#/channels/joinRoom' } }
+  sendResume: { action: send, channel: { $ref: '#/channels/resume' } }
+  sendLeave: { action: send, channel: { $ref: '#/channels/leave' } }
+  sendKick: { action: send, channel: { $ref: '#/channels/kick' } }
+  sendSettings: { action: send, channel: { $ref: '#/channels/settings' } }
+  sendReady: { action: send, channel: { $ref: '#/channels/ready' } }
+  sendBecomePlayer: { action: send, channel: { $ref: '#/channels/becomePlayer' } }
+  sendStart: { action: send, channel: { $ref: '#/channels/start' } }
+  sendPlayAgain: { action: send, channel: { $ref: '#/channels/playAgain' } }
+  sendEnd: { action: send, channel: { $ref: '#/channels/end' } }
+  sendAction: { action: send, channel: { $ref: '#/channels/action' } }
+  sendPing: { action: send, channel: { $ref: '#/channels/ping' } }
+  receiveReply: { action: receive, channel: { $ref: '#/channels/reply' } }
+  receiveRoom: { action: receive, channel: { $ref: '#/channels/room' } }
+  receiveEvents: { action: receive, channel: { $ref: '#/channels/events' } }
+  receiveStream: { action: receive, channel: { $ref: '#/channels/stream' } }

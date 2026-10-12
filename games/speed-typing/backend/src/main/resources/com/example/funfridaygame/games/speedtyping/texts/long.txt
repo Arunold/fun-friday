@@ -1,0 +1,39 @@
+# Speed Typing - LONG texts: a short passage, 150 to 260 characters.
+# One text per line, plain ASCII only (straight quotes, no dashes), family-friendly.
+# Lines starting with '#' and blank lines are ignored. TextLibraryTest checks every rule.
+The office kitchen is the true heart of every company. It is where friendships begin, where big ideas are sketched on napkins, and where someone always brings cookies to share.
+Every morning the old lighthouse keeper climbed the spiral stairs to polish the great lamp. He had done it for forty years, and he still smiled when the first sunlight touched the glass.
+Learning to type quickly is a lot like learning to play the piano. At first every key feels far away, but with steady practice your fingers find their own rhythm and the words begin to flow.
+Our team once spent an entire afternoon naming the new server. After long debates and three rounds of voting we called it Toaster, and nobody remembers why that seemed like a great idea.
+The mountain trail was steep and rocky, but the view from the top made every step worth it. Below us the lakes sparkled like mirrors, and the distant villages looked like tiny toy towns.
+A good code review is a conversation, not a contest. Ask questions with kindness, explain your suggestions clearly, and remember that the goal is better software and a stronger team.
+On the first warm day of spring, the whole neighborhood came outside. Children rode their bikes, neighbors traded garden tips over the fence, and the ice cream truck played its cheerful song.
+The library held thousands of books, but Emma always returned to the same dusty shelf in the corner. There, between an atlas and a cookbook, she had once found a note that started an adventure.
+Working from home has its perks. The commute is only a few steps long, the coffee is exactly how you like it, and your coworkers are a sleepy dog and a houseplant that never interrupts you.
+Before the big launch, the team gathered around a single laptop. Someone counted down from ten, the button was pressed, and the room stayed silent until the first happy message appeared.
+Octopuses are remarkable animals. They have three hearts, blue blood and eight clever arms, and they can change the color and texture of their skin in the blink of an eye to hide from divers.
+The secret to a great pancake is patience. Let the batter rest for a few minutes, wait until the pan is properly hot, and only flip it when small bubbles appear all over the surface.
+Every bug report tells a story. Somewhere a user clicked a button, expected one thing and got another. Our job is to follow the clues, reproduce the mystery and give the story a happy ending.
+The night train rolled through the countryside while most passengers slept. Only a few travelers stayed awake, watching the moonlit fields and the glowing windows of farmhouses pass by.
+Plants are wonderful office companions. They clean the air, brighten up gray corners and never complain about the temperature, as long as somebody waters them before the long weekend.
+When the power went out during the afternoon meeting, nobody panicked. We opened the blinds, found a marker that still worked and finished the discussion in the soft light of the window.
+The ancient Romans built roads that still exist today. Their engineers used layers of stone, sand and gravel, and they curved each road slightly so that rainwater would run off to the sides.
+A small act of kindness can change someone's whole day. Hold the door, share your umbrella or simply ask a colleague how they are doing, and then really listen to the answer they give.
+Our planning session began with sticky notes and optimism. By the end of the day the wall was covered in colorful squares, and we had agreed on three goals that everyone felt excited about.
+Honeybees communicate with a special dance. By wiggling in a certain direction for a certain time, a single bee can tell the whole hive exactly where to find the best flowers in the meadow.
+The best way to learn a new programming language is to build something small with it. A to-do list, a tiny game or a simple calculator will teach you more than a week of reading tutorials.
+On rainy Sundays the cafe on the corner is always full. People sit by the fogged-up windows with warm drinks, quietly reading newspapers or chatting while the rain taps softly on the glass.
+The hiking club planned the route for weeks. They packed maps, sandwiches and extra socks, but they forgot the most important thing of all, which turned out to be the key to the minibus.
+Clean code reads like well-written prose. Each function does one thing, each name tells you what it means, and when you return to it months later, it still makes sense on the first read.
+Giant pandas spend up to fourteen hours a day eating bamboo. Despite their round and sleepy appearance, they are surprisingly good climbers and can even swim across rivers when they need to.
+The science fair was a huge success. There were volcanoes made of clay, a robot that sorted socks by color, and a proud student who had built a working weather station out of old bottles.
+Typing races reward both speed and care. Rushing ahead creates mistakes that take time to fix, while a calm and steady pace often carries you across the finish line first. Breathe and type.
+Our team retrospective has one simple rule: we talk about what happened, not about who did it. That small agreement turned tense discussions into friendly problem-solving sessions.
+The northern lights danced across the winter sky in waves of green and purple. The travelers stood in the snow for hours, too amazed to notice how cold their toes had become.
+Every great city has a hidden garden somewhere. You might find it behind an old church, on top of a parking garage or tucked between two office towers, quietly waiting for visitors.
+The chef tasted the soup, frowned and added a pinch of salt. Then she tasted it again, smiled and declared it ready. The whole kitchen cheered, because it was the last dish before the holidays.
+Some people organize their desks with perfect precision, while others prefer a creative chaos of papers, cables and coffee mugs. Both camps insist they can find anything in five seconds.
+The first computer bug was a real moth found inside a machine in 1947. The engineers taped it into their logbook with a note, and the word has been part of every programmer's vocabulary since.
+A good playlist can make any task feel easier. Upbeat songs help with chores, calm instrumental music helps with focus, and a favorite old album can turn a long drive into a happy trip.
+The tortoise and the hare is an old story with a timeless lesson. Slow and steady progress often beats a fast start, especially when the race is long and the finish line is far away.
+Volunteers spent the whole Saturday cleaning up the riverbank. They collected forty bags of litter, planted young trees along the path and finished the day with a picnic in the sunshine.

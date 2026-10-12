@@ -1,0 +1,15 @@
+{
+  "name": "fun-friday-e2e",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Playwright end-to-end tests (platform + every game in games/*/e2e)",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "24.13.5"
+  }
+}

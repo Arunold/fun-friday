@@ -1,0 +1,568 @@
+// Reaction Showdown: one big colour field that fills the stage. Platform tokens only (--mat-sys-*,
+// --ff-*) plus player colours. The field never moves or scales — only the inner orb pulses
+// (scale-only, BUG-23) — so taps always land where the player aims.
+:host {
+  // Grow to fill the stage ourselves: with `container-type: size` the host has no content height.
+  flex: 1 1 0;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  container-type: size;
+}
+
+.game {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 2cqh, 16px);
+  padding: clamp(12px, 2.4cqh, 20px) clamp(14px, 2.4cqw, 24px);
+}
+
+// ------------------------------------------------------------------ header
+.bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 30px;
+}
+
+.pips {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pip {
+  width: 28px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+  transition:
+    background 300ms,
+    box-shadow 300ms;
+
+  &.current {
+    background: color-mix(in srgb, var(--mat-sys-primary) 45%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--mat-sys-primary) 60%, transparent);
+  }
+
+  &.good {
+    background: var(--ff-success);
+  }
+
+  &.bad {
+    background: var(--ff-danger);
+  }
+
+  &.miss {
+    background: var(--mat-sys-outline);
+  }
+
+  &.done {
+    background: var(--mat-sys-primary);
+  }
+}
+
+.signal-label {
+  font-weight: 600;
+  color: var(--ff-text-muted);
+  font-variant-numeric: tabular-nums;
+
+  b {
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+.fakeouts {
+  color: var(--mat-sys-tertiary);
+}
+
+.round-points {
+  font-variant-numeric: tabular-nums;
+  color: var(--ff-success);
+
+  &.neg {
+    color: var(--ff-danger);
+  }
+}
+
+// ------------------------------------------------------------------ the field
+.target {
+  --field: var(--mat-sys-surface-container-high);
+  --ink: var(--mat-sys-on-surface);
+  --glow: color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
+  --ring: color-mix(in srgb, var(--mat-sys-primary) 35%, transparent);
+
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--ff-radius-lg);
+  background-color: var(--field);
+  box-shadow: inset 0 0 0 1px var(--ff-border);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  // Calm states fade in; signals (decoys and GO) snap — even a short fade into GO would delay
+  // the moment players see it and add to everyone's time.
+  transition:
+    background-color 450ms var(--ff-ease-out),
+    color 300ms;
+
+  &.go,
+  &.fake {
+    transition: none;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--mat-sys-primary);
+    outline-offset: 3px;
+  }
+
+  &.go {
+    --field: var(--ff-success);
+    --ink: var(--ff-bg);
+    --glow: color-mix(in srgb, var(--ff-bg) 10%, transparent);
+    --ring: color-mix(in srgb, var(--ff-bg) 34%, transparent);
+  }
+
+  &.fake-hold {
+    --field: color-mix(in srgb, var(--mat-sys-error) 82%, var(--ff-bg));
+    --ink: var(--ff-bg);
+  }
+
+  &.fake-steady {
+    --field: var(--ff-warning);
+    --ink: var(--ff-bg);
+  }
+
+  &.fake-freeze {
+    --field: var(--mat-sys-primary);
+    --ink: var(--ff-bg);
+  }
+
+  // I tapped; GO stays open for the others.
+  &.go.locked {
+    --field: color-mix(in srgb, var(--ff-success) 62%, var(--mat-sys-surface-container-high));
+  }
+
+  // I jumped the gun: a red veil until the signal is over.
+  &.jumped {
+    --field: color-mix(in srgb, var(--ff-danger) 30%, var(--mat-sys-surface-container-high));
+    --ink: var(--mat-sys-on-surface);
+    --glow: color-mix(in srgb, var(--ff-danger) 16%, transparent);
+    transition-duration: 200ms;
+  }
+
+  &.result {
+    --field: var(--mat-sys-surface-container);
+    --glow: color-mix(in srgb, var(--mat-sys-primary) 14%, transparent);
+  }
+}
+
+// A soft disc of light behind the label. It is absolutely centred without transforms, so its
+// scale-only pulse never shifts anything (BUG-23); GO adds expanding rings.
+.orb {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: min(64cqmin, 520px);
+  height: min(64cqmin, 520px);
+  margin: auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow) 0%, transparent 68%);
+  animation: rs-breathe 2.8s ease-in-out infinite;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 18%;
+    border-radius: 50%;
+    border: 3px solid var(--ring);
+    opacity: 0;
+  }
+
+  .go & {
+    animation: ff-pulse 640ms ease-in-out infinite;
+
+    &::after {
+      animation: rs-ring 900ms ease-out infinite;
+    }
+  }
+
+  .fake & {
+    animation: none;
+    opacity: 0;
+  }
+
+  .go.locked &,
+  .jumped & {
+    animation: none;
+
+    &::after {
+      animation: none;
+    }
+  }
+
+  .result & {
+    animation: none;
+  }
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.8cqmin, 16px);
+  max-width: 100%;
+  padding: 24px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.label {
+  font-size: clamp(34px, 9.5cqmin, 92px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+
+  &.go-label {
+    font-size: clamp(56px, 17cqmin, 170px);
+    letter-spacing: 0.02em;
+  }
+
+  &.bad {
+    color: var(--ff-danger);
+  }
+
+  &.quiet {
+    color: var(--ff-text-muted);
+    font-size: clamp(28px, 7cqmin, 64px);
+  }
+}
+
+.sub {
+  font-size: clamp(14px, 2.4cqmin, 20px);
+  font-weight: 600;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+
+  b {
+    color: var(--ff-success);
+  }
+
+  .penalty {
+    color: var(--ff-danger);
+    font-weight: 800;
+  }
+
+  .ff-kbd {
+    color: inherit;
+    border-color: color-mix(in srgb, var(--ink) 30%, transparent);
+  }
+}
+
+.big-time {
+  font-size: clamp(56px, 16cqmin, 156px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+
+  small {
+    margin-left: 0.12em;
+    font-size: 0.32em;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: color-mix(in srgb, var(--ink) 70%, transparent);
+  }
+
+  .summary & {
+    background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-tertiary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    small {
+      color: var(--ff-text-muted);
+      -webkit-text-fill-color: var(--ff-text-muted);
+    }
+  }
+}
+
+// The mini-result of a signal (inside the field).
+.summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.6cqmin, 14px);
+}
+
+.rank-line {
+  font-size: clamp(18px, 3.4cqmin, 28px);
+  font-weight: 700;
+
+  b {
+    color: var(--ff-success);
+  }
+
+  .label.bad + & b {
+    color: var(--ff-danger);
+  }
+}
+
+.fastest-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+  font-size: clamp(14px, 2.2cqmin, 17px);
+  font-weight: 600;
+
+  b {
+    color: var(--ff-warning);
+  }
+}
+
+// ------------------------------------------------------------------ players
+.players {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 4px 12px 4px 6px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-high);
+  box-shadow: inset 0 0 0 1px transparent;
+  transition:
+    background 250ms,
+    box-shadow 250ms;
+
+  &.me {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mat-sys-primary) 55%, transparent);
+  }
+
+  &.tapped,
+  &.timed {
+    background: color-mix(in srgb, var(--ff-success) 14%, var(--mat-sys-surface-container-high));
+  }
+
+  &.fastest {
+    background: color-mix(in srgb, var(--ff-warning) 18%, var(--mat-sys-surface-container-high));
+  }
+
+  &.jumped {
+    background: color-mix(in srgb, var(--ff-danger) 16%, var(--mat-sys-surface-container-high));
+  }
+
+  &.missed {
+    opacity: 0.7;
+  }
+}
+
+.mark {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  .tapped & {
+    color: var(--ff-success);
+  }
+
+  .fastest & {
+    color: var(--ff-warning);
+  }
+
+  .jumped & {
+    color: var(--ff-danger);
+  }
+
+  .missed & {
+    color: var(--ff-text-muted);
+  }
+}
+
+// ------------------------------------------------------------------ round table (reveal)
+// A content-sized card centred in the free space; it scrolls inside only with very many players.
+.board {
+  flex: 0 1 auto;
+  align-self: center;
+  width: min(100%, 1000px);
+  min-height: 0;
+  margin-block: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: clamp(14px, 2.4cqh, 24px);
+  overflow: auto;
+  border-radius: var(--ff-radius-lg);
+  background: var(--mat-sys-surface-container);
+  box-shadow:
+    inset 0 0 0 1px var(--ff-border),
+    var(--ff-shadow);
+
+  &.dense {
+    gap: 4px;
+  }
+}
+
+.board-row {
+  // Rows share the height: roomy with few players, shrinking (down to 30 px) on short stages.
+  flex: 0 1 52px;
+  min-height: 30px;
+  display: grid;
+  grid-template-columns:
+    44px minmax(120px, 1.6fr) repeat(var(--signals, 3), minmax(46px, 1fr))
+    repeat(3, minmax(58px, 0.9fr));
+  align-items: center;
+  gap: 10px;
+  padding: 2px 14px;
+  border-radius: 14px;
+  background: var(--mat-sys-surface-container-high);
+  animation: ff-fade-up 420ms var(--ff-ease-out) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+
+  .dense & {
+    flex-basis: 40px;
+    min-height: 26px;
+    border-radius: 10px;
+  }
+
+  &.head {
+    flex: none;
+    min-height: 0;
+    padding-block: 2px;
+    background: none;
+    animation: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ff-text-muted);
+  }
+
+  &.me {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mat-sys-primary) 55%, transparent);
+  }
+
+  ff-player-chip {
+    min-width: 0;
+  }
+}
+
+.rank {
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.cell {
+  color: var(--ff-text-muted);
+
+  &.timed {
+    color: var(--mat-sys-on-surface);
+  }
+
+  &.jump {
+    color: var(--ff-danger);
+  }
+
+  &.best {
+    color: var(--ff-warning);
+    font-weight: 800;
+
+    &::before {
+      content: '⚡';
+      margin-right: 2px;
+    }
+  }
+}
+
+.strong {
+  font-weight: 800;
+}
+
+.points {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ff-success);
+
+  &.neg {
+    color: var(--ff-danger);
+  }
+
+  &.zero {
+    color: var(--ff-text-muted);
+  }
+}
+
+.legend {
+  flex: none;
+  padding-top: 6px;
+  font-size: 12px;
+  color: var(--ff-text-muted);
+  text-align: center;
+}
+
+// ------------------------------------------------------------------ motion
+@keyframes rs-breathe {
+  0%,
+  100% {
+    scale: 0.94;
+    opacity: 0.65;
+  }
+  50% {
+    scale: 1.04;
+    opacity: 1;
+  }
+}
+
+@keyframes rs-ring {
+  from {
+    scale: 1;
+    opacity: 0.7;
+  }
+  to {
+    scale: 1.55;
+    opacity: 0;
+  }
+}

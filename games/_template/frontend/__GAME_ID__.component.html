@@ -1,0 +1,43 @@
+@if (view(); as v) {
+  <div class="game">
+    @if (v.revealed) {
+      <p class="title">The lucky number was <b data-testid="lucky">{{ v.lucky }}</b></p>
+    } @else if (!api.isPlaying()) {
+      <p class="title">The players are picking…</p>
+    } @else if (v.myPick != null) {
+      <p class="title">You picked <b>{{ v.myPick }}</b> — waiting for the others…</p>
+    } @else {
+      <p class="title">Pick a number</p>
+    }
+
+    <div class="grid" role="group" aria-label="Numbers">
+      @for (n of numbers(); track n) {
+        <button
+          type="button"
+          class="cell"
+          [class.mine]="v.myPick === n"
+          [class.lucky]="v.revealed && v.lucky === n"
+          [disabled]="!canPick()"
+          (click)="pick(n)"
+          [attr.data-testid]="'pick-' + n"
+        >
+          {{ n }}
+        </button>
+      }
+    </div>
+    <p class="error" role="alert">{{ error() }}</p>
+
+    <div class="players">
+      @for (entry of statuses(); track entry.status.playerId) {
+        <div class="player" [class.done]="entry.status.picked">
+          <ff-player-chip [player]="entry.player!" size="sm" />
+          @if (entry.status.value != null) {
+            <b>{{ entry.status.value }}</b>
+          } @else if (entry.status.picked) {
+            <span>✓</span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

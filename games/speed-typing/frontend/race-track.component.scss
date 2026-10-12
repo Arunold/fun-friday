@@ -1,0 +1,152 @@
+:host {
+  --rider: 32px;
+  --lane-height: 52px;
+  display: grid;
+  grid-auto-rows: minmax(calc(var(--rider) + 4px), var(--lane-height));
+  align-content: center;
+  gap: 4px 20px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+:host([data-columns='2']) {
+  --rider: 28px;
+  --lane-height: 44px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+:host([data-columns='3']) {
+  --rider: 24px;
+  --lane-height: 36px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  font-size: 13px;
+}
+
+.lane {
+  display: grid;
+  grid-template-columns: minmax(64px, 132px) minmax(0, 1fr) minmax(72px, auto);
+  align-items: center;
+  gap: 12px;
+  min-height: 0;
+  padding: 0 12px;
+  border-radius: 12px;
+  transition: background 300ms;
+
+  &.me {
+    background: color-mix(in srgb, var(--ff-player-color) 9%, transparent);
+  }
+}
+
+.name {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.you {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ff-text-muted);
+}
+
+// The rail leaves room at both ends so the rider never pokes out of the lane.
+.rail {
+  position: relative;
+  height: 8px;
+  margin: 0 calc(var(--rider) / 2 + 4px);
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+
+  // Checkered finish line.
+  &::after {
+    content: '';
+    position: absolute;
+    top: -9px;
+    right: calc(var(--rider) / -2 - 4px);
+    bottom: -9px;
+    width: 6px;
+    border-radius: 2px;
+    background: repeating-conic-gradient(var(--mat-sys-on-surface) 0 25%, transparent 0 50%) 0 0 / 6px 6px;
+    opacity: 0.3;
+  }
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ff-player-color) 20%, transparent),
+    var(--ff-player-color)
+  );
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ff-player-color) 35%, transparent);
+  transition: width 450ms var(--ff-ease-out);
+
+  .me & {
+    transition-duration: 140ms;
+  }
+}
+
+.rider {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--rider);
+  height: var(--rider);
+  translate: 50% -50%;
+  border-radius: 50%;
+  font-size: calc(var(--rider) * 0.56);
+  line-height: 1;
+  background: var(--mat-sys-surface-container-high);
+  box-shadow:
+    0 0 0 2px var(--ff-player-color),
+    0 4px 12px rgb(0 0 0 / 35%);
+  transition: filter 200ms;
+
+  .offline & {
+    filter: grayscale(1);
+    opacity: 0.6;
+  }
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.percent {
+  font-weight: 700;
+  color: var(--ff-text-muted);
+}
+
+.place {
+  font-size: 1.25em;
+  font-weight: 800;
+}
+
+.wpm {
+  color: var(--ff-text-muted);
+  font-size: 0.85em;
+  font-weight: 600;
+
+  b {
+    font-size: 1.2em;
+    font-weight: 800;
+    color: var(--mat-sys-on-surface);
+  }
+}

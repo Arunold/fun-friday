@@ -1,0 +1,8 @@
+description = 'Game SDK: the contract between the Fun Friday platform and game modules'
+
+dependencies {
+    // @FunFridayGame is meta-annotated with Spring's @Component so games are discovered by scanning.
+    api 'org.springframework:spring-context'
+    // Games may put Bean Validation constraints on their action payload records.
+    api 'jakarta.validation:jakarta.validation-api'
+}

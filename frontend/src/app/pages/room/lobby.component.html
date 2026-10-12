@@ -1,0 +1,169 @@
+<div class="lobby">
+  <section class="game ff-card" aria-labelledby="next-game">
+    @if (store.game(); as ref) {
+      <div class="game-head">
+        <span class="icon" aria-hidden="true">{{ ref.icon }}</span>
+        <div class="title">
+          <span class="ff-eyebrow">Next game</span>
+          <h2 id="next-game">{{ ref.name }}</h2>
+          @if (game(); as info) {
+            <p class="ff-muted">{{ info.description }}</p>
+          }
+        </div>
+        @if (store.isHost()) {
+          <button mat-stroked-button (click)="actions.changeGame()" data-testid="change-game">
+            <mat-icon svgIcon="swap" /> Change game
+          </button>
+        }
+      </div>
+
+      @if (game(); as info) {
+        @if (info.rules.length) {
+          <ol class="rules">
+            @for (rule of info.rules; track rule) {
+              <li>{{ rule }}</li>
+            }
+          </ol>
+        }
+        <div class="settings">
+          <h3>
+            Settings
+            @if (!store.isHost()) {
+              <span class="ff-muted">· chosen by the host</span>
+            }
+          </h3>
+          <ff-settings-form
+            [defs]="info.settings"
+            [values]="settingsDraft()"
+            (valuesChange)="onSettingsChange($event)"
+            [readonly]="!store.isHost()"
+          />
+        </div>
+      }
+    }
+  </section>
+
+  <section class="side">
+    <div class="invite ff-card">
+      <span class="ff-eyebrow">Invite your team</span>
+      <button type="button" class="big-code ff-mono" (click)="actions.copyInvite()" matTooltip="Copy invite link">
+        {{ store.code() }}
+      </button>
+      <button type="button" class="link" (click)="actions.copyInvite()">
+        <span class="url">{{ actions.inviteLink() }}</span>
+        <mat-icon svgIcon="copy" />
+      </button>
+    </div>
+
+    <div class="people ff-card">
+      <div class="people-head">
+        <h3>Players</h3>
+        <span class="ff-pill" data-testid="player-count">{{ store.players().length }} / {{ maxPlayers() }}</span>
+      </div>
+      <ul class="players" data-testid="players">
+        @for (player of store.players(); track player.id) {
+          <li
+            class="player"
+            animate.enter="ff-enter-pop"
+            animate.leave="ff-leave-shrink"
+            [class.me]="player.id === meId()"
+            [attr.data-player]="player.name"
+          >
+            <ff-player-chip [player]="player" />
+            @if (player.host) {
+              <span class="badge host" title="Host">👑 Host</span>
+            }
+            @if (player.id === meId()) {
+              <span class="badge you">You</span>
+            }
+            <span class="ff-spacer"></span>
+            @if (!player.online) {
+              <span class="status offline">offline</span>
+            } @else if (player.ready && !player.host) {
+              <span class="status ready"><mat-icon svgIcon="check" /> Ready</span>
+            }
+            @if (store.isHost() && player.id !== meId()) {
+              <button
+                mat-icon-button
+                class="kick"
+                (click)="actions.kick(player)"
+                [attr.aria-label]="'Remove ' + player.name"
+                matTooltip="Remove from room"
+              >
+                <mat-icon svgIcon="remove" />
+              </button>
+            }
+          </li>
+        }
+      </ul>
+
+      @if (store.spectators().length) {
+        <h4 class="watch-title">Watching</h4>
+        <ul class="spectators">
+          @for (spectator of store.spectators(); track spectator.id) {
+            <li animate.enter="ff-enter-pop" [class.me]="spectator.id === meId()">
+              <ff-player-chip [player]="spectator" size="sm" />
+              @if (store.isHost()) {
+                <button
+                  mat-icon-button
+                  class="kick"
+                  (click)="actions.kick(spectator)"
+                  [attr.aria-label]="'Remove ' + spectator.name"
+                >
+                  <mat-icon svgIcon="remove" />
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    @if (store.snapshot()?.cup?.length) {
+      <div class="cup ff-card">
+        <h3>🏆 Friday Cup</h3>
+        <ff-cup-table [entries]="store.snapshot()!.cup" />
+      </div>
+    }
+  </section>
+
+  <footer class="actions ff-card">
+    @if (amSpectator()) {
+      <span class="hint">You're watching this room.</span>
+      <button
+        mat-flat-button
+        class="ff-big"
+        [disabled]="!seatsFree()"
+        (click)="becomePlayer()"
+        data-testid="become-player"
+      >
+        <mat-icon svgIcon="add" /> {{ seatsFree() ? 'Take a seat' : 'Room is full' }}
+      </button>
+    } @else if (store.isHost()) {
+      <span class="hint" data-testid="start-hint">{{ startHint() }}</span>
+      <button
+        mat-flat-button
+        class="ff-big"
+        [disabled]="missing() > 0 || tooMany()"
+        (click)="start()"
+        data-testid="start-game"
+      >
+        <mat-icon svgIcon="play" /> Start game
+      </button>
+    } @else {
+      <span class="hint">Waiting for {{ store.host()?.name }} to start the game…</span>
+      <button
+        mat-stroked-button
+        class="ff-big ready-toggle"
+        [class.is-ready]="store.me()?.ready"
+        (click)="toggleReady()"
+        data-testid="ready"
+      >
+        @if (store.me()?.ready) {
+          <mat-icon svgIcon="check" />
+        }
+        {{ store.me()?.ready ? 'Ready!' : "I'm ready" }}
+      </button>
+    }
+  </footer>
+</div>

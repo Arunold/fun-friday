@@ -1,0 +1,32 @@
+@for (lane of lanes(); track lane.player.id) {
+  <div
+    class="lane"
+    role="listitem"
+    [class.me]="lane.me"
+    [class.done]="lane.finished"
+    [class.offline]="lane.player.online === false"
+    [style.--ff-player-color]="lane.player.color"
+    data-testid="lane"
+    [attr.data-player]="lane.player.name"
+  >
+    <span class="name" [title]="lane.player.name">
+      {{ lane.player.name }}
+      @if (lane.me) {
+        <span class="you">you</span>
+      }
+    </span>
+    <div class="rail" [attr.aria-label]="lane.player.name + ': ' + lane.progress + '%'">
+      <div class="fill" [style.width.%]="lane.progress">
+        <span class="rider" aria-hidden="true">{{ lane.player.avatar }}</span>
+      </div>
+    </div>
+    <span class="result">
+      @if (lane.finished) {
+        <span class="place" animate.enter="ff-enter-pop">{{ place(lane) }}</span>
+        <span class="wpm"><b [ffCountUp]="lane.wpm ?? 0"></b> WPM</span>
+      } @else {
+        <span class="percent" data-testid="lane-progress">{{ lane.progress }}%</span>
+      }
+    </span>
+  </div>
+}

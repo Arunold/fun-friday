@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Backend (dev profile)",
+      "request": "launch",
+      "mainClass": "com.example.funfridaygame.FunFridayGameApplication",
+      "projectName": "app",
+      "args": "--spring.profiles.active=dev"
+    },
+    {
+      "type": "chrome",
+      "name": "Frontend (ng serve on :4200)",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/frontend"
+    }
+  ]
+}

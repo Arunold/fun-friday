@@ -4,13 +4,62 @@
 
 ## Architecture Overview
 
-Each game follows the existing architecture:
-- **GameConfig**: Game-specific settings
-- **GameRound**: Server-side game state
-- **GameRoundInfo**: Client-facing DTO
-- **GameStrategy**: Game logic implementation
+Every game is **one self-contained folder**, `games/<id>/`, plugged into a shared platform
+(rooms, lobby, reconnects, spectators, timers, reveal screen, scoreboard, podium, history,
+Friday Cup). See [docs/adding-a-game.md](docs/adding-a-game.md) and
+[docs/architecture.md](docs/architecture.md).
+
+- **`GameDefinition`** (backend): metadata, the settings schema the host form is generated from,
+  cross-field validation, `createLogic(settings)`.
+- **`GameLogic`** (backend): the rules — `startTurn`, `onAction`, `onTimer`, `isTurnComplete`,
+  `endTurn` → points + headline, `awards`, and `view(ctx, viewer)`: what each browser may see.
+- **Game component** (frontend): renders the view with `injectGameApi()` and sends actions.
+- **Scenario tests** (`GameHarness`) and a **Playwright spec** in the same folder.
 
 ---
+
+### How every game works
+
+- **Everyone plays in their own browser.** There's no shared "host screen". Each player's screen shows their own game view plus everyone's live progress and scores.
+- **Desktop web only.** Players use a keyboard and mouse. Layouts are fully responsive from small laptops (~1280×720) up to large and ultra-wide monitors, and the game area always fits the window without scrolling. Mobile is out of scope.
+- **The host plays too.** The host is simply the player who created the room. They play like everyone else, and they also pick the game, change settings and start or skip rounds.
+- **Spectators (optional).** Anyone can join with the room code as a spectator and watch a live overview without playing. Useful for latecomers (they spectate until the next game starts) or for screen-sharing on a call.
+- **No AI.** All content (words, passages, questions, pictures) comes from curated lists or simple algorithms.
+- **Real-time.** The server owns the game state and timers and pushes live updates to every browser.
+
+**Room flow:** create a room → share the code/link → everyone joins with a name (and gets a color) → lobby (pick a game, adjust settings) → play → podium 🥇🥈🥉 → back to the lobby.
+
+### Difficulty levels
+
+| Level | What it means |
+|---|---|
+| 🟢 **Easy** | Understood in seconds. No skill or practice needed, so anyone can win. |
+| 🟡 **Medium** | Simple rules, but skill matters: vocabulary, typing speed, drawing. |
+| 🔴 **Hard** | Simple rules, but doing well takes focus, problem-solving or teamwork. |
+
+The **Build** column is a rough implementation-effort estimate for planning: **S** = small, **M** = medium, **L** = large.
+
+### At a glance
+
+| # | Implemented | Game | Difficulty | The hook | Players | Time | Build |
+|---|-------------|------|------------|----------|---------|------|-------|
+| 1 | ⬜ | 📖 [Emoji Story Chain](#game-1-emoji-story-chain) | 🟢 Easy | Build a story together, 1–3 emojis per turn, then vote for the best moment | 3–10 | ~5 min | M |
+| 2 | ✅ | ⌨️ [Speed Typing Race](#game-2-speed-typing-race--implemented) | 🟡 Medium | Race to type the same sentence fast and without typos | 2–20 | ~5 min | S |
+| 3 | ⬜ | ✏️ [Quick Draw Battle](#game-3-quick-draw-battle) | 🟡 Medium | Two players draw the same word; the rest vote anonymously for the better drawing | 3–10 | ~6 min | M |
+| 4 | ✅ | ⚡ [Reaction Showdown](#game-4-reaction-showdown--implemented) | 🟢 Easy | Wait for the signal, then react faster than everyone | 2–20 | ~5 min | S |
+| 5 | ⬜ | 🔗 [Word Association Chain](#game-5-word-association-chain) | 🟡 Medium | Add a related word within 5 seconds; repeat, stall or go off-topic and you're out | 3–12 | ~5 min | M |
+| 6 | ✅ | ❓ [Trivia Blitz](#game-6-trivia-blitz--implemented) | 🟢 Easy | Quick-fire trivia: faster right answers score more | 2–30 | ~6 min | S |
+| 7 | ⬜ | 🎭 [Imposter Word](#game-7-imposter-word) | 🔴 Hard | Everyone shares a secret word except the imposter: give clues and unmask them | 4–10 | 6–10 min | M |
+| 8 | ✅ | 🃏 [Memory Match Race](#game-8-memory-match-race--implemented) | 🟢 Easy | Take turns flipping cards on one shared board; a match means you go again | 2–10 | ~5 min | M |
+| 9 | ⬜ | 🎵 [Song Lyrics Guess](#game-9-song-lyrics-guess) | 🟡 Medium | Name the song from blanked-out lyrics; fewer hints, more points | 2–20 | ~5 min | S |
+| 10 | ⬜ | ⏳ [Category Countdown](#game-10-category-countdown) | 🟡 Medium | Name something in the category within 5 seconds; repeat or freeze and you're out | 2–12 | ~5 min | S |
+| 11 | ✅ | 🔢 [Number Guess](#game-11-number-guess--implemented) | 🟢 Easy | Guess the secret number; the closest guess wins | 2–16 | ~5 min | S |
+| 12 | ✅ | 🔤 [Word Scramble](#game-12-word-scramble--implemented) | 🟡 Medium | Unscramble the word before anyone else | 2–20 | ~5 min | S |
+| 13 | ✅ | 🎨 [Pictionary](#game-13-pictionary--implemented) | 🟡 Medium | One player draws, everyone else guesses in the chat | 3–10 | 6–10 min | M |
+| 14 | ✅ | 🧩 [Sliding Puzzle](#game-14-sliding-puzzle--implemented) | 🔴 Hard | Everyone gets the same scrambled puzzle; fastest solve wins | 2–20 | 6–9 min | S |
+| 15 | ⬜ | 🐍 [Snake Arena](#game-15-snake-arena) | 🔴 Hard | Multiplayer Snake: eat, grow, make others crash | 2–12 | ~6 min | M |
+| 16 | ⬜ | 🚌 [Backseat Drivers](#game-16-backseat-drivers) | 🔴 Hard | One bus, and everyone controls just one thing | 3–10 | ~7 min | L |
+
 
 ## Game 1: Emoji Story Chain
 
@@ -528,7 +577,7 @@ Ocean, Fire, Music, Night, Dream, Space, Garden, Thunder, Crystal, Shadow, Mount
 
 ---
 
-## Game 6: Trivia Blitz
+## Game 6: Trivia Blitz ✅ IMPLEMENTED
 
 ### Concept
 Rapid-fire trivia questions! Questions appear one at a time, all players answer simultaneously. Faster correct answers = more points!
@@ -822,7 +871,7 @@ Dog/Cat, Lion/Tiger, Horse/Donkey, Dolphin/Whale, Eagle/Hawk, Snake/Lizard, Butt
 
 ---
 
-## Game 8: Memory Match Race
+## Game 8: Memory Match Race ✅ IMPLEMENTED
 
 ### Concept
 Classic memory card game but competitive! All players share the same board. Take turns flipping cards - if you match, you score and go again. If not, cards flip back and next player goes.
@@ -1614,15 +1663,247 @@ interface PlayerPuzzleInfo {
 
 ---
 
+## Game 15: Snake Arena
+
+### Concept
+*"The classic Snake, except the other snakes are your coworkers."*
+
+Steer your snake around a shared arena, eat to grow, and make other snakes crash into you.
+
+### Gameplay Flow
+1. **The arena.** Everyone's snake starts in one shared grid arena. Each player has their own color, and your snake is highlighted.
+2. **Steer.** Use the arrow keys or WASD. Snakes never stop moving; you can only change direction (and you can't reverse into yourself).
+3. **Eat.** 🍎 Food appears around the arena. Each piece makes you one segment longer.
+4. **Crash.** Hit a wall, yourself or another snake's body and you crash. Your snake turns into food for the others, and you respawn as a small snake after 3 seconds. You keep the points you've already earned.
+5. **Head-on.** If two heads collide, both snakes crash.
+6. **Power-ups** appear now and then (see Power-ups below).
+7. **Rounds** last 90 seconds. Play 3 rounds; points add up.
+
+### Example Gameplay
+
+Dev has grown to 24 segments and is circling the middle of the arena. Ana grabs a ⚡ Boost and cuts right across his path. Dev's head slams into her body: he crashes, Ana gets **+5**, and his 24 segments become a buffet that Ben and Chen race to eat.
+
+### Round Structure
+- 3 rounds of 90 seconds each (~6 min in total); points add up across rounds
+- Crashing isn't elimination: you respawn as a small snake after 3 seconds and keep your points
+- The longest snake when the round ends earns a bonus
+
+### Scoring
+| Action | Points |
+|--------|--------|
+| Eat food 🍎 | +1 pt |
+| Another snake crashes into your body | +5 pts |
+| Longest snake when the round ends | +5 pts |
+
+### Config (SnakeArenaConfig)
+```typescript
+{
+  rounds: number,              // default 3
+  roundDuration: number,       // seconds, default 90
+  respawnDelay: number,        // seconds, default 3
+  gridWidth: number,           // cells; fixed, so everyone plays on the same field
+  gridHeight: number,          // cells
+  variation: 'CLASSIC' | 'LAST_SNAKE_STANDING' | 'TEAMS' | 'SHRINKING_ARENA' | 'LIGHT_CYCLES'  // default 'CLASSIC'
+}
+```
+
+### Round Info (SnakeArenaRoundInfo)
+```typescript
+{
+  roundNumber: number,
+  timeRemaining: number,
+  snakes: { [playerName: string]: SnakeInfo },
+  food: { x: number, y: number }[],
+  powerUps: { x: number, y: number, type: PowerUpType }[],
+  killFeed: { killer: string, victim: string }[]   // shown as "Ana ⚔️ Dev"
+}
+
+interface SnakeInfo {
+  body: { x: number, y: number }[],   // head first
+  direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT',
+  crashed: boolean,
+  respawnAt: number | null,           // timestamp, 3 s after a crash
+  activePowerUp: { type: PowerUpType, expiresAt: number } | null,
+  score: number
+}
+
+type PowerUpType = 'BOOST' | 'GHOST' | 'MAGNET';
+```
+
+### Power-ups
+| Power-up | Effect |
+|----------|--------|
+| ⚡ Boost | Double speed for 3 s |
+| 👻 Ghost | Pass through other snakes for 3 s |
+| 🧲 Magnet | Pulls nearby food toward you for 5 s |
+
+### On Your Screen
+- Center: the arena, scaled to fit the window. The grid size stays fixed, so everyone plays on the same field.
+- Side: live scoreboard, round timer and kill feed (*"Ana ⚔️ Dev"*).
+- When you crash: a 3-second respawn countdown.
+- **Spectators** see the whole arena and the scoreboard.
+
+### Why It's Fun
+- Everyone has played Snake. Zero learning curve.
+- Simple controls, total chaos with 8+ snakes.
+- Crashing isn't elimination, and big snakes turn into food, so comebacks happen all the time.
+- Trapping a coworker is deeply satisfying.
+
+### Variations
+- **Last Snake Standing:** no respawns; the last survivor wins the round.
+- **Teams:** teammates' snakes can pass through each other.
+- **Shrinking Arena:** the walls close in during the last 30 seconds.
+- **Light Cycles:** no food; snakes grow forever and leave permanent trails. The last one alive wins.
+
+### Technical Notes
+- **Backend:**
+  - Server runs the grid simulation at ~10 ticks/sec
+  - Queue up to 2 turns per player so quick double-turns work
+  - Resolve collisions every tick (head vs. body, head-on)
+  - Spawn food and power-ups
+  - Broadcast small updates (new heads, removed tails) instead of the full state
+- **Frontend:**
+  - Draw on a `<canvas>`
+  - Interpolate between ticks for smooth movement
+  - Scale the arena to the window
+
+---
+
+## Game 16: Backseat Drivers
+
+### Concept
+*"One bus. Eight drivers. One button each."*
+
+The whole team drives one bus together, but each person controls just one thing, and only one person can see the map.
+
+**Needs:** everyone able to talk (same room or a call).
+
+### Gameplay Flow
+1. **The shuttle.** Everyone's screen shows the same office shuttle bus from above, on a winding course, but only a small area around the bus is visible.
+2. **Your control.** Your screen shows your control in big letters (e.g. **STEER LEFT**). Everyone uses the same key: hold `Space` to steer, accelerate or brake; tap `Space` for the horn, wipers or headlights (see Who Controls What below).
+3. **The Navigator 🧭.** One player sees the full map (the route, upcoming turns and hazards) but has no control. The Navigator has to shout directions: *"Sharp left in 3… 2… 1… NOW!"*
+4. **Hazards that need specific controls:**
+   - 🦢 **Geese** crossing: honk the Horn or they block the road for 3 s.
+   - 🌧️ **Rain**: everyone's view blurs unless the Wipers player keeps tapping.
+   - 🚇 **Tunnels**: pitch black unless the Headlights are on.
+   - 🚧 **Cones**: each one you hit costs 5 seconds.
+   - ☕ **Coffee cups**: drive through them for +5 seconds.
+   - 🏎️ **The CEO's parked sports car**: touch it and the level is over.
+5. **SEAT SHUFFLE!** Every 30 seconds (after a 2-second warning siren), all controls are randomly reassigned, the Navigator role included.
+6. **Goal.** Reach the office parking lot before time runs out. Each level takes about 2 minutes and adds new hazards.
+
+### Example Gameplay
+
+*"Rain ahead!"* yells Navigator Priya. Ben (Wipers) taps like mad, and the view clears just in time to reveal… geese. *"HONK! WHO'S GOT THE HORN?!"* It's Chen, who's busy arguing with Dev about whether "left" means *his* left. **SEAT SHUFFLE.** Priya is now the Gas. The new Navigator, Eli, looks at the map for the first time: *"Uhh… right? RIGHT!"*
+
+### Level Structure
+- 2–3 levels per game (~7 min in total)
+- Each level takes about 2 minutes and adds new hazards
+- A level ends when the bus reaches the office parking lot, time runs out, or the bus touches the CEO's parked sports car
+- Controls are reshuffled every 30 seconds (**SEAT SHUFFLE!**)
+
+### Scoring
+Scoring is **team-based**: the whole team shares one score.
+
+| Action | Points |
+|--------|--------|
+| Each second left on the clock | +10 pts |
+| Each coffee collected ☕ | +50 pts |
+| Each cone hit 🚧 | -25 pts |
+
+- **Level score** = seconds left × 10 + coffees × 50 − cones × 25.
+- The team's total goes into a **Hall of Fame**. Your real rival is last Friday's team.
+- At the end, vote for an MVP (usually the calmest Navigator).
+
+### Config (BackseatDriversConfig)
+```typescript
+{
+  levels: number,              // 2-3 per game
+  levelDuration: number,       // seconds, about 120 per level
+  shuffleInterval: number,     // seconds between SEAT SHUFFLEs, default 30
+  shuffleWarning: number,      // seconds of warning siren before a shuffle, default 2
+  variation: 'CLASSIC' | 'SABOTEUR' | 'SILENT_NAVIGATOR' | 'VERSUS' | 'RUSH_HOUR'  // default 'CLASSIC'
+}
+```
+
+### Round Info (BackseatDriversRoundInfo)
+```typescript
+{
+  levelNumber: number,
+  phase: 'DRIVING' | 'SHUFFLE_WARNING' | 'LEVEL_OVER' | 'MVP_VOTE' | 'RESULTS',
+  timeRemaining: number,
+  nextShuffleAt: number,                       // timestamp of the next SEAT SHUFFLE
+  bus: { x: number, y: number, heading: number, speed: number },
+  roles: { [playerName: string]: Control[] },  // 1-2 controls each; Power Steering puts 2 players on Left/Right
+  coffeesCollected: number,
+  conesHit: number,
+  teamScore: number,                           // goes into the Hall of Fame
+  visibleHazards: Hazard[],                    // only what's inside the visible area around the bus
+  fullMap: TileMap | null,                     // only sent to the Navigator
+  mvpVotes: { [voterName: string]: string }
+}
+
+type Control = 'NAVIGATOR' | 'STEER_LEFT' | 'STEER_RIGHT' | 'GAS' | 'BRAKE' | 'HORN' | 'WIPERS' | 'HEADLIGHTS';
+
+interface Hazard {
+  type: 'GEESE' | 'RAIN' | 'TUNNEL' | 'CONE' | 'COFFEE' | 'CEO_CAR',
+  x: number,
+  y: number
+}
+```
+
+### Who Controls What
+| Players | Roles |
+|---------|-------|
+| 3 | Navigator · Steering (left + right) · Pedals (gas + brake) |
+| 4 | Navigator · Left · Right · Pedals |
+| 5 | Navigator · Left · Right · Gas · Brake |
+| 6 | …+ Horn |
+| 7 | …+ Wipers |
+| 8 | …+ Headlights |
+| 9–10 | …+ **Power Steering**: Left and Right each need *two* players pressing at the same time |
+
+Players with two controls (in 3–4 player games) use the arrow keys instead of `Space`: `←` `→` to steer, `↑` `↓` for gas and brake. Pressing Left and Right together cancels out; if Gas and Brake are both pressed, Brake wins.
+
+### On Your Screen
+- Center: the road around the bus (fog of war). The Navigator sees the full map instead.
+- Top: your current control in big letters, plus a countdown to the next shuffle.
+- Side: the level timer, coffees collected and cones hit.
+- **Spectators** see the same fogged view as the drivers (no cheating!).
+
+### Why It's Fun
+- Every player is essential, so nobody can sit back.
+- Communication falls apart hilariously, and then the team organizes itself.
+- It's co-op: nobody loses, and there's always a score to beat next week.
+
+### Variations
+- **Saboteur:** one secret player's control sometimes does the opposite. Vote at the end to find them.
+- **Silent Navigator:** the Navigator can't speak and can only click arrow signals that flash on everyone's screen.
+- **Versus:** two teams, two buses, racing side by side.
+- **Rush Hour:** the bus speeds up over time and the brakes get weaker.
+
+### Technical Notes
+- **Backend:**
+  - Server runs the simulation at 20–30 ticks/sec with simple physics (speed, heading, turn rate) and collisions against a tile map
+  - Inputs are `{ control, pressed }` events
+  - Server also handles role assignment and the shuffle timer
+  - Only the Navigator is sent the full map
+- **Frontend:**
+  - Render the scene on a `<canvas>` with a visibility mask
+  - Big role banner with a shuffle countdown
+  - Around 100 ms of latency is fine for a co-op game
+
+---
+
 ## Implementation Priority
 
 ### Phase 1: Quick Wins (Similar to existing games)
-1. **Trivia Blitz** (like Number Guess but with questions)
-2. **Speed Typing Race** (simple, engaging)
+1. **Trivia Blitz** (like Number Guess but with questions) — ✅ implemented
+2. **Speed Typing Race** (simple, engaging) — ✅ implemented
 3. **Category Countdown** (elimination style, simple logic)
 
 ### Phase 2: Moderate Complexity
-4. **Reaction Showdown** (timing-based, new mechanic)
+4. **Reaction Showdown** (timing-based, new mechanic) — ✅ implemented
 5. **Word Association Chain** (turn-based elimination)
 6. **Song Lyrics Guess** (progressive hints)
 
@@ -1630,26 +1911,23 @@ interface PlayerPuzzleInfo {
 7. **Emoji Story Chain** (creative, voting)
 8. **Imposter Word** (social deduction)
 9. **Quick Draw Battle** (extends Pictionary)
-10. **Memory Match Race** (shared game board)
+10. **Memory Match Race** (shared game board) — ✅ implemented
 
 ---
 
 ## Architecture Notes
 
-For each new game, create:
+For each new game, create **one folder** (or run `npm run new-game -- <id> "<Name>" "<emoji>"`):
 
-### Backend
-1. `backend/src/main/java/com/example/funfridaygame/model/config/{Game}Config.java`
-2. `backend/src/main/java/com/example/funfridaygame/model/round/{Game}Round.java`
-3. `backend/src/main/java/com/example/funfridaygame/model/roundinfo/{Game}RoundInfo.java`
-4. `backend/src/main/java/com/example/funfridaygame/service/game/{Game}Strategy.java`
-5. Add to `BaseGameConfig` `@JsonSubTypes`
-6. Add to `BaseRoundInfo` `@JsonSubTypes` (if needed)
-7. Register `GameType` in `GameTypeRegistry`
+```text
+games/<id>/
+├── README.md        rules, scoring, settings, design notes
+├── backend/         <Game>Game.java (@FunFridayGame), <Game>Logic.java, <Game>View.java, content in resources/, scenario tests
+├── frontend/        index.ts (defineGameUi), <id>.component.ts|html|scss, <id>.types.ts
+└── e2e/             <id>.spec.ts (Playwright)
+```
 
-### Frontend
-1. `frontend/src/app/models/game.model.ts` - Add config and round info interfaces
-2. `frontend/src/app/utils/game-config.utils.ts` - Add type guards
-3. `frontend/src/app/components/games/{game}/` - Create game component
-4. Add route in `app.routes.ts`
-5. Add to game type list
+Nothing else changes: Gradle includes the backend module automatically, Spring discovers the
+`@FunFridayGame`, the frontend registry is generated from `games/*/frontend/index.ts`, and the
+Playwright config picks up `games/*/e2e`. The full guide with the SDK reference is
+[docs/adding-a-game.md](docs/adding-a-game.md).

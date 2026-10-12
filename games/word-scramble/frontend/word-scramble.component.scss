@@ -1,0 +1,523 @@
+// Fill the stage: the game area is a size container, so it must not depend on its content.
+:host {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.game {
+  flex: 1;
+  min-height: 0;
+  container-type: size;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  row-gap: 12px;
+  padding: 20px 32px 18px;
+}
+
+// Heading, tiles and the input area form one block in the middle of the stage.
+.stack {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
+  gap: clamp(14px, 3.4cqh, 30px);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 28px;
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ff-text-muted);
+}
+
+.revealed .eyebrow {
+  color: var(--mat-sys-primary);
+}
+
+.length {
+  font-variant-numeric: tabular-nums;
+}
+
+// ------------------------------------------------------------------ tiles
+.board {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 18px;
+}
+
+.board-side:last-child {
+  justify-self: start;
+}
+
+.tiles {
+  --tile: clamp(44px, min(calc((100cqw - 240px) / var(--n) - 12px), 15cqh), 104px);
+  display: flex;
+  gap: calc(var(--tile) * 0.14);
+}
+
+.tile {
+  position: relative;
+  width: var(--tile);
+  height: var(--tile);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  perspective: 800px;
+  cursor: default;
+  transition:
+    translate 160ms var(--ff-ease-out),
+    scale 220ms var(--ff-ease-out);
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  &.clickable:not(.used):hover {
+    translate: 0 -4px;
+  }
+
+  &.used {
+    scale: 0.9;
+  }
+}
+
+.tile-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 700ms var(--ff-ease-out);
+  transition-delay: calc(var(--i) * 75ms);
+}
+
+.tiles.flipped .tile-inner {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: calc(var(--tile) * 0.2);
+  backface-visibility: hidden;
+  font-size: calc(var(--tile) * 0.5);
+  font-weight: 800;
+  line-height: 1;
+  user-select: none;
+}
+
+.front {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--mat-sys-primary) 18%, var(--mat-sys-surface-container-highest)),
+    var(--mat-sys-surface-container-high)
+  );
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 32%, transparent);
+  box-shadow:
+    inset 0 calc(var(--tile) * -0.05) 0 color-mix(in srgb, var(--mat-sys-primary) 38%, transparent),
+    0 8px 18px rgb(0 0 0 / 28%);
+  color: var(--mat-sys-on-surface);
+  transition: opacity 200ms;
+
+  .used & {
+    opacity: 0.3;
+  }
+}
+
+.back {
+  transform: rotateY(180deg);
+  background: color-mix(in srgb, var(--mat-sys-primary) 30%, var(--mat-sys-surface-container-high));
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 60%, transparent);
+  box-shadow:
+    inset 0 calc(var(--tile) * -0.05) 0 color-mix(in srgb, var(--mat-sys-primary) 60%, transparent),
+    0 8px 18px rgb(0 0 0 / 28%);
+  color: var(--mat-sys-on-surface);
+
+  .won & {
+    background: color-mix(in srgb, var(--ff-success) 22%, var(--mat-sys-surface-container-high));
+    border-color: color-mix(in srgb, var(--ff-success) 60%, transparent);
+    box-shadow:
+      inset 0 calc(var(--tile) * -0.05) 0 color-mix(in srgb, var(--ff-success) 55%, transparent),
+      0 8px 18px rgb(0 0 0 / 28%);
+    color: var(--ff-success);
+  }
+}
+
+// Tiles drop in one after another when a round starts (animate.enter).
+.tile-enter {
+  animation: tile-in 560ms var(--ff-ease-spring) both;
+  animation-delay: calc(var(--i) * 55ms);
+}
+
+@keyframes tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(-28px) rotate(-10deg) scale(0.6);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.shuffle {
+  color: var(--ff-text-muted);
+  transition: color 150ms;
+
+  &:hover {
+    color: var(--mat-sys-primary);
+  }
+}
+
+// ------------------------------------------------------------------ below the tiles
+// Reserves room for the input area so the tiles don't jump when it changes.
+.below {
+  width: 100%;
+  min-height: min(232px, 36cqh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.hint-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slots {
+  display: flex;
+  gap: 6px;
+}
+
+.slot {
+  width: 30px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1.5px dashed var(--mat-sys-outline-variant);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--mat-sys-on-tertiary-container);
+
+  &.filled {
+    border: 1.5px solid color-mix(in srgb, var(--mat-sys-tertiary) 70%, transparent);
+    background: var(--mat-sys-tertiary-container);
+    animation: ff-pop-in 320ms var(--ff-ease-spring) both;
+  }
+}
+
+.hint-meta {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ff-text-muted);
+}
+
+.guess-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.guess-input {
+  width: min(440px, 50cqw);
+  height: 64px;
+  padding: 0 20px;
+  border: 2px solid var(--ff-border);
+  border-radius: 18px;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  transition:
+    border-color 150ms,
+    box-shadow 150ms;
+
+  &::placeholder {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--ff-text-muted);
+  }
+
+  &:focus {
+    border-color: var(--mat-sys-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mat-sys-primary) 18%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.feedback {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--ff-text-muted);
+  text-align: center;
+
+  &.is-miss {
+    color: var(--ff-warning);
+    animation: ff-pop-in 240ms var(--ff-ease-spring) both;
+  }
+
+  &.is-error {
+    color: var(--mat-sys-error);
+  }
+}
+
+.feedback-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ff-warning) 18%, transparent);
+  font-size: 13px;
+}
+
+.keys {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.misses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.miss-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mat-sys-error) 12%, var(--mat-sys-surface-container-high));
+  color: var(--ff-text-muted);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--mat-sys-error) 70%, transparent);
+}
+
+.solved-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 40px 18px;
+  border-radius: var(--ff-radius-lg);
+  border: 1px solid color-mix(in srgb, var(--ff-success) 35%, transparent);
+  background: color-mix(in srgb, var(--ff-success) 9%, var(--mat-sys-surface-container));
+
+  .big {
+    font-size: 52px;
+    line-height: 1.1;
+    animation: ff-float 2.4s ease-in-out infinite;
+  }
+}
+
+.solved-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ff-success);
+}
+
+.solved-time {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.waiting {
+  color: var(--ff-text-muted);
+}
+
+.spectating {
+  margin-top: 12px;
+  color: var(--ff-text-muted);
+  font-size: 18px;
+  text-align: center;
+
+  b {
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+// ------------------------------------------------------------------ reveal
+.results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: min(480px, 100%);
+  display: grid;
+  gap: 8px;
+
+  &.many {
+    width: min(860px, 100%);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 10px;
+  border-radius: 14px;
+  background: var(--mat-sys-surface-container-high);
+
+  ff-player-chip {
+    flex: 1;
+  }
+
+  &:first-child:not(.unsolved) {
+    background: color-mix(in srgb, var(--ff-success) 12%, var(--mat-sys-surface-container-high));
+  }
+
+  &.unsolved {
+    opacity: 0.6;
+  }
+}
+
+.medal {
+  width: 30px;
+  font-size: 22px;
+  text-align: center;
+  color: var(--ff-text-muted);
+}
+
+.time {
+  font-weight: 700;
+
+  .unsolved & {
+    font-weight: 500;
+    color: var(--ff-text-muted);
+  }
+}
+
+.tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+// ------------------------------------------------------------------ progress
+.progress {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 32px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ff-border);
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  .ff-eyebrow {
+    margin-right: 4px;
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 8px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-high);
+
+  &.solved {
+    background: color-mix(in srgb, var(--ff-success) 14%, var(--mat-sys-surface-container-high));
+  }
+}
+
+.chip-medal {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ff-text-muted);
+}
+
+.chip-time {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ff-success);
+}
+
+.nobody {
+  font-size: 13px;
+  color: var(--ff-text-muted);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 3px;
+
+  i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--ff-text-muted);
+    animation: thinking 1.2s ease-in-out infinite;
+
+    &:nth-child(2) {
+      animation-delay: 150ms;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 300ms;
+    }
+  }
+}
+
+@keyframes thinking {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    scale: 0.8;
+  }
+  40% {
+    opacity: 1;
+    scale: 1;
+  }
+}

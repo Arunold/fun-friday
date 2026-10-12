@@ -1,0 +1,91 @@
+// Fill the stage without scrolling; use platform tokens (--mat-sys-*, --ff-*) and player colours.
+:host {
+  display: flex;
+  min-height: 0;
+}
+
+.game {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 32px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+
+  b {
+    color: var(--mat-sys-primary);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, 56px);
+  gap: 8px;
+}
+
+.cell {
+  height: 56px;
+  border: 1px solid var(--ff-border);
+  border-radius: var(--ff-radius-sm);
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 150ms var(--ff-ease-spring),
+    background 150ms;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.08);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  &.mine {
+    background: var(--mat-sys-primary-container);
+    opacity: 1;
+  }
+
+  &.lucky {
+    background: color-mix(in srgb, var(--ff-success) 30%, transparent);
+    box-shadow: 0 0 0 2px var(--ff-success);
+    opacity: 1;
+    animation: ff-pop-in 500ms var(--ff-ease-spring) both;
+  }
+}
+
+.error {
+  min-height: 20px;
+  color: var(--mat-sys-error);
+}
+
+.players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-high);
+
+  &.done {
+    background: color-mix(in srgb, var(--ff-success) 14%, var(--mat-sys-surface-container-high));
+  }
+}

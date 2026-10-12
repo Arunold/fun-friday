@@ -1,0 +1,25 @@
+# Generated or third-party content
+node_modules/
+**/build/
+**/dist/
+**/.angular/
+**/.gradle/
+e2e/test-results/
+e2e/playwright-report/
+package-lock.json
+docs/openapi.json
+frontend/src/app/core/api/schema.generated.ts
+frontend/src/app/games/registry.generated.ts
+
+# Java is formatted by Spotless
+**/*.java
+backend/**
+
+# The game template contains placeholders
+games/_template/
+
+# Long-form documents kept as written
+GameIdeas.md
+bugs-and-improvements-report.md
+implementation-plan.md
+fun-friday.code-workspace
