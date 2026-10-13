@@ -1,0 +1,274 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 14px;
+  border-radius: var(--ff-radius);
+  border: 1px solid var(--ff-border);
+  background: var(--ff-surface-strong);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+}
+
+.variation {
+  margin-top: 4px;
+  color: var(--ff-warning);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+// ------------------------------------------------------------------ driving
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: var(--ff-radius-sm);
+  background: var(--mat-sys-surface-container-highest);
+
+  .emoji {
+    font-size: 22px;
+  }
+
+  .what {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+
+    small {
+      color: var(--ff-text-muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+  }
+
+  b {
+    font-size: 24px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px;
+  border-radius: var(--ff-radius-sm);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 40%, transparent);
+  background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+
+  small {
+    color: var(--ff-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  b {
+    font-size: 26px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+  }
+}
+
+// ------------------------------------------------------------------ level over
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--ff-radius-sm);
+  background: var(--mat-sys-surface-container-highest);
+
+  &[data-status='PARKED'] {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ff-success) 60%, transparent);
+  }
+
+  &[data-status='CRASHED'] {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ff-danger) 60%, transparent);
+  }
+}
+
+.verdict {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 800;
+
+  .emoji {
+    font-size: 24px;
+  }
+}
+
+dl {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  font-size: 13px;
+
+  div {
+    display: grid;
+    grid-template-columns: 1fr auto 52px;
+    gap: 6px;
+  }
+
+  dt {
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--ff-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .points {
+    color: var(--mat-sys-on-surface);
+    font-weight: 700;
+    text-align: right;
+  }
+}
+
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 6px;
+  border-top: 1px solid var(--ff-border);
+  font-weight: 700;
+
+  b {
+    color: var(--ff-success);
+    font-size: 22px;
+    font-weight: 800;
+  }
+}
+
+// ------------------------------------------------------------------ roster
+
+.roster {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+
+  h3 {
+    margin: 0;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 5px 8px;
+    border-radius: var(--ff-radius-sm);
+    background: color-mix(in srgb, var(--seat-color) 8%, transparent);
+
+    &.me {
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--seat-color) 70%, transparent);
+    }
+  }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--seat-color) 45%, transparent);
+  color: var(--ff-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  transition:
+    background 90ms,
+    color 90ms,
+    box-shadow 90ms;
+
+  &.on {
+    background: var(--seat-color);
+    color: #15131c;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--seat-color) 70%, transparent);
+  }
+
+  &.nav {
+    border-color: var(--mat-sys-tertiary);
+    color: var(--mat-sys-tertiary);
+  }
+
+  &.waiting {
+    border-style: dashed;
+  }
+}
+
+// ------------------------------------------------------------------ history
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.done {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  b {
+    color: var(--ff-success);
+    font-variant-numeric: tabular-nums;
+  }
+}

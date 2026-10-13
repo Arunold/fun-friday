@@ -1,0 +1,51 @@
+@if (view(); as v) {
+  @if (v.mode === 'VOTE' && v.vote) {
+    <ff-bd-mvp-vote [vote]="v.vote" [levels]="v.levels" />
+  } @else if (level(); as lv) {
+    <div class="level" [class.over]="over()" [attr.data-level]="lv.number" [attr.data-status]="lv.status">
+      @if (!over()) {
+        <ff-bd-role-banner
+          [level]="lv"
+          [variation]="v.variation"
+          [shuffleSeconds]="v.shuffleSeconds"
+          [held]="tracker.held()"
+          [active]="driving()"
+          (controlDown)="pointerDown($event)"
+          (controlUp)="pointerUp($event)"
+          (signal)="sendSignal($event)"
+        />
+      }
+      <div class="body">
+        <div class="screen">
+          @if (showMap()) {
+            <ff-bd-map-view [level]="lv" [attr.data-testid]="over() ? 'level-map' : 'navigator-map'" />
+          } @else {
+            <ff-bd-road-view [level]="lv" />
+          }
+          <ff-bd-signal-flash />
+          @if (intro(); as card) {
+            <div class="intro" animate.enter="ff-enter-pop" animate.leave="ff-leave-fade">
+              <span class="ff-eyebrow">Level {{ card.number }} · {{ card.name }}</span>
+              <b>Drive to the 🅿️ office parking lot</b>
+              <span>…and don't touch the CEO's car — it's parked right behind you!</span>
+            </div>
+          }
+          @if (keyHint(); as text) {
+            <div
+              class="key-hint"
+              [class.below-intro]="!!intro()"
+              role="status"
+              data-testid="key-hint"
+              animate.enter="ff-enter-pop"
+            >
+              {{ text }}
+            </div>
+          }
+        </div>
+        <ff-bd-side-panel [view]="v" [level]="lv" />
+      </div>
+    </div>
+  }
+} @else {
+  <p class="waiting">🚌 Starting the engine…</p>
+}

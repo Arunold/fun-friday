@@ -5,10 +5,6 @@
     "description" : "REST endpoints plus the schemas of the STOMP protocol (see docs/asyncapi.yaml).",
     "version" : "2"
   },
-  "servers" : [ {
-    "url" : "http://localhost:33265",
-    "description" : "Generated server url"
-  } ],
   "tags" : [ {
     "name" : "Games",
     "description" : "Installed games and their settings"

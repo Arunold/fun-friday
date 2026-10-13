@@ -63,6 +63,13 @@ public interface GameContext {
     void setDeadline(Duration fromNow);
 
     /**
+     * Moves the turn deadline by {@code delta} (negative = earlier, never before now), e.g. bonus
+     * seconds or a time penalty. Unlike {@link #setDeadline} the countdown keeps its start, so
+     * timer rings don't jump back to full.
+     */
+    void extendDeadline(Duration delta);
+
+    /**
      * Calls {@link GameLogic#onTimer} with {@code key} after {@code delay}. Timers belong to the
      * current turn and are cancelled when it ends. Scheduling an existing key replaces it.
      */
@@ -75,9 +82,10 @@ public interface GameContext {
     void endTurn();
 
     /**
-     * Tells the platform that the current action changed nothing the views show, so no state update
-     * is sent (e.g. a drawing stroke that was already relayed with {@link #stream}). Only
-     * meaningful inside {@link GameLogic#onAction}.
+     * Tells the platform that the current action or timer changed nothing the views need right
+     * away, so no state update is sent (e.g. a drawing stroke that was already relayed with {@link
+     * #stream}, or the tick of a real-time game whose frame was streamed). Only meaningful inside
+     * {@link GameLogic#onAction} and {@link GameLogic#onTimer}.
      */
     void suppressUpdate();
 

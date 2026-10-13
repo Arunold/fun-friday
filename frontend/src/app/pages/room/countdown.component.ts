@@ -9,9 +9,8 @@ import { RoomStore } from '../../core/room.store';
   template: `
     <div class="overlay" role="alert" animate.enter="ff-enter-fade" animate.leave="ff-leave-fade">
       <span class="ff-eyebrow">{{ store.game()?.icon }} {{ store.game()?.name }}</span>
-      @for (n of [seconds()]; track n) {
-        <span class="number" data-testid="countdown">{{ n }}</span>
-      }
+      <!-- The keyframes alternate with the number (odd/even), which restarts the animation. -->
+      <span class="number" data-testid="countdown" [class.odd]="seconds() % 2 === 1">{{ seconds() }}</span>
       <span class="get-ready">Get ready!</span>
     </div>
   `,
@@ -38,12 +37,32 @@ import { RoomStore } from '../../core/room.store';
       color: transparent;
       animation: count 900ms var(--ff-ease-spring) both;
     }
+    .number.odd {
+      animation-name: count-odd;
+    }
     .get-ready {
       font-size: 20px;
       font-weight: 700;
       color: var(--ff-text-muted);
     }
     @keyframes count {
+      0% {
+        opacity: 0;
+        scale: 1.8;
+      }
+      30% {
+        opacity: 1;
+        scale: 1;
+      }
+      85% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0.2;
+        scale: 0.9;
+      }
+    }
+    @keyframes count-odd {
       0% {
         opacity: 0;
         scale: 1.8;

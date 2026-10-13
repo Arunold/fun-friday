@@ -1,0 +1,93 @@
+<header class="head">
+  <span class="eyebrow">
+    <span>Round {{ round() }}</span>
+    <span class="arena">{{ arena() }}</span>
+  </span>
+  <span class="mode">{{ mode() }}</span>
+</header>
+
+<section class="block standings" aria-label="This round">
+  <div class="columns" aria-hidden="true">
+    <span>Player</span>
+    <span class="num">Len</span>
+    <span class="num">Pts</span>
+  </div>
+  <ol class="rows" data-testid="leaderboard">
+    @for (row of rows(); track row.id; let i = $index) {
+      <li
+        class="row"
+        [class.me]="row.me"
+        [class.down]="row.status !== 'alive'"
+        [attr.data-player]="row.person.name"
+        [attr.data-status]="row.status"
+        [attr.data-points]="row.points"
+      >
+        <span class="rank">{{ i + 1 }}</span>
+        <span class="who">
+          <ff-player-chip [player]="row.person" size="sm" [showName]="false" />
+          @if (row.respawnIn != null) {
+            <span class="badge timer" [title]="'Back in ' + row.respawnIn + ' s'">{{ row.respawnIn }}</span>
+          } @else if (row.status === 'out') {
+            <span class="badge out" title="Out for this round">✕</span>
+          } @else if (row.power) {
+            <span class="badge power" [title]="powerName(row.power)">{{ powerIcon(row.power) }}</span>
+          }
+        </span>
+        <span class="name">
+          <span class="name-text">{{ row.person.name }}</span>
+          @if (row.me) {
+            <small class="you">you</small>
+          }
+        </span>
+        <span class="num len">{{ row.status === 'alive' ? row.length : '–' }}</span>
+        <b class="num pts">{{ row.points }}</b>
+      </li>
+    }
+  </ol>
+</section>
+
+<!--
+  Everything below shares the remaining height. It is one wrapping flex column whose overflow is
+  hidden: whatever doesn't fit wraps into an invisible second column, so the newest kill-feed lines
+  win over older ones and the feed wins over the controls hint and the legend.
+-->
+<div class="rest">
+  <h4 class="title">Kill feed</h4>
+  <ol class="lines" data-testid="kill-feed" aria-label="Kill feed" aria-live="polite">
+    @for (line of feed(); track line.id) {
+      <li class="line" [title]="line.title" animate.enter="ff-enter-fade-up">
+        <b class="who-name" [style.color]="line.a.color">{{ line.a.name }}</b>
+        <span class="icon" aria-hidden="true">{{ line.icon }}</span>
+        @if (line.b) {
+          <b class="who-name" [style.color]="line.b.color">{{ line.b.name }}</b>
+        }
+        <span class="ff-visually-hidden">{{ line.title }}</span>
+      </li>
+    } @empty {
+      <li class="empty">No crashes yet</li>
+    }
+  </ol>
+
+  @if (controls() || powers()) {
+    <span class="spacer" aria-hidden="true"></span>
+  }
+
+  @if (controls()) {
+    <section class="extra controls" aria-label="Controls">
+      <span class="keys" aria-hidden="true">
+        <kbd class="ff-kbd">←</kbd><kbd class="ff-kbd">↑</kbd><kbd class="ff-kbd">↓</kbd><kbd class="ff-kbd">→</kbd>
+        <span class="or">or</span>
+        <kbd class="ff-kbd">W</kbd><kbd class="ff-kbd">A</kbd><kbd class="ff-kbd">S</kbd><kbd class="ff-kbd">D</kbd>
+      </span>
+      <span class="hint">Steer — you can't reverse</span>
+    </section>
+  }
+
+  @if (powers()) {
+    <section class="extra legend" aria-label="Power-ups">
+      <span class="item"><span class="emoji" aria-hidden="true">⚡</span><b>Boost</b> double speed</span>
+      <span class="item"><span class="emoji" aria-hidden="true">👻</span><b>Ghost</b> pass through snakes</span>
+      <span class="item"><span class="emoji" aria-hidden="true">🧲</span><b>Magnet</b> pulls in food</span>
+    </section>
+  }
+</div>

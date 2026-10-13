@@ -1,0 +1,65 @@
+<section class="vote">
+  <header>
+    <span class="ff-eyebrow">🏆 Team MVP</span>
+    <h2>Who kept the bus on the road?</h2>
+    <p class="status" data-testid="vote-status">{{ status() }}</p>
+  </header>
+
+  <div class="grid" role="group" aria-label="Vote for a teammate">
+    @for (option of options(); track option.id) {
+      <button
+        type="button"
+        class="option"
+        data-testid="vote-option"
+        [attr.data-player]="option.id"
+        [class.picked]="option.picked"
+        [class.winner]="option.winner"
+        [class.lost]="vote().revealed && !option.winner"
+        [disabled]="!canVote()"
+        [style.--c]="option.player.color"
+        (click)="cast(option)"
+      >
+        @if (option.winner) {
+          <span class="crown" aria-hidden="true">🏆</span>
+        }
+        <span class="avatar" aria-hidden="true">{{ option.player.avatar }}</span>
+        <span class="name">{{ option.me ? option.player.name + ' (you)' : option.player.name }}</span>
+        @if (vote().revealed) {
+          <span class="votes">{{ option.votes }} {{ option.votes === 1 ? 'vote' : 'votes' }}</span>
+        } @else if (option.picked) {
+          <span class="votes">Your vote ✓</span>
+        }
+      </button>
+    }
+  </div>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  <footer class="count" data-testid="votes-cast">
+    <span
+      ><b>{{ vote().votesCast }}</b> / {{ vote().voters }} votes in</span
+    >
+    <span class="voters">
+      @for (voter of voted(); track voter.id) {
+        <ff-player-chip [player]="voter.player" size="sm" [showName]="false" />
+      }
+    </span>
+  </footer>
+</section>
+
+<aside class="trip">
+  <h3 class="ff-eyebrow">Your road trip</h3>
+  @for (level of levels(); track level.number) {
+    <div class="leg">
+      <span class="emoji" aria-hidden="true">{{ statusEmoji[level.status] }}</span>
+      <span class="name">{{ level.name }}</span>
+      <b>+{{ level.score }}</b>
+    </div>
+  }
+  <div class="sum">
+    <span>Team total</span>
+    <b>{{ total() }}</b>
+  </div>
+</aside>

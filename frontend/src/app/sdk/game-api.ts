@@ -67,12 +67,20 @@ export interface GameApi<V = unknown> {
    * action shows a toast with the game's message unless `quiet` is set.
    */
   send(type: string, payload?: unknown, options?: SendOptions): Promise<ActionResult>;
-  /** Fire-and-forget variant for high-frequency actions (strokes, typing progress). */
+  /**
+   * Fire-and-forget variant for high-frequency actions (strokes, typing progress, key presses).
+   * Rejections — including actions that arrive just after the turn ended — are dropped silently.
+   */
   sendFast(type: string, payload?: unknown): void;
   /** Looks up a player of this game by id. */
   player(id: string | null | undefined): GamePlayer | undefined;
   /** The current server time (epoch ms), e.g. to measure reaction times. */
   now(): number;
+  /**
+   * The network round trip to the server in ms (measured on every (re)connect; `null` until then),
+   * e.g. for how far ahead a real-time game draws the player's own moves.
+   */
+  readonly roundTripMs: Signal<number | null>;
 }
 
 /** Injection token of the {@link GameApi}; provided by the platform for every game component. */

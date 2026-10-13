@@ -81,6 +81,7 @@ export class GameUiService {
       },
       player: (id) => (id ? players().find((p) => p.id === id) : undefined),
       now: () => this.clock.serverNow(),
+      roundTripMs: this.clock.roundTripMs.asReadonly(),
     };
   }
 }

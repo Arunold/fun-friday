@@ -57,8 +57,8 @@ The **Build** column is a rough implementation-effort estimate for planning: **S
 | 12 | ✅ | 🔤 [Word Scramble](#game-12-word-scramble--implemented) | 🟡 Medium | Unscramble the word before anyone else | 2–20 | ~5 min | S |
 | 13 | ✅ | 🎨 [Pictionary](#game-13-pictionary--implemented) | 🟡 Medium | One player draws, everyone else guesses in the chat | 3–10 | 6–10 min | M |
 | 14 | ✅ | 🧩 [Sliding Puzzle](#game-14-sliding-puzzle--implemented) | 🔴 Hard | Everyone gets the same scrambled puzzle; fastest solve wins | 2–20 | 6–9 min | S |
-| 15 | ⬜ | 🐍 [Snake Arena](#game-15-snake-arena) | 🔴 Hard | Multiplayer Snake: eat, grow, make others crash | 2–12 | ~6 min | M |
-| 16 | ⬜ | 🚌 [Backseat Drivers](#game-16-backseat-drivers) | 🔴 Hard | One bus, and everyone controls just one thing | 3–10 | ~7 min | L |
+| 15 | ✅ | 🐍 [Snake Arena](#game-15-snake-arena--implemented) | 🔴 Hard | Multiplayer Snake: eat, grow, make others crash | 2–12 | ~6 min | M |
+| 16 | ✅ | 🚌 [Backseat Drivers](#game-16-backseat-drivers--implemented) | 🔴 Hard | One bus, and everyone controls just one thing | 3–10 | ~7 min | L |
 
 
 ## Game 1: Emoji Story Chain
@@ -1663,7 +1663,7 @@ interface PlayerPuzzleInfo {
 
 ---
 
-## Game 15: Snake Arena
+## Game 15: Snake Arena ✅ IMPLEMENTED
 
 ### Concept
 *"The classic Snake, except the other snakes are your coworkers."*
@@ -1769,7 +1769,7 @@ type PowerUpType = 'BOOST' | 'GHOST' | 'MAGNET';
 
 ---
 
-## Game 16: Backseat Drivers
+## Game 16: Backseat Drivers ✅ IMPLEMENTED
 
 ### Concept
 *"One bus. Eight drivers. One button each."*

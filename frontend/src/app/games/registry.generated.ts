@@ -3,11 +3,13 @@
 import type { GameUiLoader } from '@ff/sdk';
 
 export const GAME_UI_LOADERS: Readonly<Record<string, GameUiLoader>> = {
+  'backseat-drivers': () => import('@games/backseat-drivers/frontend').then((m) => m.default),
   'memory-match': () => import('@games/memory-match/frontend').then((m) => m.default),
   'number-guess': () => import('@games/number-guess/frontend').then((m) => m.default),
   'pictionary': () => import('@games/pictionary/frontend').then((m) => m.default),
   'reaction-showdown': () => import('@games/reaction-showdown/frontend').then((m) => m.default),
   'sliding-puzzle': () => import('@games/sliding-puzzle/frontend').then((m) => m.default),
+  'snake-arena': () => import('@games/snake-arena/frontend').then((m) => m.default),
   'speed-typing': () => import('@games/speed-typing/frontend').then((m) => m.default),
   'trivia-blitz': () => import('@games/trivia-blitz/frontend').then((m) => m.default),
   'word-scramble': () => import('@games/word-scramble/frontend').then((m) => m.default),

@@ -1,0 +1,282 @@
+:host {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+.snake-arena {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 12px;
+  // The platform's timer bar overlays the top edge: keep it free.
+  padding: 14px 12px 12px;
+}
+
+.stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.board {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--mat-sys-outline-variant) 85%, transparent),
+    0 0 0 5px color-mix(in srgb, var(--mat-sys-surface-container-high) 80%, transparent),
+    0 18px 44px rgb(0 0 0 / 45%);
+  transition: box-shadow 300ms var(--ff-ease-out);
+
+  &.down {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--ff-danger) 55%, transparent),
+      0 0 0 5px color-mix(in srgb, var(--ff-danger) 14%, transparent),
+      0 18px 44px rgb(0 0 0 / 45%);
+  }
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// ------------------------------------------------------------------ overlays
+.center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.banner,
+.crash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 28px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
+  background: color-mix(in srgb, var(--mat-sys-surface-container-lowest) 74%, transparent);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--ff-shadow);
+  text-align: center;
+}
+
+.banner-eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mat-sys-primary);
+}
+
+.banner-title {
+  font-size: clamp(24px, 3.2vw, 38px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.banner-hint {
+  color: var(--ff-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.banner.go .banner-title {
+  color: var(--ff-success);
+}
+
+.crash {
+  gap: 4px;
+  border-color: color-mix(in srgb, var(--ff-danger) 45%, transparent);
+}
+
+.crash-title {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.crash-cause {
+  color: var(--ff-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.crash-count {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.count {
+  display: inline-block;
+  min-width: 1ch;
+  color: var(--ff-warning);
+  font-size: 34px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  // Scale only, so the number never blinks out; the keyframes alternate with the number (odd /
+  // even), which restarts the animation every second.
+  animation: count-tick 450ms var(--ff-ease-out);
+
+  &.odd {
+    animation-name: count-tick-odd;
+  }
+}
+
+@keyframes count-tick {
+  from {
+    scale: 1.5;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@keyframes count-tick-odd {
+  from {
+    scale: 1.5;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+.crash.out .crash-title {
+  font-size: 19px;
+}
+
+.walls {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ff-warning) 22%, var(--mat-sys-surface-container-lowest));
+  border: 1px solid color-mix(in srgb, var(--ff-warning) 60%, transparent);
+  color: var(--mat-sys-on-surface);
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+// ------------------------------------------------------------------ results
+.veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--mat-sys-surface-container-lowest) 42%, transparent);
+}
+
+.results-card {
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  padding: 14px 18px 12px;
+  border-radius: var(--ff-radius);
+  border: 1px solid var(--ff-border);
+  background: color-mix(in srgb, var(--mat-sys-surface-container-high) 96%, transparent);
+  box-shadow: var(--ff-shadow);
+}
+
+.card-title {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ff-text-muted);
+}
+
+.table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th {
+    padding: 0 10px 6px;
+    color: var(--ff-text-muted);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  td {
+    padding: 5px 10px;
+    font-size: 14px;
+    text-align: right;
+    border-top: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 45%, transparent);
+  }
+
+  .player {
+    min-width: 170px;
+    text-align: left;
+  }
+
+  td.player {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .points {
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  tr.top .points {
+    color: var(--ff-success);
+  }
+
+  tr.me td {
+    background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  }
+}
+
+.results-card.dense {
+  padding: 10px 16px 8px;
+
+  .card-title {
+    margin-bottom: 4px;
+  }
+
+  .table td {
+    padding: 2px 10px;
+  }
+
+  .table .points {
+    font-size: 15px;
+  }
+}
+
+.tag {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ff-warning) 20%, transparent);
+  color: var(--ff-warning);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+
+  &.survivor {
+    background: color-mix(in srgb, var(--ff-success) 20%, transparent);
+    color: var(--ff-success);
+  }
+}

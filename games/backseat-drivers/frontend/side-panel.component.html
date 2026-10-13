@@ -1,0 +1,88 @@
+<header class="head">
+  <span class="ff-eyebrow">Level {{ level().number }} of {{ totalLevels() }}</span>
+  <h2>{{ level().name }}</h2>
+  @if (variation(); as label) {
+    <span class="variation">{{ label }}</span>
+  }
+</header>
+
+@if (level().result; as result) {
+  <section class="result" data-testid="level-result" [attr.data-status]="result.status">
+    <div class="verdict">
+      <span class="emoji" aria-hidden="true">{{ verdict()?.emoji }}</span>
+      <b>{{ verdict()?.title }}</b>
+    </div>
+    <dl>
+      <div>
+        <dt>⏱️ Time</dt>
+        <dd>{{ result.secondsLeft }} s × 10</dd>
+        <dd class="points">{{ result.secondsLeft * 10 }}</dd>
+      </div>
+      <div>
+        <dt>☕ Coffee</dt>
+        <dd>{{ result.coffees }} × 50</dd>
+        <dd class="points">+{{ result.coffees * 50 }}</dd>
+      </div>
+      <div>
+        <dt>🚧 Cones</dt>
+        <dd>{{ result.cones }} × 25</dd>
+        <dd class="points">−{{ result.cones * 25 }}</dd>
+      </div>
+    </dl>
+    <div class="total">
+      <span>Everyone gets</span>
+      <b>+{{ result.score }}</b>
+    </div>
+  </section>
+} @else {
+  <section class="stats">
+    <div class="stat" data-testid="coffees">
+      <span class="emoji" aria-hidden="true">☕</span>
+      <span class="what">Coffee <small>+5 s each</small></span>
+      <b>{{ counts().coffees }}</b>
+    </div>
+    <div class="stat" data-testid="cones">
+      <span class="emoji" aria-hidden="true">🚧</span>
+      <span class="what">Cones <small>−5 s each</small></span>
+      <b>{{ counts().cones }}</b>
+    </div>
+  </section>
+  <section class="preview">
+    <small>Team score if you park now</small>
+    <b [ffCountUp]="preview()" [countUpDuration]="240" data-testid="score-preview"></b>
+  </section>
+}
+
+<section class="roster">
+  <h3 class="ff-eyebrow">Who's got what</h3>
+  <ul>
+    @for (seat of roster(); track seat.id) {
+      <li [class.me]="seat.me" [style.--seat-color]="seat.player.color" [attr.data-player]="seat.id">
+        <ff-player-chip [player]="seat.player" size="sm" />
+        <span class="tags">
+          @for (tag of seat.tags; track tag.control) {
+            <span
+              class="tag"
+              [class.on]="tag.on"
+              [class.nav]="tag.control === 'NAVIGATOR'"
+              [class.waiting]="tag.control === 'WAITING'"
+              >{{ tag.label }}</span
+            >
+          }
+        </span>
+      </li>
+    }
+  </ul>
+</section>
+
+@if (history().length) {
+  <section class="history">
+    <h3 class="ff-eyebrow">Earlier levels</h3>
+    @for (done of history(); track done.number) {
+      <div class="done">
+        <span>{{ statusEmoji(done.status) }} {{ done.name }}</span>
+        <b>+{{ done.score }}</b>
+      </div>
+    }
+  </section>
+}

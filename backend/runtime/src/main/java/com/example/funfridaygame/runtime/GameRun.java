@@ -429,7 +429,13 @@ public final class GameRun {
             return;
         }
         gameTimers.remove(key);
+        updateSuppressed = false;
         invoke("onTimer(" + key + ")", () -> logic.onTimer(ctx, key));
+        if (updateSuppressed && !endRequested) {
+            updateSuppressed = false;
+            checkTurnEnd();
+            return;
+        }
         afterChange(true);
     }
 
@@ -613,6 +619,14 @@ public final class GameRun {
         public void setDeadline(Duration fromNow) {
             deadlineSetAt = GameRun.this.now();
             deadline = deadlineSetAt + Math.max(0, fromNow.toMillis());
+            if (phase == RunPhase.PLAYING && deadlineTimer != null) {
+                scheduleDeadline();
+            }
+        }
+
+        @Override
+        public void extendDeadline(Duration delta) {
+            deadline = Math.max(GameRun.this.now(), deadline + delta.toMillis());
             if (phase == RunPhase.PLAYING && deadlineTimer != null) {
                 scheduleDeadline();
             }

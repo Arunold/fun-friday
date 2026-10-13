@@ -1,0 +1,354 @@
+:host {
+  --me: var(--mat-sys-primary);
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+  min-height: 84px;
+  padding: 10px 14px 10px 16px;
+  border-radius: var(--ff-radius);
+  border: 1px solid var(--ff-border);
+  background: var(--ff-surface-strong);
+  overflow: hidden;
+}
+
+:host(.siren) {
+  border-color: transparent;
+  animation: siren 500ms steps(1, end) infinite;
+}
+
+@keyframes siren {
+  0% {
+    background: color-mix(in srgb, #ff3b4f 48%, var(--ff-surface-strong));
+  }
+  50% {
+    background: color-mix(in srgb, #2f6fff 48%, var(--ff-surface-strong));
+  }
+}
+
+.who {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.badge {
+  flex: none;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  overflow: hidden;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.call {
+  color: var(--ff-warning);
+  font-weight: 700;
+  text-transform: none;
+}
+
+.tip {
+  overflow: hidden;
+  color: var(--ff-text-muted);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ------------------------------------------------------------------ silent navigator
+
+.signals {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.signal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 56px;
+  height: 60px;
+  border-radius: 12px;
+  border: 1px solid var(--ff-border);
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 80ms ease-out,
+    background 120ms,
+    border-color 120ms;
+
+  mat-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .emoji {
+    font-size: 22px;
+    line-height: 26px;
+  }
+
+  small {
+    color: var(--ff-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--mat-sys-primary);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--mat-sys-primary-container);
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+// ------------------------------------------------------------------ drivers
+
+.controls {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  min-width: 0;
+}
+
+.control {
+  display: grid;
+  flex: 1 1 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 3px;
+  min-width: 0;
+  max-width: 340px;
+  padding: 8px 14px;
+  border-radius: 16px;
+  border: 2px solid color-mix(in srgb, var(--me) 60%, transparent);
+  background: color-mix(in srgb, var(--me) 16%, var(--mat-sys-surface-container-high));
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  transition:
+    transform 80ms ease-out,
+    background 120ms,
+    box-shadow 120ms,
+    color 120ms;
+
+  &.down {
+    background: var(--me);
+    color: #15131c;
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--me) 35%, transparent),
+      0 0 26px color-mix(in srgb, var(--me) 55%, transparent);
+    transform: scale(0.98);
+
+    kbd,
+    .help {
+      border-color: rgb(0 0 0 / 30%);
+      color: inherit;
+    }
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+}
+
+.icon {
+  display: grid;
+  grid-row: 1 / span 2;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 18%);
+  font-size: 26px;
+
+  mat-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.label {
+  overflow: hidden;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+kbd {
+  min-width: 24px;
+  padding: 1px 7px;
+  border: 1px solid var(--ff-border);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  color: var(--mat-sys-on-surface);
+  font-family: var(--ff-font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.help {
+  overflow: hidden;
+  margin-left: 4px;
+  color: var(--ff-text-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+}
+
+.controls.solo {
+  .control {
+    max-width: 560px;
+  }
+
+  .label {
+    font-size: 32px;
+  }
+}
+
+.controls.many {
+  gap: 8px;
+
+  .control {
+    column-gap: 10px;
+    padding: 8px 10px;
+  }
+
+  .icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .label {
+    font-size: 19px;
+  }
+
+  .help {
+    display: none;
+  }
+}
+
+// ------------------------------------------------------------------ shuffle countdown
+
+.shuffle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  min-width: 158px;
+  padding-left: 14px;
+  border-left: 1px solid var(--ff-border);
+}
+
+.ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+
+  svg {
+    position: absolute;
+    inset: 0;
+    rotate: -90deg;
+  }
+}
+
+circle {
+  fill: none;
+  stroke-width: 5;
+}
+
+.track {
+  stroke: var(--mat-sys-surface-container-highest);
+}
+
+.bar {
+  stroke: var(--mat-sys-tertiary);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 250ms linear;
+}
+
+.count {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+
+  small {
+    color: var(--ff-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  b {
+    font-size: 18px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+:host(.siren) {
+  .bar {
+    stroke: #ffffff;
+  }
+
+  .caption small {
+    color: rgb(255 255 255 / 85%);
+  }
+}

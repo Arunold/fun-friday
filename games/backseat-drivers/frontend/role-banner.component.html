@@ -1,0 +1,110 @@
+<div class="who">
+  @switch (role()) {
+    @case ('navigator') {
+      <span class="badge" aria-hidden="true">🧭</span>
+      <div class="text">
+        @if (silent()) {
+          <span class="title">Navigator <span class="call">🤫</span></span>
+          <span class="tip">No talking — signal! Or press ← ↑ → ↓ H E L.</span>
+        } @else {
+          <span class="title">Navigator <span class="call">— shout directions!</span></span>
+          <span class="tip">Only you see the map. Call turns early — and the CEO's car is right behind the bus!</span>
+        }
+      </div>
+      @if (silent()) {
+        <div class="signals" role="group" aria-label="Signals">
+          @for (item of signals; track item.kind) {
+            <button
+              type="button"
+              class="signal"
+              [disabled]="!active()"
+              [attr.data-signal]="item.kind"
+              [attr.aria-label]="item.label + ' (' + item.key + ')'"
+              (click)="signal.emit(item.kind)"
+            >
+              @if (item.svgIcon) {
+                <mat-icon [svgIcon]="item.svgIcon" />
+              } @else {
+                <span class="emoji" aria-hidden="true">{{ item.emoji }}</span>
+              }
+              <small>{{ item.label }}</small>
+            </button>
+          }
+        </div>
+      }
+    }
+    @case ('driver') {
+      <div class="controls" [class.solo]="buttons().length === 1" [class.many]="buttons().length > 2">
+        @for (button of buttons(); track button.control) {
+          <button
+            type="button"
+            class="control"
+            [class.down]="held().has(button.control)"
+            [disabled]="!active()"
+            [attr.data-control]="button.control"
+            (pointerdown)="press($event, button.control)"
+            (pointerup)="release(button.control)"
+            (pointercancel)="release(button.control)"
+            (lostpointercapture)="release(button.control)"
+            (contextmenu)="$event.preventDefault()"
+          >
+            <span class="icon" aria-hidden="true">
+              @if (button.info.svgIcon) {
+                <mat-icon [svgIcon]="button.info.svgIcon" />
+              } @else {
+                {{ button.info.emoji }}
+              }
+            </span>
+            <span class="label">{{ button.label }}</span>
+            <span class="keys">
+              @for (key of button.keys; track key) {
+                <kbd>{{ key }}</kbd>
+              }
+              <span class="help">{{ button.info.help }}</span>
+            </span>
+          </button>
+        }
+      </div>
+    }
+    @case ('spectator') {
+      <span class="badge" aria-hidden="true">👀</span>
+      <div class="text">
+        <span class="title">Drivers' view</span>
+        <span class="tip">You see what the drivers see — only the navigator has the map.</span>
+      </div>
+    }
+    @default {
+      <span class="badge" aria-hidden="true">⏳</span>
+      <div class="text">
+        <span class="title">Hop on at the next shuffle</span>
+        <span class="tip">You'll get a seat at the next SEAT SHUFFLE.</span>
+      </div>
+    }
+  }
+</div>
+
+<div class="shuffle" role="timer" [attr.aria-label]="'Seat shuffle in ' + seconds() + ' seconds'">
+  <span class="ring">
+    <svg viewBox="0 0 50 50" aria-hidden="true">
+      <circle class="track" cx="25" cy="25" [attr.r]="ringRadius" />
+      <circle
+        class="bar"
+        cx="25"
+        cy="25"
+        [attr.r]="ringRadius"
+        [attr.stroke-dasharray]="ringLength"
+        [style.stroke-dashoffset]="ringOffset()"
+      />
+    </svg>
+    <span class="count">{{ seconds() }}</span>
+  </span>
+  <span class="caption">
+    @if (siren()) {
+      <b>SEAT SHUFFLE!</b>
+      <small>Hands off — new seats</small>
+    } @else {
+      <small>Seat shuffle in</small>
+      <b>{{ seconds() }} s</b>
+    }
+  </span>
+</div>

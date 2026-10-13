@@ -53,3 +53,6 @@ if (current !== content) {
   writeFileSync(target, content);
   console.log(`Game registry updated: ${ids.join(', ') || '(no games)'}`);
 }
+if (filter.length > 0) {
+  console.warn('FF_GAMES is set: run `npm run generate:games` before committing to list every game again.');
+}

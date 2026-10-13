@@ -21,6 +21,8 @@ export class ClockService {
 
   /** Server time, updated four times a second; read it in templates and computed signals. */
   readonly now = signal(Date.now());
+  /** The lowest ping round trip of the last (re)connect in ms; `null` until measured. */
+  readonly roundTripMs = signal<number | null>(null);
 
   constructor() {
     setInterval(() => this.now.set(this.serverNow()), TICK_MS);
@@ -59,5 +61,6 @@ export class ClockService {
       }
     }
     this.now.set(this.serverNow());
+    this.roundTripMs.set(this.bestRoundTrip);
   }
 }

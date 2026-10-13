@@ -14,6 +14,8 @@ game ends on a podium with awards and a running **Friday Cup** for the room.
 | 🧩 [Sliding Puzzle](games/sliding-puzzle/README.md)       | Same scramble for all, fastest solve wins           | 2–20    |
 | ❓ [Trivia Blitz](games/trivia-blitz/README.md)           | Quick-fire multiple choice, speed and streaks count | 2–30    |
 | 🃏 [Memory Match](games/memory-match/README.md)           | One shared board, a match means you go again        | 2–10    |
+| 🐍 [Snake Arena](games/snake-arena/README.md)             | Real-time Snake in one arena with your coworkers    | 2–12    |
+| 🚌 [Backseat Drivers](games/backseat-drivers/README.md)   | One bus, one map reader, everyone else one control  | 3–10    |
 
 Each game lives in its own folder under [`games/`](games/) — see [Adding a game](docs/adding-a-game.md).
 

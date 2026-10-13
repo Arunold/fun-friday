@@ -169,24 +169,76 @@ final class MyGameLogic implements GameLogic {
 
 Rules of thumb:
 
-| Topic        | Do                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Time         | `ctx.now()`, `ctx.deadline()`, `ctx.remainingMillis()`, `ctx.turnStartedAt()` — never the system clock (tests use virtual time).                                                                                                                                                                                                                                                                               |
-| Randomness   | `ctx.random()` (seeded in tests).                                                                                                                                                                                                                                                                                                                                                                              |
-| Timers       | `ctx.schedule("key", Duration)` → `onTimer(ctx, "key")`; timers belong to the turn and are cancelled when it ends. `ctx.setDeadline(Duration)` moves the turn end (e.g. a "choose a word" sub-phase).                                                                                                                                                                                                          |
-| Ending early | Return `true` from `isTurnComplete` (checked after every action/timer/roster change) or call `ctx.endTurn()`. Count only `ctx.activePlayers()` (connected players) so a disconnected player never blocks a turn.                                                                                                                                                                                               |
-| Leaving      | `onPlayerLeft` is called when someone leaves for good; `skipTurn` lets you skip e.g. a departed drawer's turn.                                                                                                                                                                                                                                                                                                 |
-| Rejecting    | Throw `InvalidActionException("message")` — the sender sees the message, nothing changes.                                                                                                                                                                                                                                                                                                                      |
-| Payloads     | Records with Bean Validation (`@NotNull`, `@Size`, `@Min`, …) and `action.payload(Type.class)`.                                                                                                                                                                                                                                                                                                                |
-| Views        | Return records (or maps). `null` fields are omitted from the JSON. Hide secrets until the reveal; spectators get `Viewer.spectator()`.                                                                                                                                                                                                                                                                         |
-| Live data    | `ctx.stream(type, payload)` sends a public event to everybody immediately (e.g. drawing strokes); `ctx.sendTo(playerId, type, payload)` a private one ("you're close!"). Call `ctx.suppressUpdate()` in `onAction` when the action changed nothing the views show (no snapshot is sent). State that late joiners need must be in the view or re-sent on request (e.g. a `sync` action answered with `sendTo`). |
-| Rate         | Players may send about 20 actions per second (burst 40); batch high-frequency input (e.g. strokes every ~80 ms).                                                                                                                                                                                                                                                                                               |
-| Errors       | Exceptions in your code are contained and logged; the room keeps running.                                                                                                                                                                                                                                                                                                                                      |
-| Content      | Curated lists in `src/main/resources` (no AI, no network).                                                                                                                                                                                                                                                                                                                                                     |
-| Scoring      | `TurnOutcome.builder().add(playerId, points).headline("…")`; negative points are allowed, totals never drop below 0.                                                                                                                                                                                                                                                                                           |
-| Awards       | `awards(ctx)` → e.g. `new Award("⚡", "Fastest fingers", playerId, "182 ms")`.                                                                                                                                                                                                                                                                                                                                 |
+| Topic        | Do                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Time         | `ctx.now()`, `ctx.deadline()`, `ctx.remainingMillis()`, `ctx.turnStartedAt()` — never the system clock (tests use virtual time).                                                                                                                                                                                                                                                                                 |
+| Randomness   | `ctx.random()` (seeded in tests).                                                                                                                                                                                                                                                                                                                                                                                |
+| Timers       | `ctx.schedule("key", Duration)` → `onTimer(ctx, "key")`; timers belong to the turn and are cancelled when it ends. `ctx.setDeadline(Duration)` moves the turn end (e.g. a "choose a word" sub-phase); `ctx.extendDeadline(Duration)` adds or removes time (bonus seconds, penalties).                                                                                                                            |
+| Ending early | Return `true` from `isTurnComplete` (checked after every action/timer/roster change) or call `ctx.endTurn()`. Count only `ctx.activePlayers()` (connected players) so a disconnected player never blocks a turn.                                                                                                                                                                                                 |
+| Leaving      | `onPlayerLeft` is called when someone leaves for good; `skipTurn` lets you skip e.g. a departed drawer's turn.                                                                                                                                                                                                                                                                                                   |
+| Rejecting    | Throw `InvalidActionException("message")` — the sender sees the message, nothing changes.                                                                                                                                                                                                                                                                                                                        |
+| Payloads     | Records with Bean Validation (`@NotNull`, `@Size`, `@Min`, …) and `action.payload(Type.class)`.                                                                                                                                                                                                                                                                                                                  |
+| Views        | Return records (or maps). `null` fields are omitted from the JSON. Hide secrets until the reveal; spectators get `Viewer.spectator()`.                                                                                                                                                                                                                                                                           |
+| Live data    | `ctx.stream(type, payload)` sends a public event to everybody immediately (e.g. drawing strokes); `ctx.sendTo(playerId, type, payload)` a private one ("you're close!"). Call `ctx.suppressUpdate()` in `onAction` or `onTimer` when nothing the views show changed (no snapshot is sent). State that late joiners need must be in the view or re-sent on request (e.g. a `sync` action answered with `sendTo`). |
+| Rate         | Players may send about 20 actions per second (burst 40); batch high-frequency input (e.g. strokes every ~80 ms).                                                                                                                                                                                                                                                                                                 |
+| Errors       | Exceptions in your code are contained and logged; the room keeps running.                                                                                                                                                                                                                                                                                                                                        |
+| Content      | Curated lists in `src/main/resources` (no AI, no network).                                                                                                                                                                                                                                                                                                                                                       |
+| Scoring      | `TurnOutcome.builder().add(playerId, points).headline("…")`; negative points are allowed, totals never drop below 0.                                                                                                                                                                                                                                                                                             |
+| Awards       | `awards(ctx)` → e.g. `new Award("⚡", "Fastest fingers", playerId, "182 ms")`.                                                                                                                                                                                                                                                                                                                                   |
 
 Threading: all callbacks of a room run one at a time — no locks needed.
+
+#### Real-time games
+
+Games that run continuously (Snake Arena, Backseat Drivers) use a tick loop instead of turns full
+of actions:
+
+```java
+private static final Duration TICK = Duration.ofMillis(100);
+private long tick;
+
+@Override
+public void startTurn(GameContext ctx) {
+    tick = 0;
+    ctx.schedule("tick", TICK);
+}
+
+@Override
+public void onTimer(GameContext ctx, String key) {
+    if ("tick".equals(key)) {
+        tick++;
+        simulation.step();                          // move, collide, score
+        ctx.stream("frame", simulation.frame(tick)); // compact, public, every tick
+        long next = ctx.turnStartedAt() + (tick + 1) * TICK.toMillis();
+        ctx.schedule("tick", Duration.ofMillis(Math.max(1, next - ctx.now()))); // no drift
+        ctx.suppressUpdate();                       // no per-player snapshot for a tick
+    }
+}
+```
+
+- **Frames** go out with `ctx.stream` on every tick and carry a tick number. Keep them compact
+  (numbers, short arrays) and public — never put secrets in them.
+- **Snapshots** (your `view`) are only sent when a tick doesn't call `ctx.suppressUpdate()`: do that
+  when something a view shows changes (roles, a phase), and include the latest frame in the view so
+  a reconnecting browser can draw at once.
+- **Input**: the browser sends changes (`api.sendFast('turn', { dir: 'UP' })`, key down/up), not a
+  continuous stream; `onAction` records the intent, calls `ctx.suppressUpdate()` and the next tick
+  applies it. Remember the rate limit (about 20 actions per second).
+- **Time bonuses and penalties**: `ctx.extendDeadline(Duration.ofSeconds(5))` (negative = earlier)
+  keeps the timer ring's start, unlike `setDeadline`.
+- **Browser**: keep the newest frame by tick (from `api.stream$` or the view), draw on a `<canvas>`
+  in a `requestAnimationFrame` loop and interpolate between the last two frames for smooth motion.
+- **Responsive controls**: plain interpolation draws everything about a tick behind the server, so
+  controls feel late. Draw the player's own piece ahead along their pending input (client-side
+  prediction; `api.roundTripMs()` tells how far) and send the tick the player acted on, so the
+  server applies the input where the player saw it, not where it happens to be when the message
+  arrives. "Saw" is a moment before the key event: a picture needs ~40 ms to reach the eyes, so draw
+  that much further ahead and date the input back by it. Ease out the jumps this causes instead of
+  snapping — Snake Arena's `turn {dir, at}` with `frame-clock.ts`, `motion.ts` and `steering.ts`
+  shows how.
+- **One clock**: use `performance.now()` for frame arrivals and pictures alike — the
+  `requestAnimationFrame` timestamp can be older than an arrival in the same frame, and a negative
+  age makes canvas calls such as `arc` throw (the rest of the picture is lost).
 
 ### 3. Scenario tests
 
@@ -276,10 +328,13 @@ export class MyGameComponent {
 | `sendFast(type, payload)`           | fire-and-forget for high-frequency actions (strokes, progress)          |
 | `stream$`, `events$`                | public stream events / private events for this player                   |
 | `now()`                             | server time (e.g. to measure reaction times)                            |
+| `roundTripMs()`                     | network round trip in ms (real-time games: how far to predict)          |
 
-The platform already shows the game name, round counter, timer, scoreboard (with the turn's
-points during the reveal) and a reveal banner with your `headline`, so the component only renders
-the game itself.
+The platform already shows the game name, round counter, the turn timer (large, in the middle of
+the toolbar, plus a time bar along the top edge of the game area that turns amber and then red),
+the scoreboard (with the turn's points during the reveal) and a reveal banner with your `headline`,
+so the component only renders the game itself. Keep the top ~10 px of your component free of
+essential content (the time bar overlays it) and don't add a second round timer.
 
 SDK building blocks: `<ff-player-chip [player]="p" size="sm">`, `<ff-timer-ring>`,
 `[ffCountUp]="score"`, `ffAutofocus` / `[ffAutofocus]="condition"`, `formatDuration()`, and the
@@ -288,8 +343,10 @@ components can be used directly.
 
 ### 3. Look and layout
 
-- Desktop only. The component's host fills the stage, which has a fixed size: **never let the page
-  scroll** — scale content to the available space (flex/grid, `min-height: 0`).
+- Desktop only. The stage has a fixed size: **never let the page scroll** — scale content to the
+  available space (flex/grid, `min-height: 0`). The stage can't style your component's host
+  element, so size it yourself: `:host { flex: 1; display: flex; min-width: 0; min-height: 0; }`
+  fills the stage (without `flex: 1` the component is centred at its natural size).
 - Use the design tokens instead of hard-coded colours: Material's `--mat-sys-*` variables and the
   platform's `--ff-*` tokens (`--ff-success`, `--ff-warning`, `--ff-danger`, `--ff-radius`,
   `--ff-text-muted`, …). Each player has a colour (`player.color`) — use it for their marks.

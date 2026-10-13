@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Checks the REST API contract and exports the OpenAPI document to {@code docs/openapi.json}; the
@@ -48,6 +49,9 @@ class ApiContractTest {
 
         String docsDir = System.getProperty("ff.docsDir");
         if (docsDir != null) {
+            // springdoc lists this test server (random port); without "servers" clients default
+            // to the server that serves the document, and the export only changes with the API.
+            ((ObjectNode) doc).remove("servers");
             Path file = Path.of(docsDir, "openapi.json");
             Files.createDirectories(file.getParent());
             Files.writeString(

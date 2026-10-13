@@ -370,7 +370,7 @@ Effort: **S** ≤ 1 day · **M** 2–4 days · **L** 1–2 weeks. Priority refle
 
 | ID | Improvement | Why / fixes | Effort | Priority | Status |
 | --- | --- | --- | :---: | :---: | --- |
-| IMP-38 | **Tests** — Playwright e2e first (create → join → play a round of every game with two browser contexts), then backend rule tests per strategy and a STOMP integration test | No tests exist; most bugs above would be caught by a two-player e2e | M–L | High | ✅ Functional tests only: **246 JUnit tests** (every game through the real runtime with `GameHarness` + STOMP integration and API contract tests) and **42 Playwright tests** (platform, every game end to end, and a [layout check](e2e/tests/layout.spec.ts) that no game makes the page scroll at 1366×700), all green; they also run in CI. |
+| IMP-38 | **Tests** — Playwright e2e first (create → join → play a round of every game with two browser contexts), then backend rule tests per strategy and a STOMP integration test | No tests exist; most bugs above would be caught by a two-player e2e | M–L | High | ✅ Functional tests only: **371 JUnit tests** (every game through the real runtime with `GameHarness` + STOMP integration and API contract tests) and **49 Playwright tests** (platform, every game end to end, and a [layout check](e2e/tests/layout.spec.ts) that no game makes the page scroll at 1366×700), all green; they also run in CI. |
 | IMP-39 | **CI** — GitHub Actions: backend build + Checkstyle/Spotless, frontend lint + Prettier check + build, e2e on pull requests | Nothing enforces formatting today (Prettier fails on 11 files) | S | High | ✅ [ci.yml](.github/workflows/ci.yml): backend build (tests, Checkstyle, Spotless) + OpenAPI drift check, frontend lint/Prettier/build + registry drift check, a freshly scaffolded game through every check, Playwright e2e, Docker build. |
 | IMP-40 | **Toolchain upgrade** — newer Gradle wrapper with toolchain auto-provisioning (foojay resolver), move off Spring Boot 3.2.x (out of OSS support), align `angular-eslint` 21 with Angular 20 | Gradle 8.10 can't run on current JDKs (25/26); security fixes | M | Medium | ✅ Gradle 9.8.1 wrapper + foojay toolchains (JDK 25), Spring Boot 4.1.1, Angular 21.2 with matching angular-eslint 21 ([ADR 0003](docs/adr/0003-toolchain.md)). |
 | IMP-41 | **Cross-platform scripts & line endings** — `./gradlew` in root scripts, POSIX-sh husky hook, `.gitattributes` (`* text=auto eol=lf`, `*.bat eol=crlf`), one reformat commit | Fixes BUG-35; ends CRLF/LF churn | S | Medium | ✅ Cross-platform scripts, POSIX husky hook + lint-staged, `.gitattributes`, `.editorconfig`, all files LF. |
@@ -399,7 +399,7 @@ Effort: **S** ≤ 1 day · **M** 2–4 days · **L** 1–2 weeks. Priority refle
 | --- | --- | --- | :---: | :---: | --- |
 | IMP-48 | **H2 + Flyway persistence** — finished games and leaderboards, optionally live-state snapshots | Planned in `implementation-plan.md`; a restart wipes everything today | M | Medium | ✅ H2 file DB + Flyway (`V1__game_history.sql`) + Spring Data JDBC: finished games, per-player results, Friday Cup leaderboard (`/history`) ([ADR 0004](docs/adr/0004-persistence.md)). |
 | IMP-49 | **JHipster decision spike** (time-boxed) — JHipster brings its own conventions (Liquibase, auth, generated entities) that overlap with IMP-01–04 and IMP-48 | Decide before Phase 2 so the platform work isn't done twice | S | Medium | ✅ Decided: keep Spring Boot + Angular, borrow conventions only ([ADR 0002](docs/adr/0002-jhipster-evaluation.md)). |
-| IMP-50 | **New games** from `GameIdeas.md`, once IMP-01–05 exist | Each new game should be one backend package + one frontend folder | L | Low | ✅ Two new games from `GameIdeas.md`, one folder each: [Trivia Blitz](games/trivia-blitz/README.md) (200 curated questions in 10 categories, streaks) and [Memory Match](games/memory-match/README.md) (one shared board, a match means you go again) — and the six existing games were rebuilt the same way. |
+| IMP-50 | **New games** from `GameIdeas.md`, once IMP-01–05 exist | Each new game should be one backend package + one frontend folder | L | Low | ✅ Two new games from `GameIdeas.md`, one folder each: [Trivia Blitz](games/trivia-blitz/README.md) (200 curated questions in 10 categories, streaks) and [Memory Match](games/memory-match/README.md) (one shared board, a match means you go again) — and the six existing games were rebuilt the same way. Later the first real-time games followed, also one folder each: [Snake Arena](games/snake-arena/README.md) and [Backseat Drivers](games/backseat-drivers/README.md) (tick loop with streamed frames, see "Real-time games" in the [guide](docs/adding-a-game.md)). |
 
 ---
 
@@ -445,7 +445,7 @@ Everything in this report is done. Rather than patching `7a85bbe` item by item, 
 | [backend/testkit](backend/testkit) | `GameHarness`: plays a game with virtual time and a seeded random generator |
 | [backend/app](backend/app) | Rooms, identity, presence, host migration, STOMP + REST API, per-viewer snapshots, H2 history, metrics |
 | [frontend](frontend) | Angular 21 (zoneless, signals): realtime client, room store, pages, game SDK (`@ff/sdk`), Material 3 theme |
-| [games/](games) | One folder per game: `backend/`, `frontend/`, `e2e/`, `README.md` — 8 games; `npm run new-game` scaffolds a new one |
+| [games/](games) | One folder per game: `backend/`, `frontend/`, `e2e/`, `README.md` — 10 games; `npm run new-game` scaffolds a new one |
 | [e2e](e2e) | Playwright platform specs and shared fixtures (game specs live in `games/<id>/e2e`) |
 | [docs](docs) | [Architecture](docs/architecture.md), [Adding a game](docs/adding-a-game.md), [ADRs](docs/adr/README.md), `openapi.json`, `asyncapi.yaml` |
 | [Dockerfile](Dockerfile), [docker-compose.yml](docker-compose.yml), [render.yaml](render.yaml), [ci.yml](.github/workflows/ci.yml) | One image, one command, CI |
@@ -454,8 +454,8 @@ Everything in this report is done. Rather than patching `7a85bbe` item by item, 
 
 | Check | Result |
 | --- | --- |
-| `./gradlew build` (backend, all games) | ✅ 246 tests, Checkstyle (0 warnings) and Spotless clean |
-| `npx playwright test` against the packaged jar | ✅ 42 / 42 — platform, all 8 games end to end, and every game fits a 1366×700 window without page scroll for every player |
+| `./gradlew build` (backend, all games) | ✅ 371 tests, Checkstyle (0 warnings) and Spotless clean |
+| `npx playwright test` against the packaged jar | ✅ 49 / 49 — platform, all 10 games end to end, and every game fits a 1366×700 window without page scroll for every player |
 | `npm run lint` · `npm run format:check` · `npm run build` | ✅ ESLint, Prettier and the production build clean (initial bundle ≈ 650 kB, every page and game lazy) |
 | `npm run new-game` | ✅ the scaffolded game passes ESLint, Prettier, Spotless, Checkstyle, its scenario tests, its e2e spec and the layout check (also checked in CI) |
 | `docker build` + `docker run` | ✅ health UP in ~6 s; the full Playwright suite also passes against the container |

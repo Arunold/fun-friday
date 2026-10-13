@@ -1,0 +1,127 @@
+<div class="snake-arena" [class.revealed]="revealed()" [attr.data-variation]="view()?.variation">
+  <section class="stage" #stage>
+    <div
+      class="board"
+      [style.width.px]="box().width"
+      [style.height.px]="box().height"
+      [class.down]="hud().mine === 'respawning' || hud().mine === 'out'"
+    >
+      <canvas #canvas class="canvas" data-testid="arena-canvas" role="img" [attr.aria-label]="ariaLabel()"></canvas>
+
+      @if (view()) {
+        @if (revealed()) {
+          <div class="veil results" animate.enter="ff-enter-fade">
+            <div
+              class="card results-card"
+              data-testid="round-results"
+              [class.dense]="results().length > 8"
+              animate.enter="ff-enter-fade-up"
+            >
+              <h3 class="card-title">Round {{ round() }} results</h3>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="player" scope="col">Player</th>
+                    <th scope="col" title="Round points">Pts</th>
+                    <th scope="col" title="Food eaten">🍎</th>
+                    <th scope="col" title="Snakes that crashed into them (+5 each)">⚔️</th>
+                    <th scope="col" title="Crashes">💥</th>
+                    <th scope="col" title="Longest length">🐍</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (line of results(); track line.playerId; let first = $first) {
+                    <tr [class.me]="line.me" [class.top]="first" [attr.data-player]="line.person.name">
+                      <td class="player">
+                        <ff-player-chip [player]="line.person" size="sm" />
+                        @if (line.longest) {
+                          <span class="tag" title="Longest snake at the end: +5">👑 +5</span>
+                        }
+                        @if (line.survivor) {
+                          <span class="tag survivor" title="Survived: +10">🛡️ +10</span>
+                        }
+                      </td>
+                      <td class="points">{{ line.points }}</td>
+                      <td>{{ line.food }}</td>
+                      <td>{{ line.credits }}</td>
+                      <td>{{ line.crashes }}</td>
+                      <td>{{ line.maxLength }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        } @else {
+          @switch (hud().stage) {
+            @case ('ready') {
+              <div class="center" animate.leave="ff-leave-fade">
+                <div class="banner" data-testid="ready-banner">
+                  @if (round() > 1) {
+                    <span class="banner-eyebrow">Round {{ round() }}</span>
+                  }
+                  <b class="banner-title">Get ready…</b>
+                  @if (canSteer()) {
+                    <span class="banner-hint"
+                      >Steer with <span class="ff-kbd">←↑→↓</span> or <span class="ff-kbd">WASD</span></span
+                    >
+                  }
+                </div>
+              </div>
+            }
+            @case ('go') {
+              <div class="center" animate.leave="ff-leave-fade">
+                <div class="banner go" animate.enter="ff-enter-pop">
+                  <b class="banner-title">{{ round() > 1 ? 'Round ' + round() + ' — go!' : 'Go!' }}</b>
+                </div>
+              </div>
+            }
+          }
+
+          @if (hud().mine === 'respawning') {
+            <div class="center" animate.enter="ff-enter-fade" animate.leave="ff-leave-fade">
+              <div class="crash" data-testid="crash-overlay" role="status">
+                <span class="crash-title">💥 Crashed!</span>
+                @if (hud().cause; as cause) {
+                  <span class="crash-cause">{{ cause }}</span>
+                }
+                <span class="crash-count"
+                  >Respawning in
+                  <b class="count" [class.odd]="hud().respawnIn % 2 === 1">{{ hud().respawnIn }}</b>
+                </span>
+              </div>
+            </div>
+          } @else if (hud().mine === 'out') {
+            <div class="center" animate.enter="ff-enter-fade">
+              <div class="crash out" data-testid="crash-overlay" role="status">
+                <span class="crash-title">You're out — watch the rest</span>
+                @if (hud().cause; as cause) {
+                  <span class="crash-cause">{{ cause }}</span>
+                }
+              </div>
+            </div>
+          }
+
+          @if (hud().walls) {
+            <div class="walls" role="status" animate.enter="ff-enter-fade-up" animate.leave="ff-leave-fade">
+              ⚠️ The walls are closing in!
+            </div>
+          }
+        }
+      }
+    </div>
+  </section>
+
+  @if (view(); as v) {
+    <ff-snake-panel
+      class="panel"
+      [round]="round()"
+      [arena]="arenaLabel()"
+      [mode]="mode()"
+      [rows]="rows()"
+      [feed]="feed()"
+      [controls]="canSteer() && hud().mine !== 'out'"
+      [powers]="v.powers"
+    />
+  }
+</div>

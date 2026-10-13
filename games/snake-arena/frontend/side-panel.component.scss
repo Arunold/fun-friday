@@ -1,0 +1,338 @@
+:host {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 10px;
+  overflow: hidden;
+  border-radius: var(--ff-radius);
+  border: 1px solid var(--ff-border);
+  background: var(--mat-sys-surface-container);
+}
+
+.head {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 4px;
+}
+
+.eyebrow,
+.title,
+.columns {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ff-text-muted);
+}
+
+.eyebrow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.arena {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.mode {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.block {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+// ------------------------------------------------------------------ leaderboard
+// The leaderboard always shows everyone; with many players the rows get denser.
+
+.columns,
+.row {
+  display: grid;
+  grid-template-columns: 14px 28px minmax(0, 1fr) 26px 30px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px;
+}
+
+.columns > :first-child {
+  grid-column: 1 / span 3;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row {
+  height: 32px;
+  flex: none;
+  border-radius: 10px;
+  transition: background 200ms;
+
+  &.me {
+    background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
+  }
+
+  &.down {
+    .name,
+    .len,
+    .pts {
+      opacity: 0.55;
+    }
+  }
+}
+
+:host(.dense) {
+  .rows {
+    gap: 1px;
+  }
+
+  .row {
+    height: 26px;
+    border-radius: 8px;
+  }
+
+  .badge {
+    right: -4px;
+    bottom: -3px;
+    min-width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+}
+
+.rank {
+  color: var(--ff-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.who {
+  position: relative;
+  display: inline-flex;
+}
+
+.badge {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  display: grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 0 0 2px var(--mat-sys-surface-container);
+
+  &.timer {
+    background: var(--ff-warning);
+    color: #241a00;
+  }
+
+  &.out {
+    background: var(--mat-sys-surface-container-highest);
+    color: var(--ff-text-muted);
+  }
+
+  &.power {
+    background: var(--mat-sys-surface-container-highest);
+  }
+}
+
+.down ff-player-chip {
+  filter: grayscale(0.85);
+  opacity: 0.6;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.you {
+  flex: none;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  color: var(--mat-sys-on-surface);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.len {
+  color: var(--ff-text-muted);
+  font-size: 12px;
+}
+
+.pts {
+  font-size: 15px;
+}
+
+// ------------------------------------------------------------------ kill feed, controls & legend
+// One wrapping column with hidden overflow: items that don't fit wrap into a second column that
+// is never visible, so only whole lines show — newest feed lines first, then the extras.
+
+.rest {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  row-gap: 3px;
+  column-gap: 0;
+  overflow: hidden;
+
+  > *,
+  > .lines > * {
+    flex: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.title {
+  margin: 0 0 3px;
+  padding: 0 4px;
+}
+
+.lines {
+  display: contents;
+  list-style: none;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-high);
+  font-size: 12px;
+
+  &:first-child {
+    background: color-mix(in srgb, var(--mat-sys-surface-container-highest) 90%, transparent);
+  }
+}
+
+.who-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.icon {
+  flex: none;
+}
+
+.empty {
+  padding: 4px 8px;
+  color: var(--ff-text-muted);
+  font-size: 12px;
+}
+
+// Pushes the extras to the bottom; keeps at least a small gap above them.
+.rest > .spacer {
+  flex: 1 0 6px;
+}
+
+.extra {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+.controls + .legend {
+  margin-top: 5px;
+}
+
+.keys {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  .ff-kbd {
+    min-width: 19px;
+    padding: 0 3px;
+    font-size: 11px;
+  }
+}
+
+.or {
+  margin: 0 4px;
+  color: var(--ff-text-muted);
+  font-size: 11px;
+}
+
+.hint {
+  color: var(--ff-text-muted);
+  font-size: 11px;
+}
+
+.legend {
+  gap: 3px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ff-text-muted);
+  font-size: 11.5px;
+
+  b {
+    color: var(--mat-sys-on-surface);
+    font-weight: 700;
+  }
+}
+
+.emoji {
+  width: 16px;
+  text-align: center;
+}

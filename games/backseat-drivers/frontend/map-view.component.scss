@@ -1,0 +1,93 @@
+:host {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #0f0d16;
+}
+
+canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.legend {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgb(15 13 22 / 82%);
+  color: var(--ff-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  list-style: none;
+  translate: -50% 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+.sign {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #2f6fdc;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  &.ceo {
+    border-radius: 3px;
+    background: #e3354f;
+  }
+
+  &.cone {
+    background: #ff8a1f;
+  }
+
+  &.coffee {
+    background: #f5f0e6;
+    box-shadow: inset 0 0 0 3px #6b4226;
+  }
+}
+
+.swatch {
+  width: 14px;
+  height: 10px;
+  border-radius: 2px;
+
+  &.rain {
+    background: repeating-linear-gradient(60deg, #333d4d 0 3px, #7fa8de 3px 4px);
+  }
+
+  &.tunnel {
+    background: #24252c;
+    box-shadow: inset 0 0 0 2px #7a7d8a;
+  }
+}
+
+.ring {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px dashed rgb(255 255 255 / 60%);
+}

@@ -1,7 +1,7 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Subject, filter } from 'rxjs';
 
 import { ClockService } from './clock.service';
 import { NotifyService } from './notify.service';
@@ -102,7 +102,12 @@ export class RoomStore {
   constructor() {
     this.realtime.subscribe<RoomSnapshot>(Destinations.room, (s) => this.applySnapshot(s), { requiresSession: false });
     this.realtime.subscribe<ServerEvent>(Destinations.events, (e) => this.handleEvent(e), { requiresSession: false });
-    this.realtime.errors$.subscribe((error) => this.notify.error(error));
+    // Failures of fire-and-forget game actions (`sendFast`). A stroke or key press that arrives just
+    // after a turn ended, or that the game turns down, is expected in real-time play and not worth a
+    // toast; rate limiting and malformed requests still are.
+    this.realtime.errors$
+      .pipe(filter((error) => error.code !== 'INVALID_ACTION' && error.code !== 'WRONG_PHASE'))
+      .subscribe((error) => this.notify.error(error));
     this.realtime.connected$.subscribe(() => void this.restoreSession());
     if (this.realtime.isConnected()) {
       void this.restoreSession();
@@ -215,7 +220,10 @@ export class RoomStore {
     }
   }
 
-  /** Sends a high-frequency game action without waiting for an answer (failures are toasted). */
+  /**
+   * Sends a high-frequency game action without waiting for an answer. Rejections by the game (or
+   * because the turn just ended) are dropped silently; rate limiting is still toasted.
+   */
   actFast(type: string, payload?: unknown): boolean {
     return this.realtime.send('action', { type, payload: payload ?? null });
   }
