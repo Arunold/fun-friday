@@ -105,11 +105,15 @@ Timings (countdown, reveal, reconnect grace), room limits and rate limits are in
 
 - **Docker**: the [Dockerfile](Dockerfile) builds the frontend (Node 24), the jar (JDK 25) and a
   small non-root JRE image with a health check. Mount `/app/data` to keep the history.
-- **Render**: [`render.yaml`](render.yaml) deploys the Docker image (health check
-  `/actuator/health`).
+- **Render**: [`render.yaml`](render.yaml) is the Blueprint of the live service `fun-friday-game`
+  (Docker, free plan, Oregon). Render deploys a commit once its CI checks pass and switches to it
+  once `/actuator/health` answers (within 15 minutes). Keep `name` and `region` equal to the
+  existing service; if the service isn't linked to the Blueprint, set the same health check path
+  in its dashboard settings.
 - **CI**: [GitHub Actions](.github/workflows/ci.yml) — backend build and tests, frontend lint and
   build, a game freshly scaffolded with `npm run new-game` through every check, Playwright e2e,
-  Docker build.
+  Docker build plus a smoke test (the image must answer `render.yaml`'s health check path with
+  512 MB on Render's `$PORT`).
 
 ## Contributing
 

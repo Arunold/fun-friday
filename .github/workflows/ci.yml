@@ -1,5 +1,6 @@
 # Continuous integration: backend (format, static checks, tests), frontend (lint, format, build),
-# a game scaffolded from the template, end-to-end tests of the packaged app, and a Docker image build.
+# a game scaffolded from the template, end-to-end tests of the packaged app, and the Docker image
+# (build, then a smoke test that starts it the way Render does).
 name: CI
 
 on:
@@ -121,6 +122,19 @@ jobs:
         with:
           context: .
           push: false
+          load: true
           tags: fun-friday:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      # Start the image the way Render runs it (512 MB, its own $PORT) and wait for the health check
+      # path from render.yaml: Render only switches to a new deploy once that path answers 2xx/3xx.
+      - name: Smoke test
+        run: |
+          health=$(sed -n 's/^ *healthCheckPath: *\([^ #]*\).*/\1/p' render.yaml)
+          test -n "$health" || { echo "::error::render.yaml has no healthCheckPath"; exit 1; }
+          docker run -d --name app --memory 512m -e PORT=10000 -p 8080:10000 fun-friday:ci
+          get() { curl -fsS --max-time 5 "http://localhost:8080$1"; }
+          for _ in $(seq 90); do get "$health" > /dev/null 2>&1 && break; sleep 2; done
+          get "$health" || { docker logs app; echo "::error::$health never became healthy"; exit 1; }
+          [[ "$(get /)" == *'<ff-root>'* ]] || { echo "::error::/ does not serve the app"; exit 1; }
+          [[ "$(get /api/games)" == *'"id":'* ]] || { echo "::error::/api/games lists no games"; exit 1; }

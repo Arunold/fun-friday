@@ -1,12 +1,18 @@
-# Render Blueprint — connect the repository on render.com and it deploys the Dockerfile.
+# Render Blueprint of the live service https://fun-friday-game.onrender.com (Docker, free plan).
 # The app reads $PORT (set by Render) and serves UI, REST and WebSocket from one origin.
+# Keep `name` and `region` equal to the existing service: Render applies a Blueprint to the service
+# with the same name, and a service's region can't change after creation.
 services:
   - type: web
-    name: fun-friday
+    name: fun-friday-game
     runtime: docker
     plan: free
-    region: frankfurt # or oregon, ohio, singapore
+    region: oregon
+    # A deploy goes live only once this path answers 2xx/3xx (Render gives up after 15 minutes).
+    # CI starts the image and probes this path too (see .github/workflows/ci.yml, job `docker`).
     healthCheckPath: /actuator/health
+    # Deploy a commit only after its GitHub checks (CI) have passed.
+    autoDeployTrigger: checksPass
     envVars:
       - key: JAVA_TOOL_OPTIONS
         value: -XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError
