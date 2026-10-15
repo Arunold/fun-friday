@@ -45,11 +45,11 @@ total score, then to whoever joined first.
 | ---------------------- | ------------------------------------------------------ |
 | `←` `↑` `↓` `→` / WASD | turn — a quick double turn is queued (up to two turns) |
 
-Your snake turns on screen the moment you press, in the cell its head was in on your screen — and
-that is where the server turns it, network delay or not (see _Latency_ below). Key auto-repeat is
-ignored and typing in text fields is never hijacked. Spectators watch the whole arena and the live
-leaderboard. The kill feed reads _"Ana ⚔️ Dev"_ (Dev ran into Ana), 💥 for a head-on crash, 🧱 for a
-wall, 🌀 for biting your own tail and 👋 for a player who left.
+Your snake turns at the next cell its head reaches on screen — its eyes look the new way at once —
+and that is where the server turns it too, network delay or not (see _Latency_ below). Key
+auto-repeat is ignored and typing in text fields is never hijacked. Spectators watch the whole
+arena and the live leaderboard. The kill feed reads _"Ana ⚔️ Dev"_ (Dev ran into Ana), 💥 for a
+head-on crash, 🧱 for a wall, 🌀 for biting your own tail and 👋 for a player who left.
 
 ## Settings
 
@@ -94,20 +94,21 @@ wall, 🌀 for biting your own tail and 👋 for a player who left.
 - **Input.** `turn {dir, at}` with Bean Validation: unknown actions and directions are rejected;
   harmless no-ops — a turn into the current heading, a reversal, a turn while crashed or with a full
   queue — are ignored silently, so no error toast appears. `at` (optional) is the tick whose head
-  position the turn starts from — the cell the player saw their head in. The server carries the
-  turn out with the first move after that tick: an early turn waits (at most two ticks), a late one
-  goes with the next move; without `at` the next move takes it.
+  position the turn starts from — the cell where the player's screen shows the snake turning. The
+  server carries the turn out with the first move after that tick: an early turn waits (at most two
+  ticks), a late one goes with the next move; without `at` the next move takes it.
 - **Latency.** Drawing a full tick behind the server made turns look a cell late (and crash). Now
   the browser draws against a smoothed clock of the server's ticks, and your own snake runs ahead
-  of the newest frame along your pending turns (client-side prediction) by what a turn needs to
-  reach the server in time — half a tick plus the measured round trip (`api.roundTripMs()`, 0.8 to
-  1.3 ticks) — **plus what you haven't seen yet**: a picture takes ~40 ms to reach your eyes and a
-  key press a moment to reach the page, so a press names the cell the head was in on your screen
-  (`event.timeStamp` − 40 ms), not where the page has drawn it since. The server agrees with every
-  such turn as long as the round trip stays under ~60 ms. Jumps of a drawn head (a turn that counts
-  for a moment already drawn past, a guess the next frame corrects) glide out within ~100 ms instead
-  of snapping, and a head guessed ahead stops in front of a wall — the crash is the server's to
-  tell. Other snakes are drawn half a tick ahead, straight on.
+  of the newest frame along your pending turns (client-side prediction) — by half a tick plus the
+  measured round trip (`api.roundTripMs()`, 0.8 to 1.3 ticks), enough for a turn to reach the
+  server before the snake moves on. A key press turns it at the next cell centre the drawn head
+  reaches (or at the one it passed less than a quarter cell ago) and names that cell's tick, so the
+  server turns it in the same place and the head never jumps back. Other snakes glide between
+  frames that have already arrived, at most a quarter tick past the newest — less while frames come
+  unevenly (the clock remembers how late they have been) — so their turns need hardly any
+  correction. What little does (a boost that starts, a very late frame) glides out within ~100 ms;
+  a guess never runs into a wall (the crash is the server's to tell), and the prediction knows when
+  a boost ends.
 - **Leaving and connections.** A player who leaves turns into food (feed: 👋) and drops out of the
   round table; a disconnected snake keeps going straight and respawns as usual.
 - **Browser.** A `requestAnimationFrame` loop reads the two newest frames from plain fields and

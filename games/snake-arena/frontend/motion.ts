@@ -39,8 +39,8 @@ export interface Motion {
   at: number;
   /** Headings of the moves after the current frame, one per cell (empty: the snake stays put). */
   ahead: readonly Dir[];
-  /** Cells per tick (two while boosted). */
-  speed: number;
+  /** The last tick of a boost (two cells per tick up to and including it; `-1`: no boost). */
+  boostUntil: number;
   /** Cells with food: a snake that eats there grows instead of pulling its tail along. */
   food: ReadonlySet<number>;
   /** The walls: a head running on ahead of the newest frame stops in front of them. */
@@ -54,6 +54,15 @@ const centres = new WeakMap<readonly number[], readonly Point[]>();
 /** The centre of a cell. */
 export function cellCenter(cell: number, cols: number): Point {
   return { x: (cell % cols) + 0.5, y: Math.floor(cell / cols) + 0.5 };
+}
+
+/**
+ * How many cells a snake moves from the frame of tick `from` to moment `at` (fractional ticks):
+ * two per tick up to and including tick `boostUntil`, one after.
+ */
+export function cellsMoved(from: number, at: number, boostUntil: number): number {
+  const ticks = Math.max(0, at - from);
+  return ticks + Math.max(0, Math.min(ticks, boostUntil - from));
 }
 
 /** The centres of a body's cells (cached per frame). */
@@ -82,7 +91,7 @@ export function poseAt(m: Motion): Pose {
   // crash is the server's to tell — and the tail follows, except over food (the snake will grow).
   const path: Point[] = [];
   let point = points[0];
-  const wanted = Math.min(m.ahead.length, (m.at - m.currentTick) * m.speed);
+  const wanted = Math.min(m.ahead.length, cellsMoved(m.currentTick, m.at, m.boostUntil));
   for (let i = 0; i < Math.ceil(wanted - 1e-6); i++) {
     const step = VECTORS[m.ahead[i]];
     const next = { x: point.x + step.x, y: point.y + step.y };

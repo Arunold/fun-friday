@@ -19,7 +19,7 @@ import { directionOf, isTyping } from './arena-input';
 import { ArenaRenderer } from './arena-renderer';
 import { resolveTheme } from './arena-theme';
 import { FrameClock } from './frame-clock';
-import { Point, Pose, pointAt, poseAt, shiftHead } from './motion';
+import { Point, Pose, cellsMoved, pointAt, poseAt, shiftHead } from './motion';
 import { Person, crashCause, feedLines, leaderRows, resultLines, secondsUntil } from './panel-model';
 import { SidePanel } from './side-panel.component';
 import { Dir, Frame, SnakeArenaView } from './snake-arena.types';
@@ -53,25 +53,31 @@ const YOU_TAG_RESPAWN_MS = 1600;
 /** Room around the board for its frame and shadow (px). */
 const BOARD_INSET = 12;
 /**
- * How far ahead of "one tick behind the newest frame" the own snake must be drawn for a turn to
- * reach the server before the snake moves on (ticks): half a tick plus the network round trip,
- * within these bounds.
+ * How far ahead of "one tick behind the newest frame" the own snake is drawn (ticks): half a tick
+ * plus the network round trip, within these bounds — far enough for a turn to reach the server
+ * before the snake moves on.
  */
-const MIN_SEND_LEAD = 0.8;
-const MAX_SEND_LEAD = 1.3;
+const MIN_LEAD = 0.8;
+const MAX_LEAD = 1.3;
 /**
- * How long a picture takes to reach the player's eyes and a key press to reach the page (ms) on a
- * usual screen. The own snake is drawn this much further ahead, and a key press counts for the
- * moment the player saw — so the snake turns where its head was on the player's screen, not where
- * the page has drawn it by the time the key press arrives.
+ * A key press turns the snake at the next cell centre its head reaches — or at the one it has just
+ * passed, if that is at most this far back (cells): the head never visibly jumps back.
  */
-const SEEN_LATENCY_MS = 40;
-/** Other snakes are guessed straight on, half a tick ahead: small corrections when they turn. */
-const OTHERS_LEAD = 0.5;
+const TURN_GRACE = 0.25;
+/**
+ * Other snakes are drawn a quarter tick ahead of "one tick behind the newest frame" — less when
+ * frames come unevenly ({@link FrameClock.jitter}) — so they glide between frames they already
+ * have and a turn of theirs needs at most a quarter cell of correction.
+ */
+const OTHERS_LEAD = 0.25;
 /** Round trip assumed until the platform has measured it (ms). */
 const DEFAULT_ROUND_TRIP_MS = 30;
-/** Extra ticks a snake may run on when a frame is late before it waits for the frame. */
-const LATE_SLACK = 0.35;
+/**
+ * How late a frame may be (ticks) before a snake waits for it: the own snake runs on along its
+ * known moves, others are only guessed straight on.
+ */
+const MY_SLACK = 1;
+const OTHERS_SLACK = 0.5;
 /** A drawn head that jumps (a correction) glides to its new place with this time constant (ms). */
 const SMOOTHING_MS = 45;
 
@@ -88,12 +94,12 @@ interface Shown {
  *
  * The server streams a compact frame every tick; this component keeps the two newest frames
  * (stream or snapshot, whichever is newer) in plain fields and a `requestAnimationFrame` loop
- * draws them on a canvas against a smoothed clock of the server's ticks — gliding between frames
- * and a little past the newest one, the own snake along its pending turns (see {@link
- * SEEN_LATENCY_MS}); jumps are eased out. Signals only carry the low-frequency UI around it: the
- * leaderboard and kill feed in the side panel, the "get ready", crash and wall overlays and the
- * round's results. Arrow keys / WASD send `turn` actions (key presses only) naming the tick of the
- * cell the player saw the head in.
+ * draws them on a canvas against a smoothed clock of the server's ticks — the others gliding
+ * between frames, the own snake a little past the newest one along its pending turns (see {@link
+ * MIN_LEAD}); what little needs correcting is eased out. Signals only carry the low-frequency UI
+ * around it: the leaderboard and kill feed in the side panel, the "get ready", crash and wall
+ * overlays and the round's results. Arrow keys / WASD send `turn` actions (key presses only)
+ * naming the tick of the cell the snake turns in.
  */
 @Component({
   selector: 'ff-snake-arena',
@@ -140,12 +146,11 @@ export class SnakeArenaComponent {
   protected readonly canSteer = computed(
     () => this.api.isPlaying() && this.api.phase() === 'PLAYING' && !this.revealed(),
   );
-  /** How far ahead the own snake is drawn (ticks): what a turn needs plus what the player hasn't seen yet. */
+  /** How far ahead the own snake is drawn (ticks), from the network round trip. */
   private readonly myLead = computed(() => {
-    const tickMs = this.view()?.tickMs ?? 100;
     const roundTrip = this.api.roundTripMs() ?? DEFAULT_ROUND_TRIP_MS;
-    const send = Math.min(MAX_SEND_LEAD, Math.max(MIN_SEND_LEAD, 0.5 + (roundTrip * 1.25 + 10) / tickMs));
-    return send + SEEN_LATENCY_MS / tickMs;
+    const lead = 0.5 + (roundTrip * 1.25 + 10) / (this.view()?.tickMs ?? 100);
+    return Math.min(MAX_LEAD, Math.max(MIN_LEAD, lead));
   });
 
   /** Everyone of the round (also those who left since) plus live info of current players. */
@@ -236,8 +241,9 @@ export class SnakeArenaComponent {
 
   /**
    * Arrow keys / WASD steer; auto-repeat is ignored, text fields are left alone. The turn names the
-   * tick of the cell the head was in on the player's screen when they pressed the key (the page has
-   * drawn it {@link SEEN_LATENCY_MS} further since), so the snake turns exactly there.
+   * tick of the next cell centre the drawn head reaches when the key goes down (or of the one it
+   * has just passed, {@link TURN_GRACE}), so the snake turns right there on screen and on the
+   * server alike.
    */
   protected onKey(event: KeyboardEvent): void {
     if (!this.canSteer() || event.ctrlKey || event.metaKey || event.altKey || isTyping(event.target)) {
@@ -256,8 +262,8 @@ export class SnakeArenaComponent {
     }
     const now = performance.now();
     const pressed = event.timeStamp > now - 1000 && event.timeStamp <= now ? event.timeStamp : now;
-    const seen = this.drawTick(current, this.myLead(), pressed) - SEEN_LATENCY_MS / view.tickMs;
-    const turn = this.steering.press(dir, mine, Math.max(view.startDelay, current.tick - 1, seen));
+    const at = Math.ceil(this.drawTick(current, this.myLead(), MY_SLACK, pressed) - TURN_GRACE);
+    const turn = this.steering.press(dir, mine, Math.max(view.startDelay, current.tick - 1, at));
     if (turn) {
       this.api.sendFast('turn', turn);
     }
@@ -333,9 +339,9 @@ export class SnakeArenaComponent {
     });
   }
 
-  /** The moment (in ticks) to draw a snake with this lead, never further than the slack allows. */
-  private drawTick(current: Frame, lead: number, now: number): number {
-    return Math.min(this.clock.position(now) - 1 + lead, current.tick + lead + LATE_SLACK);
+  /** The moment (in ticks) to draw a snake with this lead, waiting once a frame is `slack` late. */
+  private drawTick(current: Frame, lead: number, slack: number, now: number): number {
+    return Math.min(this.clock.position(now) - 1 + lead, current.tick + lead + slack);
   }
 
   /** Where every living snake is drawn now: mine along its pending turns, the others straight on. */
@@ -343,6 +349,8 @@ export class SnakeArenaComponent {
     const frozen = this.revealed();
     const previous = frozen ? null : this.clock.previous;
     const moving = !frozen && current.tick >= view.startDelay;
+    // Others a little earlier while frames come unevenly, so their next frame is there in time.
+    const othersLead = Math.max(0, OTHERS_LEAD - this.clock.jitter / view.tickMs);
     const poses = new Map<string, Pose>();
     for (const snake of current.snakes) {
       if (!snake.alive || !snake.body.length) {
@@ -350,9 +358,10 @@ export class SnakeArenaComponent {
         continue;
       }
       const mine = snake.id === me;
-      const lead = mine ? this.myLead() : OTHERS_LEAD;
-      const perTick = snake.power === 'BOOST' ? 2 : 1;
-      const cells = moving ? Math.ceil((lead + LATE_SLACK) * perTick) : 0;
+      const lead = mine ? this.myLead() : othersLead;
+      const slack = mine ? MY_SLACK : OTHERS_SLACK;
+      const boostUntil = snake.power === 'BOOST' ? (snake.powerUntil ?? current.tick) : -1;
+      const cells = moving ? Math.ceil(cellsMoved(current.tick, current.tick + lead + slack, boostUntil)) : 0;
       const before = previous?.snakes.find((each) => each.id === snake.id);
       const pose = poseAt({
         cols: view.cols,
@@ -360,24 +369,25 @@ export class SnakeArenaComponent {
         previousTick: previous?.tick ?? current.tick,
         current: snake,
         currentTick: current.tick,
-        at: frozen ? current.tick : this.drawTick(current, lead, now),
+        at: frozen ? current.tick : this.drawTick(current, lead, slack, now),
         ahead: mine
-          ? this.steering.ahead(current.tick, snake.dir, cells, perTick)
+          ? this.steering.ahead(current.tick, snake.dir, cells, boostUntil)
           : new Array<Dir>(cells).fill(snake.dir),
-        speed: perTick,
+        boostUntil,
         food: this.food,
         bounds: current.bounds,
         look: mine && !frozen ? this.steering.pending() : undefined,
       });
-      poses.set(snake.id, this.smooth(snake.id, pose, current.round, perTick / view.tickMs, now));
+      const cellsPerMs = (snake.power === 'BOOST' ? 2 : 1) / view.tickMs;
+      poses.set(snake.id, this.smooth(snake.id, pose, current.round, cellsPerMs, now));
     }
     return poses;
   }
 
   /**
-   * Eases out a jump of a drawn head — a turn that counts for a moment the page had already drawn
-   * past, a guess the next frame corrects — so the head glides to its new place within a few
-   * frames instead of snapping there. Respawns and new rounds start fresh.
+   * Eases out a jump of a drawn head — a turn that starts in the cell the head has just passed, a
+   * guess the next frame corrects, a boost that starts — so the head glides to its new place
+   * within a few frames instead of snapping there. Respawns and new rounds start fresh.
    */
   private smooth(id: string, pose: Pose, round: number, cellsPerMs: number, now: number): Pose {
     const head = pointAt(pose.points, pose.head);
@@ -387,7 +397,7 @@ export class SnakeArenaComponent {
       const dt = now - last.time;
       const jump = Math.hypot(head.x - last.head.x, head.y - last.head.y);
       offset = last.offset;
-      if (jump > cellsPerMs * dt + 0.3 && jump < 4) {
+      if (jump > cellsPerMs * dt + 0.1 && jump < 4) {
         offset = { x: offset.x + last.head.x - head.x, y: offset.y + last.head.y - head.y };
       }
       const keep = Math.exp(-dt / SMOOTHING_MS);

@@ -16,17 +16,17 @@ export interface Turn {
  * This browser's turns that the server hasn't carried out yet — a mirror of the server's queue —
  * so the own snake can be drawn turning the moment a key is pressed (client-side prediction).
  *
- * Each turn names the tick whose head position it starts from: the cell the player saw their head
- * in. The server carries it out by the first move after that tick, so the snake turns exactly
- * where the player pressed — early turns wait, late ones go with the next move.
+ * Each turn names the tick whose head position it starts from: the cell centre where the drawn
+ * head turns. The server carries it out by the first move after that tick, so the snake turns
+ * exactly there — early turns wait, late ones go with the next move.
  */
 export class Steering {
   private turns: Turn[] = [];
   private round = -1;
 
   /**
-   * A key press while the head is drawn in the cell of tick `at`. Returns the turn to send, or
-   * `null` when it changes nothing (the current heading, a reversal, a full queue — the server would
+   * A key press that turns the snake in the cell of tick `at`. Returns the turn to send, or `null`
+   * when it changes nothing (the current heading, a reversal, a full queue — the server would
    * ignore it as well).
    */
   press(dir: Dir, me: SnakeFrame, at: number): Turn | null {
@@ -57,20 +57,23 @@ export class Steering {
   }
 
   /**
-   * The headings of the next `count` moves after the frame of `tick`, starting from `dir`, with
-   * `perTick` moves per tick — the queued turns taken just as the server will take them.
+   * The headings of the next `count` moves after the frame of `tick`, starting from `dir` — two
+   * moves per tick up to and including tick `boostUntil`, one after — with the queued turns taken
+   * just as the server will take them (once due, at most one per move).
    */
-  ahead(tick: number, dir: Dir, count: number, perTick: number): Dir[] {
+  ahead(tick: number, dir: Dir, count: number, boostUntil: number): Dir[] {
     const moves: Dir[] = [];
     let heading = dir;
     let next = 0;
-    for (let i = 0; i < count; i++) {
-      const turn = this.turns[next];
-      if (turn && turn.at < tick + 1 + Math.floor(i / perTick)) {
-        heading = turn.dir;
-        next++;
+    for (let t = tick + 1; moves.length < count; t++) {
+      for (let step = t <= boostUntil ? 2 : 1; step > 0 && moves.length < count; step--) {
+        const turn = this.turns[next];
+        if (turn && turn.at < t) {
+          heading = turn.dir;
+          next++;
+        }
+        moves.push(heading);
       }
-      moves.push(heading);
     }
     return moves;
   }

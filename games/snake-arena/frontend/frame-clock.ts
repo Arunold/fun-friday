@@ -4,6 +4,8 @@ import { Frame } from './snake-arena.types';
 const SETTLE = 0.15;
 /** A frame this many ticks off the clock restarts it (a new round, a tab that slept). */
 const RESYNC_TICKS = 3;
+/** How much of the remembered lateness of frames is kept per frame (it fades in a few seconds). */
+const JITTER_KEEP = 0.97;
 
 /**
  * Keeps the two newest frames for drawing — whichever is newer wins, stream or snapshot — and a
@@ -17,6 +19,11 @@ export class FrameClock {
   current: Frame | null = null;
   /** Length of a tick (from the view). */
   tickMs = 100;
+  /**
+   * How much later than the clock frames have come lately, at most (ms, up to a tick): drawing
+   * other snakes that much earlier means their next frame is there before it is needed.
+   */
+  jitter = 0;
   /** `performance.now()` at which the round's tick 0 was due (by the smoothed clock). */
   private base = Number.NaN;
 
@@ -57,7 +64,9 @@ export class FrameClock {
     const due = now - tick * this.tickMs;
     if (Number.isNaN(this.base) || newRound || Math.abs(due - this.base) > RESYNC_TICKS * this.tickMs) {
       this.base = due;
+      this.jitter = 0;
     } else if (!fromSnapshot) {
+      this.jitter = Math.min(this.tickMs, Math.max(due - this.base, this.jitter * JITTER_KEEP));
       this.base += (due - this.base) * SETTLE;
     }
   }
