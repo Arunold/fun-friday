@@ -31,8 +31,8 @@ import java.util.Map;
  * compact frame to everybody ({@value #FRAME_EVENT}) and suppresses the snapshot: views only go out
  * when the round starts or ends or the roster changes, and they carry the latest frame so a
  * (re)connecting browser can draw at once. {@value #TURN} actions are queued in the simulation and
- * carried out by the move after the tick they name in {@code at} — the cell the player saw their
- * head in when they pressed the key, so network delay never makes a snake turn a cell late or early
+ * carried out by the move after the tick they name in {@code at} — the cell where the player's
+ * browser shows the snake turning, so network delay never makes a snake turn a cell late or early
  * (without {@code at}: the next move); harmless ones (into the current heading, while crashed) are
  * ignored without an error. In "last snake standing" the round ends as soon as at most one snake is
  * left.

@@ -45,11 +45,11 @@ total score, then to whoever joined first.
 | ---------------------- | ------------------------------------------------------ |
 | `←` `↑` `↓` `→` / WASD | turn — a quick double turn is queued (up to two turns) |
 
-Your snake turns on screen the moment you press, in the cell its head was in on your screen — and
-that is where the server turns it, network delay or not (see _Latency_ below). Key auto-repeat is
-ignored and typing in text fields is never hijacked. Spectators watch the whole arena and the live
-leaderboard. The kill feed reads _"Ana ⚔️ Dev"_ (Dev ran into Ana), 💥 for a head-on crash, 🧱 for a
-wall, 🌀 for biting your own tail and 👋 for a player who left.
+Your snake turns at the next cell its head reaches on screen — its eyes look the new way at once —
+and that is where the server turns it too, network delay or not (see _Latency_ below). Key
+auto-repeat is ignored and typing in text fields is never hijacked. Spectators watch the whole
+arena and the live leaderboard. The kill feed reads _"Ana ⚔️ Dev"_ (Dev ran into Ana), 💥 for a
+head-on crash, 🧱 for a wall, 🌀 for biting your own tail and 👋 for a player who left.
 
 ## Settings
 
@@ -94,25 +94,33 @@ wall, 🌀 for biting your own tail and 👋 for a player who left.
 - **Input.** `turn {dir, at}` with Bean Validation: unknown actions and directions are rejected;
   harmless no-ops — a turn into the current heading, a reversal, a turn while crashed or with a full
   queue — are ignored silently, so no error toast appears. `at` (optional) is the tick whose head
-  position the turn starts from — the cell the player saw their head in. The server carries the
-  turn out with the first move after that tick: an early turn waits (at most two ticks), a late one
-  goes with the next move; without `at` the next move takes it.
-- **Latency.** Drawing a full tick behind the server made turns look a cell late (and crash). Now
-  the browser draws against a smoothed clock of the server's ticks, and your own snake runs ahead
-  of the newest frame along your pending turns (client-side prediction) by what a turn needs to
-  reach the server in time — half a tick plus the measured round trip (`api.roundTripMs()`, 0.8 to
-  1.3 ticks) — **plus what you haven't seen yet**: a picture takes ~40 ms to reach your eyes and a
-  key press a moment to reach the page, so a press names the cell the head was in on your screen
-  (`event.timeStamp` − 40 ms), not where the page has drawn it since. The server agrees with every
-  such turn as long as the round trip stays under ~60 ms. Jumps of a drawn head (a turn that counts
-  for a moment already drawn past, a guess the next frame corrects) glide out within ~100 ms instead
-  of snapping, and a head guessed ahead stops in front of a wall — the crash is the server's to
-  tell. Other snakes are drawn half a tick ahead, straight on.
+  position the turn starts from — the cell where the player's screen shows the snake turning. The
+  server carries the turn out with the first move after that tick: an early turn waits (at most
+  four ticks), a late one goes with the next move; without `at` the next move takes it.
+- **Latency.** The server decides everything; the browser hides the network delay without ever
+  showing a move the server won't make (`arena-playback.ts`):
+  - _Other snakes_ glide between the two newest frames against a smoothed clock of the server's
+    ticks (`frame-clock.ts`), held back a little more while frames arrive unevenly — they only show
+    moves the server has made.
+  - _Your snake_ runs ahead along your pending turns (client-side prediction, `steering.ts`). A key
+    turns it at the next cell centre its drawn head reaches — its eyes look the new way at once —
+    and the turn names that cell's tick. Your snake is drawn a round trip minus one tick (plus
+    30 ms) past the frames' clock (`lead.ts`), so the turn always reaches the server before that
+    tick has passed and the server turns the snake in exactly the same cell: the head never jumps,
+    near or far from the server (round trips up to ~370 ms). The round trip comes from the
+    platform's ping and from the answer to every turn (the second longest of the last eight
+    counts); a change is eased in, so your snake runs a little faster or slower for a moment
+    instead of jumping. Close to the server that puts your snake at about the others' moment; far
+    away, the others lag behind it by the round trip.
+  - What still needs correcting — a frame later than ever, a boost that starts — glides out within
+    ~100 ms. A head guessed ahead runs up to a wall and touches it; the crash is the server's to
+    tell (waiting at the last cell would look as if a turn could still save it).
 - **Leaving and connections.** A player who leaves turns into food (feed: 👋) and drops out of the
   round table; a disconnected snake keeps going straight and respawns as usual.
-- **Browser.** A `requestAnimationFrame` loop reads the two newest frames from plain fields and
-  places every snake on them (`motion.ts`: between the frames or ahead of the newest one; signals
-  only drive the panel and overlays). It draws on the clock frames arrive on (`performance.now()`),
+- **Browser.** A `requestAnimationFrame` loop asks `ArenaPlayback` where every snake is — plain
+  fields, no signals; `motion.ts` places a body between two frames or ahead of the newest one —
+  while signals only drive the panel and overlays. It draws on the clock frames arrive on
+  (`performance.now()`),
   so an effect born on arrival is never "younger than zero" — that negative age once made a canvas
   call throw and the snakes blink out for a picture whenever food appeared. The canvas is sized by
   a `ResizeObserver`, crisp on HiDPI, and tones down decorative effects (crash bursts, pulses, speed
@@ -153,7 +161,8 @@ wall, 🌀 for biting your own tail and 👋 for a player who left.
 | `frontend/snake-arena.component.*`                                                    | the game screen and overlays; `index.ts` registers it            |
 | `frontend/side-panel.component.*`                                                     | leaderboard, kill feed, controls and legend                      |
 | `frontend/arena-renderer.ts`, `arena-labels.ts`, `arena-effects.ts`, `arena-theme.ts` | canvas drawing, name labels, effects, colours                    |
-| `frontend/frame-clock.ts`, `motion.ts`, `steering.ts`                                 | tick clock, snake poses (glide, prediction, easing), own turns   |
+| `frontend/arena-playback.ts`                                                          | where each snake is drawn and which tick a key turns at          |
+| `frontend/frame-clock.ts`, `lead.ts`, `steering.ts`, `motion.ts`                      | tick clock, own snake's lead, own turns, snake poses             |
 | `frontend/arena-input.ts`, `panel-model.ts`                                           | keys, panel data                                                 |
 | `frontend/snake-arena.types.ts`                                                       | TypeScript mirror of the view                                    |
 | `e2e/snake-arena.spec.ts`                                                             | Playwright: steering, spectator, a full last-snake-standing game |

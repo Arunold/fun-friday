@@ -230,12 +230,15 @@ public void onTimer(GameContext ctx, String key) {
   in a `requestAnimationFrame` loop and interpolate between the last two frames for smooth motion.
 - **Responsive controls**: plain interpolation draws everything about a tick behind the server, so
   controls feel late. Draw the player's own piece ahead along their pending input (client-side
-  prediction; `api.roundTripMs()` tells how far) and send the tick the player acted on, so the
-  server applies the input where the player saw it, not where it happens to be when the message
-  arrives. "Saw" is a moment before the key event: a picture needs ~40 ms to reach the eyes, so draw
-  that much further ahead and date the input back by it. Ease out the jumps this causes instead of
-  snapping — Snake Arena's `turn {dir, at}` with `frame-clock.ts`, `motion.ts` and `steering.ts`
-  shows how.
+  prediction) and send the tick where the drawn piece acts — the next cell its head reaches — so
+  the server applies the input exactly where the screen shows it. Draw it far enough ahead for the
+  input to arrive in time: about a round trip, measured all along (`api.send` resolves when the
+  server has answered; `api.roundTripMs()` is the ping at connect) — a fixed lead breaks as soon as
+  someone plays from far away. Never date input back to a spot the piece was already drawn past: it
+  would have to jump back. Draw the other pieces between frames you already have (a little earlier
+  while frames come unevenly) and ease out what still needs correcting instead of snapping — Snake
+  Arena's `arena-playback.ts` (with `frame-clock.ts`, `lead.ts`, `steering.ts`, `motion.ts`) shows
+  how.
 - **One clock**: use `performance.now()` for frame arrivals and pictures alike — the
   `requestAnimationFrame` timestamp can be older than an arrival in the same frame, and a negative
   age makes canvas calls such as `arc` throw (the rest of the picture is lost).

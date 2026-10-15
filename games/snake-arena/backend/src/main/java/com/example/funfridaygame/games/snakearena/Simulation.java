@@ -71,8 +71,11 @@ final class Simulation {
     /** Reach of a magnet in cells. */
     static final int MAGNET_RADIUS = 5;
 
-    /** A turn may be scheduled at most this many ticks ahead. */
-    static final int MAX_TURN_LEAD = 2;
+    /**
+     * A turn may be scheduled at most this many ticks ahead: browsers far from the server draw
+     * their own snake further ahead (see the README's "Latency").
+     */
+    static final int MAX_TURN_LEAD = 4;
 
     /** Power-ups never appear this close to a head (no instant pick-ups). */
     private static final int POWER_UP_HEAD_DISTANCE = 2;
@@ -134,8 +137,8 @@ final class Simulation {
     /**
      * Queues a turn for a player's snake; harmless turns are ignored silently.
      *
-     * @param from the tick whose head position the turn starts from, i.e. where the player saw
-     *     their head when they pressed the key ({@code -1}: the next move); at most {@value
+     * @param from the tick whose head position the turn starts from, i.e. the cell where the
+     *     player's browser shows the snake turning ({@code -1}: the next move); at most {@value
      *     #MAX_TURN_LEAD} ticks ahead
      */
     void turn(String playerId, Dir dir, long from) {

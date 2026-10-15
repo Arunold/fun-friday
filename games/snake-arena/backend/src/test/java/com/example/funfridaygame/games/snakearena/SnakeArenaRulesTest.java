@@ -64,12 +64,11 @@ class SnakeArenaRulesTest {
     }
 
     @Test
-    void aTurnWaitsForTheCellThePlayerSawTheirHeadIn() {
+    void aTurnWaitsForTheCellItNames() {
         TestArena arena = TestArena.start("alice").calm().go();
         long now = arena.sim().tick(); // the head is at 6,12, heading right
 
-        // Browsers draw a little ahead: the player pressed while their head showed in the next
-        // cell.
+        // Browsers draw the own snake ahead and turn it at the next cell its head reaches.
         arena.turn("alice", "UP", now + 1).ticks(1);
         assertThat(arena.head("alice")).containsExactly(7, 12);
         arena.ticks(1);
@@ -87,10 +86,10 @@ class SnakeArenaRulesTest {
     }
 
     @Test
-    void aTurnWaitsAtMostTwoTicks() {
+    void aTurnWaitsAtMostFourTicks() {
         TestArena arena = TestArena.start("alice").calm().go();
 
-        arena.turn("alice", "DOWN", arena.sim().tick() + 50).ticks(2);
+        arena.turn("alice", "DOWN", arena.sim().tick() + 50).ticks(4);
         assertThat(arena.snake("alice").dir()).isEqualTo(Dir.RIGHT);
         arena.ticks(1);
         assertThat(arena.snake("alice").dir()).isEqualTo(Dir.DOWN);

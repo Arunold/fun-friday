@@ -13,29 +13,29 @@ export interface Turn {
 }
 
 /**
- * This browser's turns that the server hasn't carried out yet — a mirror of the server's queue —
- * so the own snake can be drawn turning the moment a key is pressed (client-side prediction).
+ * This browser's turns that no frame has shown carried out yet — a mirror of the server's queue —
+ * so the own snake can be drawn along them before the server confirms them (client-side
+ * prediction).
  *
- * Each turn names the tick whose head position it starts from: the cell the player saw their head
- * in. The server carries it out by the first move after that tick, so the snake turns exactly
- * where the player pressed — early turns wait, late ones go with the next move.
+ * Each turn names the tick whose head position it starts from: the cell centre where the drawn
+ * head turns. The server carries it out with the first move after that tick, at most one turn per
+ * move — exactly as {@link ahead} predicts.
  */
 export class Steering {
   private turns: Turn[] = [];
   private round = -1;
 
   /**
-   * A key press while the head is drawn in the cell of tick `at`. Returns the turn to send, or
-   * `null` when it changes nothing (the current heading, a reversal, a full queue — the server would
-   * ignore it as well).
+   * A key press that turns the snake in the cell of tick `at`. Returns the turn to send, or `null`
+   * when the server would ignore it: the current heading, a reversal, a full queue.
    */
   press(dir: Dir, me: SnakeFrame, at: number): Turn | null {
     const last = this.turns.at(-1);
     const heading = last?.dir ?? me.dir;
-    if (this.turns.length >= MAX_QUEUED || dir === heading || dir === OPPOSITE[heading]) {
+    if (dir === heading || dir === OPPOSITE[heading] || this.queuedAt(at) >= MAX_QUEUED) {
       return null;
     }
-    const turn = { dir, at: Math.max(0, Math.round(at), last?.at ?? 0) };
+    const turn = { dir, at: Math.max(at, last?.at ?? 0) };
     this.turns.push(turn);
     return turn;
   }
@@ -57,20 +57,23 @@ export class Steering {
   }
 
   /**
-   * The headings of the next `count` moves after the frame of `tick`, starting from `dir`, with
-   * `perTick` moves per tick — the queued turns taken just as the server will take them.
+   * The headings of the next `count` moves after the frame of `tick`, starting from `dir` — two
+   * moves per tick up to and including tick `boostUntil`, one after — with the queued turns taken
+   * just as the server will take them (once due, at most one per move).
    */
-  ahead(tick: number, dir: Dir, count: number, perTick: number): Dir[] {
+  ahead(tick: number, dir: Dir, count: number, boostUntil: number): Dir[] {
     const moves: Dir[] = [];
     let heading = dir;
     let next = 0;
-    for (let i = 0; i < count; i++) {
-      const turn = this.turns[next];
-      if (turn && turn.at < tick + 1 + Math.floor(i / perTick)) {
-        heading = turn.dir;
-        next++;
+    for (let t = tick + 1; moves.length < count; t++) {
+      for (let step = t <= boostUntil ? 2 : 1; step > 0 && moves.length < count; step--) {
+        const turn = this.turns[next];
+        if (turn && turn.at < t) {
+          heading = turn.dir;
+          next++;
+        }
+        moves.push(heading);
       }
-      moves.push(heading);
     }
     return moves;
   }
@@ -78,5 +81,22 @@ export class Steering {
   /** The newest turn not carried out yet, if any (the eyes already look that way). */
   pending(): Dir | undefined {
     return this.turns.at(-1)?.dir;
+  }
+
+  /**
+   * How many of the turns will still wait in the server's queue when a turn for tick `at` gets
+   * there. Turns carried out by an earlier move are gone by then, even if no frame has shown them
+   * yet — which matters when the server is far away.
+   */
+  private queuedAt(at: number): number {
+    let move = Number.NEGATIVE_INFINITY;
+    let queued = 0;
+    for (const turn of this.turns) {
+      move = Math.max(turn.at + 1, move + 1);
+      if (move >= at) {
+        queued++;
+      }
+    }
+    return queued;
   }
 }
